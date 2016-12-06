@@ -37,6 +37,36 @@ class GameManager {
         }
     }
 
-    PieceImageView getCurrentPiece() { return mArrayPieces.get(mCurrentPiece); }
-    MapImageView getCurrentMap() { return mCurrentMap; }
+    //Геттеры
+    PieceImageView getPiece() { return mArrayPieces.get(mCurrentPiece); }
+    PieceImageView getPiece(int number) { return mArrayPieces.get(number); }
+    MapImageView getMap() { return mCurrentMap; }
+
+    //Возвращает массив номеров кусочков паззла, которые уже стоят на своих местах
+    ArrayList<Integer> getListOfSettledPieces() {
+        ArrayList<Integer> array = new ArrayList<>();
+        for (PieceImageView piece : mArrayPieces) {
+            if (piece.isSettled())
+                array.add(mArrayPieces.indexOf(piece));
+        }
+        return array;
+    }
+    //Возвращает массив значений ширины этих кусочков
+    ArrayList<Integer> getWidthOfSettledPieces() {
+        ArrayList<Integer> array = new ArrayList<>();
+        for (PieceImageView piece : mArrayPieces) {
+            if (piece.isSettled())
+                array.add(piece.getWidth());
+        }
+        return array;
+    }
+    //Возвращает массив значений высоты этих кусочков
+    ArrayList<Integer> getHeightOfSettledPieces() {
+        ArrayList<Integer> array = new ArrayList<>();
+        for (PieceImageView piece : mArrayPieces) {
+            if (piece.isSettled())
+                array.add(piece.getHeight());
+        }
+        return array;
+    }
 }

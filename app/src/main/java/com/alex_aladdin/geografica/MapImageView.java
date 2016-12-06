@@ -14,6 +14,7 @@ import android.widget.ImageView;
 public class MapImageView extends ImageView {
 
     public static float K; //Отношение ширины реального изображения к ширине оригинального
+    public static float RATIO; //Пропорции картинки
     private int mOriginalWidth;
 
     public MapImageView(Context context, AttributeSet attrs) {
@@ -56,6 +57,9 @@ public class MapImageView extends ImageView {
             //Сохраняем коэффициент сжатия
             K = (float)bmScaledMap.getWidth()/mOriginalWidth;
         }
+
+        //Сохраняем пропорции картинки
+        RATIO = bitmap_ratio;
     }
 
     //Метод, получающий из ресурсов сразу уменьшенное изображение (в кратное двум число раз), чтобы оно было не меньше
