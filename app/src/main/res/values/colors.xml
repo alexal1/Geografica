@@ -2,4 +2,5 @@
 <resources>
     <color name="backlight">#8800ccff</color>
     <color name="transparent">#00000000</color>
+    <color name="background">#339966</color>
 </resources>

@@ -11,6 +11,7 @@ import android.view.Display;
 import android.view.DragEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -21,7 +22,6 @@ public class MainActivity extends AppCompatActivity {
 
     private GameManager mManager;
     private MapImageView mImageMap;
-    private PieceImageView mImagePiece;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,9 +31,13 @@ public class MainActivity extends AppCompatActivity {
         mManager = new GameManager(this);
 
         mImageMap = mManager.getMap();
-        mImagePiece = mManager.getPiece();
-        mImagePiece.setOnTouchListener(new MyTouchListener());
-        mImagePiece.getRootView().setOnDragListener(new MyDragListener());
+
+        //Если приложение запущено впервые
+        if (savedInstanceState == null)
+            showNewPiece();
+
+        RelativeLayout rootView = (RelativeLayout)findViewById(R.id.root);
+        rootView.setOnDragListener(new MyDragListener());
     }
 
     //Класс MyTouchListener
@@ -43,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
                 ClipData data = ClipData.newPlainText("", "");
                 View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(view);
                 //Выключаем подсветку
-                mImagePiece.setBackgroundResource(R.color.transparent);
+                view.setBackgroundResource(R.color.transparent);
                 //Запускаем DragAndDrop
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                     newDragAndDrop(view, data, shadowBuilder, view, 0);
@@ -78,8 +82,8 @@ public class MainActivity extends AppCompatActivity {
             TextView textAccuracy = (TextView)findViewById(R.id.text_accuracy);
 
             //Координаты цели
-            final float target_x = mImagePiece.getTargetX()*MapImageView.K + mImageMap.getX();
-            final float target_y = mImagePiece.getTargetY()*MapImageView.K + mImageMap.getY();
+            final float target_x = view.getTargetX()*MapImageView.K + mImageMap.getX();
+            final float target_y = view.getTargetY()*MapImageView.K + mImageMap.getY();
 
             switch (event.getAction()) {
                 case DragEvent.ACTION_DRAG_STARTED:
@@ -88,8 +92,8 @@ public class MainActivity extends AppCompatActivity {
                 case DragEvent.ACTION_DRAG_LOCATION:
                     x = event.getX();
                     y = event.getY();
-                    float picture_x = (x - mImageMap.getX())/MapImageView.K;
-                    float picture_y = (y - mImageMap.getY())/MapImageView.K;
+                    float picture_x = (x - view.getX())/MapImageView.K;
+                    float picture_y = (y - view.getY())/MapImageView.K;
                     textAccuracy.setText("x = " + picture_x + ", y = " + picture_y);
                     break;
                 case DragEvent.ACTION_DROP:
@@ -103,10 +107,14 @@ public class MainActivity extends AppCompatActivity {
                         y = target_y;
                         //Этот кусочек встал на свое место, ура
                         view.settle();
+                        //Теперь можно открыть новый
+                        showNewPiece();
+                        //А с этого уже можно снять обработчик
+                        view.setOnTouchListener(null);
                     }
                     else {
                         //Включаем подсветку
-                        mImagePiece.setBackgroundResource(R.drawable.backlight);
+                        view.setBackgroundResource(R.drawable.backlight);
                     }
 
                     view.setX(x - view.getWidth()/2);
@@ -118,6 +126,17 @@ public class MainActivity extends AppCompatActivity {
             }
             return true;
         }
+    }
+
+    //Добавляем на экран новый кусочек паззла
+    private void showNewPiece() {
+        PieceImageView imagePiece;
+        if ((imagePiece = mManager.getPiece()) == null) return;
+        //Вешаем обработчик
+        imagePiece.setOnTouchListener(new MyTouchListener());
+        //Делаем видимым и включаем подсветку
+        imagePiece.setVisibility(View.VISIBLE);
+        imagePiece.setBackgroundResource(R.drawable.backlight);
     }
 
     //Сохраняем промежуточное состоние активности (какие куски паззла уже на своих местах)
@@ -197,9 +216,14 @@ public class MainActivity extends AppCompatActivity {
             view.setY(target_y - piece_new_height/2);
             //И снова подтверждаем, что кусочек на своем месте
             view.settle();
+            //И делаем его видимым
+            view.setVisibility(View.VISIBLE);
 
             Log.i("Restore", "map_x = " + map_x + ", map_y = " + map_y);
             Log.i("Restore", String.valueOf(array_indexes));
         }
+
+        //Наконец, показываем новый кусочек паззла
+        showNewPiece();
     }
 }
