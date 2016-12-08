@@ -34,7 +34,7 @@ public class MapImageView extends ImageView {
         final int screen_h = size.y;
 
         //Загружаем из ресурсов картинку, сразу уменьшенную в число раз, кратное двум, но чтобы была не меньше размеров экрана
-        Bitmap bmMap = decodeSampledBitmapFromResource(getResources(), R.drawable.contur_ocruga_s_subjectamy, screen_w, screen_h);
+        Bitmap bmMap = decodeSampledBitmapFromResource(getResources(), R.drawable.contur_ocruga_s_name__subjectov, screen_w, screen_h);
         //Получаем размеры загруженной картинки
         int bitmap_w = bmMap.getWidth();
         int bitmap_h = bmMap.getHeight();

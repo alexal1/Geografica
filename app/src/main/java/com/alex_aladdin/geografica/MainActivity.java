@@ -18,7 +18,7 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static final float STICK = 1/8f; //Помноженное на высоту экрана, дает дельту прилипания
+    public static final float STICK = 1/50f; //Помноженное на высоту экрана, дает дельту прилипания
 
     private GameManager mManager;
     private MapImageView mImageMap;
