@@ -9,7 +9,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Display;
 import android.view.DragEvent;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -36,12 +38,13 @@ public class MainActivity extends AppCompatActivity {
         if (savedInstanceState == null)
             showNewPiece();
 
-        RelativeLayout rootView = (RelativeLayout)findViewById(R.id.root);
-        rootView.setOnDragListener(new MyDragListener());
+        RelativeLayout rootLayout = (RelativeLayout)findViewById(R.id.root);
+        rootLayout.setOnDragListener(new MyDragListener()); //Теперь мы можем перетаскивать кусочки паззла
+        rootLayout.setOnTouchListener(new MyZoomTouchListener()); //Теперь мы можем зуммировать layout
     }
 
-    //Класс MyTouchListener
-    private final class MyTouchListener implements View.OnTouchListener {
+    //Класс MyDragTouchListener, вешается на PieceImageView для DragAndDrop'a
+    private final class MyDragTouchListener implements View.OnTouchListener {
         public boolean onTouch(View view, MotionEvent motionEvent) {
             if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
                 ClipData data = ClipData.newPlainText("", "");
@@ -73,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    //Класс MyDragListener
+    //Класс MyDragListener, вешается на layout для DragAndDrop'a
     private class MyDragListener implements View.OnDragListener {
         public boolean onDrag(View v, DragEvent event) {
             float x, y; //Текущие координаты DragAndDrop'a
@@ -133,7 +136,7 @@ public class MainActivity extends AppCompatActivity {
         PieceImageView imagePiece;
         if ((imagePiece = mManager.getPiece()) == null) return;
         //Вешаем обработчик
-        imagePiece.setOnTouchListener(new MyTouchListener());
+        imagePiece.setOnTouchListener(new MyDragTouchListener());
         //Делаем видимым и включаем подсветку
         imagePiece.setVisibility(View.VISIBLE);
         imagePiece.setBackgroundResource(R.drawable.backlight);
@@ -225,5 +228,77 @@ public class MainActivity extends AppCompatActivity {
 
         //Наконец, показываем новый кусочек паззла
         showNewPiece();
+    }
+
+    //Класс MyZoomTouchListener, вешается на layout для зуммирования
+    private final class MyZoomTouchListener implements View.OnTouchListener {
+        private ScaleGestureDetector scaleGestureDetector = new ScaleGestureDetector(MainActivity.this, new OnPinchListener());
+        private GestureDetector doubleTapGestureDetector = new GestureDetector(MainActivity.this, new GestureDoubleTap());
+        private ZoomableRelativeLayout rootLayout = (ZoomableRelativeLayout)findViewById(R.id.root);
+        private float x0, y0, x, y;
+
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+            scaleGestureDetector.onTouchEvent(event);
+            doubleTapGestureDetector.onTouchEvent(event);
+
+            //Реализуем перемещение
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    x0 = event.getX();
+                    y0 = event.getY();
+                    break;
+                case MotionEvent.ACTION_MOVE:
+                    x = event.getX();
+                    y = event.getY();
+
+                    rootLayout.move(x0-x, y0-y);
+
+                    x0 = x;
+                    y0 = y;
+                    break;
+            }
+
+            return true;
+        }
+    }
+
+    //Класс OnPinchListener, нужный для зуммирования
+    private class OnPinchListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
+        private ZoomableRelativeLayout rootLayout = (ZoomableRelativeLayout)findViewById(R.id.root);
+        private float currentSpan;
+        private float startFocusX;
+        private float startFocusY;
+
+        public boolean onScaleBegin(ScaleGestureDetector detector) {
+            currentSpan = detector.getCurrentSpan();
+            startFocusX = detector.getFocusX();
+            startFocusY = detector.getFocusY();
+            return true;
+        }
+
+        public boolean onScale(ScaleGestureDetector detector) {
+            rootLayout.relativeScale(detector.getCurrentSpan() / currentSpan, startFocusX, startFocusY);
+            currentSpan = detector.getCurrentSpan();
+            return true;
+        }
+
+        public void onScaleEnd(ScaleGestureDetector detector) {
+            rootLayout.release();
+        }
+    }
+
+    //Класс GestureDoubleTap, нужный для определения двойного клика
+    private class GestureDoubleTap extends GestureDetector.SimpleOnGestureListener {
+        private ZoomableRelativeLayout rootLayout = (ZoomableRelativeLayout)findViewById(R.id.root);
+
+        @Override
+        public boolean onDoubleTap(MotionEvent event) {
+            float x = event.getX();
+            float y = event.getY();
+
+            rootLayout.restore(x, y);
+            return true;
+        }
     }
 }
