@@ -21,7 +21,7 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static final float DELTA_MM = 1.0f; //Дельта прилипания в миллиметрах
+    public static final float DELTA_MM = 2.0f; //Дельта прилипания в миллиметрах
 
     private GameManager mManager;
     private MapImageView mImageMap;
