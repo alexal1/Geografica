@@ -7,6 +7,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Display;
 import android.view.DragEvent;
 import android.view.GestureDetector;
@@ -20,7 +21,7 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static final float STICK = 1/50f; //Помноженное на высоту экрана, дает дельту прилипания
+    public static final float DELTA_MM = 1.0f; //Дельта прилипания в миллиметрах
 
     private GameManager mManager;
     private MapImageView mImageMap;
@@ -79,6 +80,15 @@ public class MainActivity extends AppCompatActivity {
 
     //Класс MyDragListener, вешается на layout для DragAndDrop'a
     private class MyDragListener implements View.OnDragListener {
+
+        private final float delta;
+
+        //Конструктор
+        MyDragListener() {
+            //Переводим величину прилипания из миллиметров в пиксели
+            delta = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_MM, DELTA_MM, getResources().getDisplayMetrics());
+        }
+
         public boolean onDrag(View v, DragEvent event) {
             float x, y; //Текущие координаты DragAndDrop'a
 
@@ -105,7 +115,6 @@ public class MainActivity extends AppCompatActivity {
                     y = event.getY();
 
                     //Прилипание
-                    float delta = STICK*v.getHeight();
                     if ((Math.abs(x - target_x) < delta) && (Math.abs(y - target_y) < delta)) {
                         x = target_x;
                         y = target_y;
@@ -317,11 +326,18 @@ public class MainActivity extends AppCompatActivity {
         PieceImageView piece;
         int i = 0;
         //Если true, вешаем слушатели
-        if (enabled)
+        if (enabled) {
+            //При этом НЕ НАДО вешать слушатели на те кусочки, которые уже стоят на своих местах
+            ArrayList<Integer> settled_pieces = mManager.getListOfSettledPieces();
+
             while ((piece = mManager.getPiece(i)) != null) {
-                piece.setOnTouchListener(new MyDragTouchListener());
+                //Если этот кусочек ещё не на своем месте, вешаем слушатель
+                if (!settled_pieces.contains(i))
+                    piece.setOnTouchListener(new MyDragTouchListener());
+
                 i++;
             }
+        }
         //Если false, снимаем слушатели
         else
             while ((piece = mManager.getPiece(i)) != null) {
