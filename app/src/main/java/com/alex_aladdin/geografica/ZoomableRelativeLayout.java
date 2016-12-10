@@ -12,8 +12,8 @@ import android.widget.RelativeLayout;
 //http://stackoverflow.com/a/10029320/7271660
 //...и немного доработан
 public class ZoomableRelativeLayout extends RelativeLayout {
-    private final float MIN_SCALE = 1.0f;
-    private final float MAX_SCALE = 2.0f;
+    public static final float MIN_SCALE = 1.0f;
+    public static final float MAX_SCALE = 2.0f;
 
     private float mScaleFactor = 1;
     private float mPivotX;
@@ -134,4 +134,7 @@ public class ZoomableRelativeLayout extends RelativeLayout {
         mPivotY += diff_y;
         this.invalidate();
     }
+
+    //Геттер
+    public float getScaleFactor() { return mScaleFactor; }
 }

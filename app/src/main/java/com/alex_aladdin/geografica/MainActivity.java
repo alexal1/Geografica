@@ -24,6 +24,7 @@ public class MainActivity extends AppCompatActivity {
 
     private GameManager mManager;
     private MapImageView mImageMap;
+    private boolean mPiecesEnabled = true; //Разрешено ли перетаскивание кусочков (запрещается при зуммировании)
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -271,6 +272,8 @@ public class MainActivity extends AppCompatActivity {
         private float startFocusY;
 
         public boolean onScaleBegin(ScaleGestureDetector detector) {
+            setPiecesEnabled(false); //Делаем невозможным перетаскивание кусочков
+
             currentSpan = detector.getCurrentSpan();
             startFocusX = detector.getFocusX();
             startFocusY = detector.getFocusY();
@@ -284,6 +287,9 @@ public class MainActivity extends AppCompatActivity {
         }
 
         public void onScaleEnd(ScaleGestureDetector detector) {
+            if (rootLayout.getScaleFactor() <= ZoomableRelativeLayout.MIN_SCALE)
+                setPiecesEnabled(true); //Если вернулись в нормальный масштаб, делаем кусочки снова доступными
+
             rootLayout.release();
         }
     }
@@ -298,7 +304,29 @@ public class MainActivity extends AppCompatActivity {
             float y = event.getY();
 
             rootLayout.restore(x, y);
+
+            setPiecesEnabled(!mPiecesEnabled); //Делаем кусочки доступными/недоступными в зависимости от состояния
             return true;
         }
+    }
+
+    //Метод, снимающий/вешающий слушатели на PieceImageView до/после зуммирования
+    private void setPiecesEnabled(boolean enabled) {
+        mPiecesEnabled = enabled;
+
+        PieceImageView piece;
+        int i = 0;
+        //Если true, вешаем слушатели
+        if (enabled)
+            while ((piece = mManager.getPiece(i)) != null) {
+                piece.setOnTouchListener(new MyDragTouchListener());
+                i++;
+            }
+        //Если false, снимаем слушатели
+        else
+            while ((piece = mManager.getPiece(i)) != null) {
+                piece.setOnTouchListener(null);
+                i++;
+            }
     }
 }

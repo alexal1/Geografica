@@ -45,7 +45,12 @@ class GameManager {
         }
         return null;
     }
-    PieceImageView getPiece(int number) { return mArrayPieces.get(number); }
+    PieceImageView getPiece(int number) { //Возвращает либо кусок с нужным индексом, либо null
+        if (number < mArrayPieces.size())
+            return mArrayPieces.get(number);
+        else
+            return null;
+    }
     MapImageView getMap() { return mCurrentMap; }
 
     //Возвращает массив номеров кусочков паззла, которые уже стоят на своих местах
