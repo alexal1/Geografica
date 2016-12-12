@@ -81,4 +81,13 @@ class GameManager {
         }
         return array;
     }
+
+    //Есть ли кусочки паззла, ещё не установленные на свои места, но уже видимые
+    boolean hasVisiblePieces() {
+        for (PieceImageView piece : mArrayPieces) {
+            if (!piece.isSettled() && (piece.getVisibility() == View.VISIBLE))
+                return true;
+        }
+        return false;
+    }
 }

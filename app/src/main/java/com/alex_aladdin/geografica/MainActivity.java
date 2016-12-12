@@ -113,8 +113,9 @@ public class MainActivity extends AppCompatActivity {
                         y = target_y;
                         //Этот кусочек встал на свое место, ура
                         view.settle();
-                        //Теперь можно открыть новый
-                        showNewPiece();
+                        //Теперь можно открыть новый, НО только если уже нет открытых кусочков
+                        if (!mManager.hasVisiblePieces())
+                            showNewPiece();
                         //А с этого уже можно снять обработчик
                         view.setOnTouchListener(null);
                     }
