@@ -41,7 +41,8 @@ class GameManager {
     //Геттеры
     PieceImageView getPiece() {
         for (PieceImageView piece : mArrayPieces) {
-            if (!piece.isSettled()) return piece;
+            //Возвращаем первый кусок паззла, НЕ стоящий уже на своем месте, и НЕ видимый пользователю
+            if (!piece.isSettled() && (piece.getVisibility() == View.INVISIBLE)) return piece;
         }
         return null;
     }

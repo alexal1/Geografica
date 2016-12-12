@@ -14,8 +14,8 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 
@@ -93,7 +93,6 @@ public class MainActivity extends AppCompatActivity {
             float x, y; //Текущие координаты DragAndDrop'a
 
             PieceImageView view = (PieceImageView) event.getLocalState();
-            TextView textAccuracy = (TextView)findViewById(R.id.text_accuracy);
 
             //Координаты цели
             final float target_x = view.getTargetX()*MapImageView.K + mImageMap.getX();
@@ -103,13 +102,7 @@ public class MainActivity extends AppCompatActivity {
                 case DragEvent.ACTION_DRAG_STARTED:
                     view.setVisibility(View.INVISIBLE);
                     break;
-                case DragEvent.ACTION_DRAG_LOCATION:
-                    x = event.getX();
-                    y = event.getY();
-                    float picture_x = (x - view.getX())/MapImageView.K;
-                    float picture_y = (y - view.getY())/MapImageView.K;
-                    textAccuracy.setText("x = " + picture_x + ", y = " + picture_y);
-                    break;
+
                 case DragEvent.ACTION_DROP:
                     x = event.getX();
                     y = event.getY();
@@ -134,6 +127,7 @@ public class MainActivity extends AppCompatActivity {
                     view.setY(y - view.getHeight()/2);
                     view.setVisibility(View.VISIBLE);
                     break;
+
                 default:
                     break;
             }
@@ -320,9 +314,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //Метод, снимающий/вешающий слушатели на PieceImageView до/после зуммирования
+    //А также блокирующий все кнопки
     private void setPiecesEnabled(boolean enabled) {
         mPiecesEnabled = enabled;
 
+        ImageButton buttonAdd = (ImageButton)findViewById(R.id.button_add_piece);
         PieceImageView piece;
         int i = 0;
         //Если true, вешаем слушатели
@@ -337,12 +333,24 @@ public class MainActivity extends AppCompatActivity {
 
                 i++;
             }
+
+            //Разблокируем кнопки
+            buttonAdd.setEnabled(true);
         }
         //Если false, снимаем слушатели
-        else
+        else {
             while ((piece = mManager.getPiece(i)) != null) {
                 piece.setOnTouchListener(null);
                 i++;
             }
+
+            //Блокируем кнопки
+            buttonAdd.setEnabled(false);
+        }
+    }
+
+    //Клик на кнопку, добавляющую новый кусок паззла
+    public void onButtonAddClick(View view) {
+        showNewPiece();
     }
 }
