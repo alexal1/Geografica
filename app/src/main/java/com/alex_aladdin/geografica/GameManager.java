@@ -6,6 +6,7 @@ import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 
 class GameManager {
@@ -38,15 +39,32 @@ class GameManager {
         }
     }
 
-    //Геттеры
-    PieceImageView getPiece() {
+    //Есть ли кусочки паззла, ещё не установленные на свои места, но уже видимые
+    boolean hasVisiblePieces() {
         for (PieceImageView piece : mArrayPieces) {
-            //Возвращаем первый кусок паззла, НЕ стоящий уже на своем месте, и НЕ видимый пользователю
+            if (!piece.isSettled() && (piece.getVisibility() == View.VISIBLE))
+                return true;
+        }
+        return false;
+    }
+
+    /* --- Геттеры --- */
+
+    //Возвращаем произвольный кусок паззла
+    // НЕ стоящий на своем месте, и НЕ видимый пользователю
+    PieceImageView getPiece() {
+        //Клонируем массив
+        ArrayList<PieceImageView> array_random = new ArrayList<>(mArrayPieces);
+        //Перемешиваем
+        Collections.shuffle(array_random);
+
+        for (PieceImageView piece : array_random) {
             if (!piece.isSettled() && (piece.getVisibility() == View.INVISIBLE)) return piece;
         }
         return null;
     }
-    PieceImageView getPiece(int number) { //Возвращает либо кусок с нужным индексом, либо null
+    //Возвращает либо кусок с нужным индексом, либо null
+    PieceImageView getPiece(int number) {
         if (number < mArrayPieces.size())
             return mArrayPieces.get(number);
         else
@@ -80,14 +98,5 @@ class GameManager {
                 array.add(piece.getHeight());
         }
         return array;
-    }
-
-    //Есть ли кусочки паззла, ещё не установленные на свои места, но уже видимые
-    boolean hasVisiblePieces() {
-        for (PieceImageView piece : mArrayPieces) {
-            if (!piece.isSettled() && (piece.getVisibility() == View.VISIBLE))
-                return true;
-        }
-        return false;
     }
 }
