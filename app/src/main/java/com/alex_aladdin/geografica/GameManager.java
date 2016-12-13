@@ -30,6 +30,9 @@ class GameManager {
             PieceImageView view = new PieceImageView(activity);
             RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
                     ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            //Выравнивание по центру
+            layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT);
+
             view.setLayoutParams(layoutParams);
             view.loadPiece(map);
             layout.addView(view);
@@ -78,24 +81,6 @@ class GameManager {
         for (PieceImageView piece : mArrayPieces) {
             if (piece.isSettled())
                 array.add(mArrayPieces.indexOf(piece));
-        }
-        return array;
-    }
-    //Возвращает массив значений ширины этих кусочков
-    ArrayList<Integer> getWidthOfSettledPieces() {
-        ArrayList<Integer> array = new ArrayList<>();
-        for (PieceImageView piece : mArrayPieces) {
-            if (piece.isSettled())
-                array.add(piece.getWidth());
-        }
-        return array;
-    }
-    //Возвращает массив значений высоты этих кусочков
-    ArrayList<Integer> getHeightOfSettledPieces() {
-        ArrayList<Integer> array = new ArrayList<>();
-        for (PieceImageView piece : mArrayPieces) {
-            if (piece.isSettled())
-                array.add(piece.getHeight());
         }
         return array;
     }

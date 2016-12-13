@@ -6,7 +6,6 @@ import android.graphics.Point;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.Display;
 import android.view.DragEvent;
@@ -18,6 +17,7 @@ import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -145,6 +145,29 @@ public class MainActivity extends AppCompatActivity {
         //Делаем видимым и включаем подсветку
         imagePiece.setVisibility(View.VISIBLE);
         imagePiece.setBackgroundResource(R.drawable.backlight);
+
+        //Хотим, чтобы он показывался в случайном месте
+        int piece_w = imagePiece.getWidth();
+        int piece_h = imagePiece.getHeight();
+        if (piece_w == 0 && piece_h == 0) return; //При первоначальной загрузке оставляем как есть
+        //Размер экрана
+        Display display = getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        int screen_w = size.x;
+        int screen_h = size.y;
+        //Высота кнопок
+        ImageButton buttonAdd = (ImageButton)findViewById(R.id.button_add_piece);
+        int buttons_h = buttonAdd.getHeight();
+        //Диапазон
+        int range_x = screen_w - piece_w;
+        int range_y = screen_h - piece_h - buttons_h;
+        //Берем случайные значения из диапазона
+        Random random = new Random();
+        int x = random.nextInt(range_x);
+        int y = random.nextInt(range_y);
+        imagePiece.setX(x);
+        imagePiece.setY(y);
     }
 
     //Сохраняем промежуточное состоние активности (какие куски паззла уже на своих местах)
@@ -153,16 +176,9 @@ public class MainActivity extends AppCompatActivity {
         super.onSaveInstanceState(saveInstanceState);
 
         //Получаем массив индексов кусочков паззла, которые уже стоят на своих местах
-        ArrayList<Integer> array_indexes = mManager.getListOfSettledPieces();
-        //Получаем массив значений ширины этих кусочков паззла
-        ArrayList<Integer> array_width = mManager.getWidthOfSettledPieces();
-        //Получаем массив значений высоты этих кусочков паззла
-        ArrayList<Integer> array_height = mManager.getHeightOfSettledPieces();
+        ArrayList<Integer> array = mManager.getListOfSettledPieces();
 
-        saveInstanceState.putInt("MAP_WIDTH", mImageMap.getWidth());
-        saveInstanceState.putIntegerArrayList("SETTLED_PIECES", array_indexes);
-        saveInstanceState.putIntegerArrayList("SETTLED_PIECES_WIDTH", array_width);
-        saveInstanceState.putIntegerArrayList("SETTLED_PIECES_HEIGHT", array_height);
+        saveInstanceState.putIntegerArrayList("SETTLED_PIECES", array);
     }
 
     //Восстанавливаем сохраненные значения из метода onSaveInstanceState
@@ -170,11 +186,8 @@ public class MainActivity extends AppCompatActivity {
     public void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
 
-        int map_old_width = savedInstanceState.getInt("MAP_WIDTH");
-        ArrayList<Integer> array_indexes = savedInstanceState.getIntegerArrayList("SETTLED_PIECES");
-        ArrayList<Integer> array_width = savedInstanceState.getIntegerArrayList("SETTLED_PIECES_WIDTH");
-        ArrayList<Integer> array_height = savedInstanceState.getIntegerArrayList("SETTLED_PIECES_HEIGHT");
-        if (array_indexes == null || array_width == null || array_height == null) return;
+        ArrayList<Integer> array = savedInstanceState.getIntegerArrayList("SETTLED_PIECES");
+        if (array == null) return;
 
         //Необходимо вычислить координаты верхнего левого угла карты относительно экрана
         //Мы не можем просто взять эти координаты из объекта MapImageView, потому что у него они пока ещё нулевые
@@ -188,30 +201,19 @@ public class MainActivity extends AppCompatActivity {
         float screen_ratio = (float)screen_w/screen_h;
         float bitmap_ratio = MapImageView.RATIO;
         //Считаем по-разному в зависимости от того, какие пропорции у экрана и картинки
-        float map_x, map_y, map_new_width;
+        float map_x, map_y;
         if (bitmap_ratio > screen_ratio) {
             map_x = 0;
             map_y = (screen_h - screen_w/bitmap_ratio) / 2;
-            map_new_width = (float)screen_w;
         }
         else {
             map_x = (screen_w - screen_h*bitmap_ratio) / 2;
             map_y = 0;
-            map_new_width = (float)screen_h*bitmap_ratio;
         }
-        //Во сколько раз сжалась/расширилась карта по сравнению с предыдущим состоянием
-        //Так мы узнаем, во сколько раз надо изменить размеры кусочков паззла
-        float c = map_new_width / (float)map_old_width;
 
         //Берем кусочки паззла с номерами из array и втыкаем их на нужные места
-        for (int i : array_indexes) {
+        for (int i : array) {
             PieceImageView view = mManager.getPiece(i);
-
-            //Необходимо узнать размеры этого кусочка, зная размеры, которые были до перезагрузки активности
-            int piece_old_width = array_width.get(array_indexes.indexOf(i));
-            int piece_old_height = array_height.get(array_indexes.indexOf(i));
-            float piece_new_width = (float)piece_old_width * c;
-            float piece_new_height = (float)piece_old_height * c;
 
             //Координаты относительно картинки
             float picture_x = view.getTargetX();
@@ -220,15 +222,12 @@ public class MainActivity extends AppCompatActivity {
             final float target_x = picture_x*MapImageView.K + map_x;
             final float target_y = picture_y*MapImageView.K + map_y;
             //Устанавливаем их
-            view.setX(target_x - piece_new_width/2);
-            view.setY(target_y - piece_new_height/2);
+            view.setX(target_x - screen_w/2);
+            view.setY(target_y - screen_h/2);
             //И снова подтверждаем, что кусочек на своем месте
             view.settle();
             //И делаем его видимым
             view.setVisibility(View.VISIBLE);
-
-            Log.i("Restore", "map_x = " + map_x + ", map_y = " + map_y);
-            Log.i("Restore", String.valueOf(array_indexes));
         }
 
         //Наконец, показываем новый кусочек паззла
