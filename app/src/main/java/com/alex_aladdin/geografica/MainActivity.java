@@ -115,9 +115,11 @@ public class MainActivity extends AppCompatActivity {
                         y = target_y;
                         //Этот кусочек встал на свое место, ура
                         view.settle();
-                        //Теперь можно открыть новый, НО только если уже нет открытых кусочков
-                        if (!mManager.hasVisiblePieces())
-                            showNewPiece();
+                        //Подсвечиваем кнопку buttonAdd, но только если нет других доступных кусочков
+                        if (!mManager.hasVisiblePieces()) {
+                            ImageButton buttonAdd = (ImageButton)findViewById(R.id.button_add_piece);
+                            buttonAdd.setBackgroundResource(R.drawable.button_attn);
+                        }
                         //А с этого уже можно снять обработчик
                         view.setOnTouchListener(null);
                     }
@@ -147,6 +149,8 @@ public class MainActivity extends AppCompatActivity {
         //Делаем видимым и включаем подсветку
         imagePiece.setVisibility(View.VISIBLE);
         imagePiece.setBackgroundResource(R.drawable.backlight);
+        //Поднимаем этот кусок над остальными
+        imagePiece.toFront();
 
         //Хотим, чтобы он показывался в случайном месте
         int piece_w = imagePiece.getWidth();
@@ -170,9 +174,6 @@ public class MainActivity extends AppCompatActivity {
         int y = random.nextInt(range_y);
         imagePiece.setX(x);
         imagePiece.setY(y);
-
-        //Поднимаем этот кусок над остальными
-        imagePiece.toFront();
     }
 
     //Сохраняем промежуточное состоние активности (какие куски паззла уже на своих местах)
@@ -357,5 +358,6 @@ public class MainActivity extends AppCompatActivity {
     //Клик на кнопку, добавляющую новый кусок паззла
     public void onButtonAddClick(View view) {
         showNewPiece();
+        view.setBackgroundResource(R.color.transparent);
     }
 }
