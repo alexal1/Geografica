@@ -101,6 +101,8 @@ public class MainActivity extends AppCompatActivity {
             switch (event.getAction()) {
                 case DragEvent.ACTION_DRAG_STARTED:
                     view.setVisibility(View.INVISIBLE);
+                    //Поднимаем этот кусок над остальными
+                    view.toFront();
                     break;
 
                 case DragEvent.ACTION_DROP:
@@ -168,6 +170,9 @@ public class MainActivity extends AppCompatActivity {
         int y = random.nextInt(range_y);
         imagePiece.setX(x);
         imagePiece.setY(y);
+
+        //Поднимаем этот кусок над остальными
+        imagePiece.toFront();
     }
 
     //Сохраняем промежуточное состоние активности (какие куски паззла уже на своих местах)

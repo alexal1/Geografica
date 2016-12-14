@@ -5,6 +5,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
 
 import java.util.HashMap;
@@ -81,6 +82,14 @@ public class PieceImageView extends ImageView {
         }
 
         return inSampleSize;
+    }
+
+    //Метод, поднимающий этот View над всеми остальными
+    public void toFront() {
+        View parent = (View)this.getParent();
+        this.bringToFront();
+        parent.requestLayout();
+        parent.invalidate();
     }
 
     //Геттеры
