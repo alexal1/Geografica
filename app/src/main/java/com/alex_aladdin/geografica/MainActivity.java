@@ -236,8 +236,9 @@ public class MainActivity extends AppCompatActivity {
             view.setVisibility(View.VISIBLE);
         }
 
-        //Наконец, показываем новый кусочек паззла
-        showNewPiece();
+        //Подсвечиваем кнопку buttonAdd
+        ImageButton buttonAdd = (ImageButton)findViewById(R.id.button_add_piece);
+        buttonAdd.setBackgroundResource(R.drawable.button_attn);
     }
 
     //Класс MyZoomTouchListener, вешается на layout для зуммирования
