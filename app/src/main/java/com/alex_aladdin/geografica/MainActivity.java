@@ -115,11 +115,9 @@ public class MainActivity extends AppCompatActivity {
                         y = target_y;
                         //Этот кусочек встал на свое место, ура
                         view.settle();
-                        //Подсвечиваем кнопку buttonAdd, но только если нет других доступных кусочков
-                        if (!mManager.hasVisiblePieces()) {
-                            ImageButton buttonAdd = (ImageButton)findViewById(R.id.button_add_piece);
-                            buttonAdd.setBackgroundResource(R.drawable.button_attn);
-                        }
+                        //Теперь можно показать следующий кусочек, но только если нет других доступных
+                        if (!mManager.hasVisiblePieces())
+                            showNewPiece();
                         //А с этого уже можно снять обработчик
                         view.setOnTouchListener(null);
                     }
@@ -236,9 +234,8 @@ public class MainActivity extends AppCompatActivity {
             view.setVisibility(View.VISIBLE);
         }
 
-        //Подсвечиваем кнопку buttonAdd
-        ImageButton buttonAdd = (ImageButton)findViewById(R.id.button_add_piece);
-        buttonAdd.setBackgroundResource(R.drawable.button_attn);
+        //Наконец, показываем один кусок паззла
+        showNewPiece();
     }
 
     //Класс MyZoomTouchListener, вешается на layout для зуммирования
@@ -326,6 +323,7 @@ public class MainActivity extends AppCompatActivity {
         mPiecesEnabled = enabled;
 
         ImageButton buttonAdd = (ImageButton)findViewById(R.id.button_add_piece);
+        ImageButton buttonInfo = (ImageButton)findViewById(R.id.button_info);
         PieceImageView piece;
         int i = 0;
         //Если true, вешаем слушатели
@@ -343,6 +341,7 @@ public class MainActivity extends AppCompatActivity {
 
             //Разблокируем кнопки
             buttonAdd.setEnabled(true);
+            buttonInfo.setEnabled(true);
         }
         //Если false, снимаем слушатели
         else {
@@ -353,13 +352,13 @@ public class MainActivity extends AppCompatActivity {
 
             //Блокируем кнопки
             buttonAdd.setEnabled(false);
+            buttonInfo.setEnabled(false);
         }
     }
 
     //Клик на кнопку, добавляющую новый кусок паззла
     public void onButtonAddClick(View view) {
         showNewPiece();
-        view.setBackgroundResource(R.color.transparent);
     }
 
     //Клик на кнопку, меняющую картинку карты
