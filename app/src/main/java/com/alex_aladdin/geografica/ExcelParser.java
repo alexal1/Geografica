@@ -23,7 +23,7 @@ class ExcelParser {
         try {
             //Получаем доступ к Excel-файлу в папке assets
             AssetManager am = context.getAssets();
-            mInputStream = am.open("DVOkrug.xls");
+            mInputStream = am.open("dvo.xls");
 
             //Читаем Excel-файл
             mWorkbook = new HSSFWorkbook(mInputStream);

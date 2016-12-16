@@ -15,16 +15,21 @@ public class MapImageView extends ImageView {
 
     public static float K; //Отношение ширины реального изображения к ширине оригинального
     public static float RATIO; //Пропорции картинки
-    private int mOriginalWidth;
+    private int mOriginalWidth; //Длина оригинального изображения
+    private int mType = 2; //Текущий тип информационности карты (с надписями, без напдписей, и т.д.)
 
     public MapImageView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        loadMap(context);
+        //В метод loadMap передаем название файла с картой и тип (с надписями, без надписей и т.д.)
+        loadMap(context, "dvo", mType);
     }
 
     //Метод, загружающий нужную карту
-    private void loadMap(Context context) {
+    private void loadMap(Context context, String name, int type) {
+        //Получаем id ресурса по строке name и числу type
+        int resId = getResources().getIdentifier(name + type, "drawable", context.getPackageName());
+
         //Получаем размеры экрана
         WindowManager wm = (WindowManager)context.getSystemService(Context.WINDOW_SERVICE);
         Display display = wm.getDefaultDisplay();
@@ -34,7 +39,7 @@ public class MapImageView extends ImageView {
         final int screen_h = size.y;
 
         //Загружаем из ресурсов картинку, сразу уменьшенную в число раз, кратное двум, но чтобы была не меньше размеров экрана
-        Bitmap bmMap = decodeSampledBitmapFromResource(getResources(), R.drawable.contur_ocruga_s_name__subjectov, screen_w, screen_h);
+        Bitmap bmMap = decodeSampledBitmapFromResource(getResources(), resId, screen_w, screen_h);
         //Получаем размеры загруженной картинки
         int bitmap_w = bmMap.getWidth();
         int bitmap_h = bmMap.getHeight();
@@ -101,5 +106,17 @@ public class MapImageView extends ImageView {
         mOriginalWidth = width;
 
         return inSampleSize;
+    }
+
+    //Метод, меняющий картинку карты
+    public void changeMapInfo(Context context) {
+        mType++;
+        mType = mType % 4;
+        if (mType == 0)
+            this.setVisibility(INVISIBLE);
+        else {
+            this.setVisibility(VISIBLE);
+            loadMap(context, "dvo", mType);
+        }
     }
 }

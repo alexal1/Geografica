@@ -361,4 +361,9 @@ public class MainActivity extends AppCompatActivity {
         showNewPiece();
         view.setBackgroundResource(R.color.transparent);
     }
+
+    //Клик на кнопку, меняющую картинку карты
+    public void onButtonInfoClick(View view) {
+        mImageMap.changeMapInfo(this);
+    }
 }
