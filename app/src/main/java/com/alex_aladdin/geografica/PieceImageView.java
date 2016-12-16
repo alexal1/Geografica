@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import java.util.HashMap;
@@ -90,6 +91,13 @@ public class PieceImageView extends ImageView {
         this.bringToFront();
         parent.requestLayout();
         parent.invalidate();
+    }
+
+    //Метод, опускающий этот View под все остальные
+    public void toBack() {
+        ViewGroup parent = (ViewGroup) this.getParent();
+        parent.removeView(this);
+        parent.addView(this, 0);
     }
 
     //Геттеры

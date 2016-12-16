@@ -115,6 +115,8 @@ public class MainActivity extends AppCompatActivity {
                         y = target_y;
                         //Этот кусочек встал на свое место, ура
                         view.settle();
+                        //Показываем его позади всех остальных
+                        view.toBack();
                         //Теперь можно показать следующий кусочек, но только если нет других доступных
                         if (!mManager.hasVisiblePieces())
                             showNewPiece();
