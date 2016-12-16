@@ -97,7 +97,7 @@ public class PieceImageView extends ImageView {
     public void toBack() {
         ViewGroup parent = (ViewGroup) this.getParent();
         parent.removeView(this);
-        parent.addView(this, 0);
+        parent.addView(this, 1);
     }
 
     //Геттеры
