@@ -26,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
     private GameManager mManager;
     private MapImageView mImageMap;
     private boolean mPiecesEnabled = true; //Разрешено ли перетаскивание кусочков (запрещается при зуммировании)
+    private GameTimer mTimer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,8 +34,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         mManager = new GameManager(this);
-
         mImageMap = mManager.getMap();
+
+        mTimer = new GameTimer(this);
+        mTimer.start();
 
         //Если приложение запущено впервые
         if (savedInstanceState == null)
