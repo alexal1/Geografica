@@ -106,6 +106,8 @@ public class MainActivity extends AppCompatActivity {
                     view.setVisibility(View.INVISIBLE);
                     //Поднимаем этот кусок над остальными
                     view.toFront();
+                    //Показываем название вместо таймера
+                    mTimer.showCaption(view);
                     break;
 
                 case DragEvent.ACTION_DROP:
@@ -134,6 +136,9 @@ public class MainActivity extends AppCompatActivity {
                     view.setX(x - view.getWidth()/2);
                     view.setY(y - view.getHeight()/2);
                     view.setVisibility(View.VISIBLE);
+
+                    //Показываем таймер вместо названия
+                    mTimer.showTimer();
                     break;
 
                 default:

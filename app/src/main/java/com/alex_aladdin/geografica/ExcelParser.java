@@ -45,16 +45,19 @@ class ExcelParser {
             Cell name = row.getCell(1);
             Cell x = row.getCell(2);
             Cell y = row.getCell(3);
+            Cell caption = row.getCell(4);
 
             Log.i("Parsing", "name = " + name.toString() +
                     ", x = " + x.toString() +
-                    ", y = " + y.toString());
+                    ", y = " + y.toString() +
+                    ", caption = " + caption.toString());
 
             //Создаем отображение и заполняем данными
             HashMap<String, String> map = new HashMap<>();
             map.put("name", name.toString());
             map.put("x", x.toString());
             map.put("y", y.toString());
+            map.put("caption", caption.toString().replace("\\n", "\n"));
 
             return map;
         }

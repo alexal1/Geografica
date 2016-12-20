@@ -16,6 +16,7 @@ public class PieceImageView extends ImageView {
 
     private Boolean mSettled = false; //Кусочек установлен на предназначенное для него место
     private float mTargetX, mTargetY;
+    private String mCaption;
     private int mReqWidth = 0, mReqHeight = 0; //Ширина и высота, которые должны получиться исходя из масштабирования к карте
     private Context mContext;
 
@@ -30,6 +31,7 @@ public class PieceImageView extends ImageView {
         String name = map.get("name");
         mTargetX = Float.parseFloat(map.get("x"));
         mTargetY = Float.parseFloat(map.get("y"));
+        mCaption = map.get("caption");
         Log.i("PieceImageView", "name = " + name + ", x = " + mTargetX + ", y = " + mTargetY);
         //Получаем id ресурса по строке name
         int resId = getResources().getIdentifier(name, "drawable", mContext.getPackageName());
@@ -104,6 +106,7 @@ public class PieceImageView extends ImageView {
     public float getTargetX() { return mTargetX; }
     public float getTargetY() { return mTargetY; }
     public boolean isSettled() { return mSettled; }
+    public String getCaption() { return mCaption; }
 
     //Сеттеры
     public void settle() { mSettled = true; }
