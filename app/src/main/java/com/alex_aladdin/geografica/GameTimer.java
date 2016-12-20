@@ -16,4 +16,12 @@ class GameTimer {
     void start() {
         mChronometer.start();
     }
+
+    long getBase() {
+        return mChronometer.getBase();
+    }
+
+    void setBase(long base) {
+        mChronometer.setBase(base);
+    }
 }

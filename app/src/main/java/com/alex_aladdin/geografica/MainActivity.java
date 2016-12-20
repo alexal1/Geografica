@@ -186,8 +186,10 @@ public class MainActivity extends AppCompatActivity {
 
         //Получаем массив индексов кусочков паззла, которые уже стоят на своих местах
         ArrayList<Integer> array = mManager.getListOfSettledPieces();
-
         saveInstanceState.putIntegerArrayList("SETTLED_PIECES", array);
+
+        //Сохраняем текущее время таймера
+        saveInstanceState.putLong("TIMER", mTimer.getBase());
     }
 
     //Восстанавливаем сохраненные значения из метода onSaveInstanceState
@@ -241,6 +243,10 @@ public class MainActivity extends AppCompatActivity {
 
         //Наконец, показываем один кусок паззла
         showNewPiece();
+
+        //Выставляем нужное время таймера
+        long base = savedInstanceState.getLong("TIMER");
+        mTimer.setBase(base);
     }
 
     //Класс MyZoomTouchListener, вешается на layout для зуммирования
