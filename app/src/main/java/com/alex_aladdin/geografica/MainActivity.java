@@ -174,8 +174,9 @@ public class MainActivity extends AppCompatActivity {
         ImageButton buttonAdd = (ImageButton)findViewById(R.id.button_add_piece);
         int buttons_h = buttonAdd.getHeight();
         //Диапазон
-        int range_x = screen_w - piece_w;
-        int range_y = screen_h - piece_h - buttons_h;
+        //Берем max, чтобы не получить отрицательных значений
+        int range_x = Math.max(screen_w - piece_w, 1);
+        int range_y = Math.max(screen_h - piece_h - buttons_h, 1);
         //Берем случайные значения из диапазона
         Random random = new Random();
         int x = random.nextInt(range_x);
