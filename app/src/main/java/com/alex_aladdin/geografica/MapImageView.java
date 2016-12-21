@@ -22,7 +22,7 @@ public class MapImageView extends ImageView {
         super(context, attrs);
 
         //В метод loadMap передаем название файла с картой и тип (с надписями, без надписей и т.д.)
-        loadMap(context, "dvo", mType);
+        loadMap(context, "sfo", mType);
     }
 
     //Метод, загружающий нужную карту
@@ -116,7 +116,7 @@ public class MapImageView extends ImageView {
             this.setVisibility(INVISIBLE);
         else {
             this.setVisibility(VISIBLE);
-            loadMap(context, "dvo", mType);
+            loadMap(context, "sfo", mType);
         }
     }
 }
