@@ -67,8 +67,8 @@ public class PieceImageView extends ImageView {
         final int height = options.outHeight;
         final int width = options.outWidth;
         //Вычисляем mReqWidth и mReqHeight
-        mReqWidth = (int)(width*MapImageView.K);
-        mReqHeight = (int)(height*MapImageView.K);
+        mReqWidth = Math.round(width*MapImageView.K);
+        mReqHeight = Math.round(height*MapImageView.K);
 
         int inSampleSize = 1;
 

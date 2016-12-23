@@ -21,7 +21,7 @@ import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static final float DELTA_MM = 2.0f; //Дельта прилипания в миллиметрах
+    public static final float DELTA_MM = 4.0f; //Дельта прилипания в миллиметрах
 
     private GameManager mManager;
     private MapImageView mImageMap;
@@ -133,8 +133,8 @@ public class MainActivity extends AppCompatActivity {
                         view.setBackgroundResource(R.drawable.backlight);
                     }
 
-                    view.setX(x - view.getWidth()/2);
-                    view.setY(y - view.getHeight()/2);
+                    view.setX(x - (float)view.getWidth()/2);
+                    view.setY(y - (float)view.getHeight()/2);
                     view.setVisibility(View.VISIBLE);
 
                     //Показываем таймер вместо названия
@@ -212,10 +212,10 @@ public class MainActivity extends AppCompatActivity {
         Display display = getWindowManager().getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
-        final int screen_w = size.x;
-        final int screen_h = size.y;
+        final float screen_w = size.x;
+        final float screen_h = size.y;
         //Пропорции экрана и картинки
-        float screen_ratio = (float)screen_w/screen_h;
+        float screen_ratio = screen_w/screen_h;
         float bitmap_ratio = MapImageView.RATIO;
         //Считаем по-разному в зависимости от того, какие пропорции у экрана и картинки
         float map_x, map_y;

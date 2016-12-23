@@ -15,7 +15,7 @@ public class MapImageView extends ImageView {
 
     public static float K; //Отношение ширины реального изображения к ширине оригинального
     public static float RATIO; //Пропорции картинки
-    private int mOriginalWidth; //Длина оригинального изображения
+    private float mOriginalWidth; //Длина оригинального изображения
     private int mType = 2; //Текущий тип информационности карты (с надписями, без напдписей, и т.д.)
 
     public MapImageView(Context context, AttributeSet attrs) {
@@ -35,20 +35,21 @@ public class MapImageView extends ImageView {
         Display display = wm.getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
-        final int screen_w = size.x;
-        final int screen_h = size.y;
+        final float screen_w = size.x;
+        final float screen_h = size.y;
 
         //Загружаем из ресурсов картинку, сразу уменьшенную в число раз, кратное двум, но чтобы была не меньше размеров экрана
-        Bitmap bmMap = decodeSampledBitmapFromResource(getResources(), resId, screen_w, screen_h);
+        Bitmap bmMap = decodeSampledBitmapFromResource(getResources(), resId, Math.round(screen_w), Math.round(screen_h));
         //Получаем размеры загруженной картинки
-        int bitmap_w = bmMap.getWidth();
-        int bitmap_h = bmMap.getHeight();
+        float bitmap_w = bmMap.getWidth();
+        float bitmap_h = bmMap.getHeight();
         //Считаем пропорции экрана и картинки
-        float screen_ratio = (float)screen_w/screen_h;
-        float bitmap_ratio = (float)bitmap_w/bitmap_h;
+        float screen_ratio = screen_w/screen_h;
+        float bitmap_ratio = bitmap_w/bitmap_h;
         //Если у картинки ratio больше, надо уменьшить её до ширины экрана
         if (bitmap_ratio > screen_ratio) {
-            Bitmap bmScaledMap = Bitmap.createScaledBitmap(bmMap, screen_w, screen_w*bitmap_h/bitmap_w, true);
+            Bitmap bmScaledMap = Bitmap.createScaledBitmap(bmMap, Math.round(screen_w),
+                    Math.round(screen_w*bitmap_h/bitmap_w), true);
             bmMap.recycle();
             this.setImageBitmap(bmScaledMap);
             //Сохраняем коэффициент сжатия
@@ -56,7 +57,8 @@ public class MapImageView extends ImageView {
         }
         //Если у картинки ratio меньше, надо уменьшить её до высоты экрана
         else {
-            Bitmap bmScaledMap = Bitmap.createScaledBitmap(bmMap, screen_h*bitmap_w/bitmap_h, screen_h, true);
+            Bitmap bmScaledMap = Bitmap.createScaledBitmap(bmMap, Math.round(screen_h*bitmap_w/bitmap_h),
+                    Math.round(screen_h), true);
             bmMap.recycle();
             this.setImageBitmap(bmScaledMap);
             //Сохраняем коэффициент сжатия
