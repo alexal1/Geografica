@@ -243,8 +243,10 @@ public class MainActivity extends AppCompatActivity {
             view.setY(target_y - screen_h/2);
             //И снова подтверждаем, что кусочек на своем месте
             view.settle();
-            //И делаем его видимым
+            //Делаем его видимым
             view.setVisibility(View.VISIBLE);
+            //Отодвигаем его на задний план, чтоб он не мог перекрыть элементы интерфейса
+            view.toBack();
         }
 
         //Наконец, показываем один кусок паззла
