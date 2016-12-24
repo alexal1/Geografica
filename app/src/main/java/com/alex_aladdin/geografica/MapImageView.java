@@ -17,12 +17,16 @@ public class MapImageView extends ImageView {
     public static float RATIO; //Пропорции картинки
     private float mOriginalWidth; //Длина оригинального изображения
     private int mType = 2; //Текущий тип информационности карты (с надписями, без напдписей, и т.д.)
+    private String mName;
 
     public MapImageView(Context context, AttributeSet attrs) {
         super(context, attrs);
+    }
 
-        //В метод loadMap передаем название файла с картой и тип (с надписями, без надписей и т.д.)
-        loadMap(context, "sfo", mType);
+    //Метод, вызывающий loadMap(context, name, type) со значением type по умолчанию
+    public void loadMap(Context context, String name) {
+        loadMap(context, name, mType);
+        mName = name;
     }
 
     //Метод, загружающий нужную карту
@@ -118,7 +122,7 @@ public class MapImageView extends ImageView {
             this.setVisibility(INVISIBLE);
         else {
             this.setVisibility(VISIBLE);
-            loadMap(context, "sfo", mType);
+            loadMap(context, mName, mType);
         }
     }
 }

@@ -1,8 +1,10 @@
 package com.alex_aladdin.geografica;
 
 import android.app.Activity;
+import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import java.util.ArrayList;
@@ -14,20 +16,26 @@ class GameManager {
     private MapImageView mCurrentMap;
     private ArrayList<PieceImageView> mArrayPieces = new ArrayList<>();
 
-    GameManager(Activity activity) {
+    GameManager(Context context, String map_name) {
         //Загружаем карту
-        mCurrentMap = (MapImageView)activity.findViewById(R.id.image_map);
+        mCurrentMap = (MapImageView)((Activity)context).findViewById(R.id.image_map);
+        mCurrentMap.loadMap(context, map_name);
 
-        //Создаем все PieceImageView
-        ExcelParser parser = new ExcelParser(activity);
+        //Загружаем навигатор
+        ImageView imageNav = (ImageView)((Activity)context).findViewById(R.id.image_nav);
+        int resId = context.getResources().getIdentifier("nav_" + map_name, "drawable", context.getPackageName());
+        imageNav.setImageResource(resId);
+
+        /* --- Создаем все PieceImageView --- */
+        ExcelParser parser = new ExcelParser(context, map_name);
         //Объявяем отображение HashMap, в которое parser'ом будет вкладываться требуемая информация о каждом PieceImageView
         HashMap<String, String> map;
         //Вспомогательные объекты для программного создания View
-        RelativeLayout layout = (RelativeLayout)activity.findViewById(R.id.root);
+        RelativeLayout layout = (RelativeLayout)((Activity)context).findViewById(R.id.root);
 
         while ((map = parser.getNextMap()) != null) {
             //Создаем PieceImageView
-            PieceImageView view = new PieceImageView(activity);
+            PieceImageView view = new PieceImageView(context);
             RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
                     ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             //Выравнивание по центру

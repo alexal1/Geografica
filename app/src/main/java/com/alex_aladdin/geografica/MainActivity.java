@@ -21,7 +21,7 @@ import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static final float DELTA_MM = 4.0f; //Дельта прилипания в миллиметрах
+    public static final float DELTA_MM = 5.0f; //Дельта прилипания в миллиметрах
 
     private GameManager mManager;
     private MapImageView mImageMap;
@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mManager = new GameManager(this);
+        mManager = new GameManager(this, "sfo");
         mImageMap = mManager.getMap();
 
         mTimer = new GameTimer(this);

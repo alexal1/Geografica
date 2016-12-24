@@ -19,11 +19,11 @@ class ExcelParser {
     private HSSFWorkbook mWorkbook;
     private Iterator<Row> mRows;
 
-    ExcelParser(Context context) {
+    ExcelParser(Context context, String name) {
         try {
             //Получаем доступ к Excel-файлу в папке assets
             AssetManager am = context.getAssets();
-            mInputStream = am.open("sfo.xls");
+            mInputStream = am.open(name + ".xls");
 
             //Читаем Excel-файл
             mWorkbook = new HSSFWorkbook(mInputStream);
