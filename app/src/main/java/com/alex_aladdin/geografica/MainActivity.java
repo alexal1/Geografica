@@ -418,6 +418,9 @@ public class MainActivity extends AppCompatActivity {
         ImageButton buttonInfo = (ImageButton)findViewById(R.id.button_info);
         buttonAdd.setEnabled(true);
         buttonInfo.setEnabled(true);
+        //Разрешаем зуммирование
+        RelativeLayout rootLayout = (RelativeLayout)findViewById(R.id.root);
+        rootLayout.setOnTouchListener(new MyZoomTouchListener());
         //Показываем кусок паззла
         showNewPiece();
         //Включаем таймер
@@ -433,5 +436,8 @@ public class MainActivity extends AppCompatActivity {
         ImageButton buttonInfo = (ImageButton)findViewById(R.id.button_info);
         buttonAdd.setEnabled(false);
         buttonInfo.setEnabled(false);
+        //Запрещаем зуммирование
+        RelativeLayout rootLayout = (RelativeLayout)findViewById(R.id.root);
+        rootLayout.setOnTouchListener(null);
     }
 }
