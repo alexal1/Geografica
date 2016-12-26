@@ -4,4 +4,6 @@
     <color name="transparent">#00000000</color>
     <color name="background">#004422</color>
     <color name="white">#ffffff</color>
+    <color name="dark_screen">#99000000</color>
+    <color name="white_pressed">#99ffffff</color>
 </resources>

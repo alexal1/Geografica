@@ -2,6 +2,7 @@ package com.alex_aladdin.geografica;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.SystemClock;
 import android.view.View;
 import android.widget.TextView;
 
@@ -18,6 +19,8 @@ class GameTimer {
     }
 
     void start() {
+        //Обнуляем и запускаем
+        mChronometer.setBase(SystemClock.elapsedRealtime());
         mChronometer.start();
     }
 

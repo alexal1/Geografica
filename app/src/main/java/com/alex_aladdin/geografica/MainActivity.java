@@ -27,6 +27,11 @@ public class MainActivity extends AppCompatActivity {
     private MapImageView mImageMap;
     private boolean mPiecesEnabled = true; //Разрешено ли перетаскивание кусочков (запрещается при зуммировании)
     private GameTimer mTimer;
+    private State mState; //Состояние игры
+
+    private enum State {
+        START, RUN, FINISH
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,11 +42,12 @@ public class MainActivity extends AppCompatActivity {
         mImageMap = mManager.getMap();
 
         mTimer = new GameTimer(this);
-        mTimer.start();
 
         //Если приложение запущено впервые
-        if (savedInstanceState == null)
-            showNewPiece();
+        if (savedInstanceState == null) {
+            mState = State.START;
+            showStartLayout();
+        }
 
         RelativeLayout rootLayout = (RelativeLayout)findViewById(R.id.root);
         rootLayout.setOnDragListener(new MyDragListener()); //Теперь мы можем перетаскивать кусочки паззла
@@ -190,6 +196,9 @@ public class MainActivity extends AppCompatActivity {
     public void onSaveInstanceState(Bundle saveInstanceState) {
         super.onSaveInstanceState(saveInstanceState);
 
+        //Сохраняем состояние игры
+        saveInstanceState.putString("STATE", mState.toString());
+
         //Получаем массив индексов кусочков паззла, которые уже стоят на своих местах
         ArrayList<Integer> array = mManager.getListOfSettledPieces();
         saveInstanceState.putIntegerArrayList("SETTLED_PIECES", array);
@@ -249,12 +258,24 @@ public class MainActivity extends AppCompatActivity {
             view.toBack();
         }
 
-        //Наконец, показываем один кусок паззла
-        showNewPiece();
-
-        //Выставляем нужное время таймера
-        long base = savedInstanceState.getLong("TIMER");
-        mTimer.setBase(base);
+        //Далее выполняем действия в зависимости от состояния игры
+        mState = State.valueOf(savedInstanceState.getString("STATE"));
+        switch (mState){
+            case START:
+                //Показываем стартовый экран
+                showStartLayout();
+                break;
+            case RUN:
+                //Показываем новый кусок паззла
+                showNewPiece();
+                //Выставляем нужное время таймера
+                long base = savedInstanceState.getLong("TIMER");
+                mTimer.start();
+                mTimer.setBase(base);
+                break;
+            case FINISH:
+                break;
+        }
     }
 
     //Класс MyZoomTouchListener, вешается на layout для зуммирования
@@ -383,5 +404,34 @@ public class MainActivity extends AppCompatActivity {
     //Клик на кнопку, меняющую картинку карты
     public void onButtonInfoClick(View view) {
         mImageMap.changeMapInfo(this);
+    }
+
+    //Клик на кнопку НАЧАТЬ
+    public void onButtonStartClick(View view) {
+        //Обновляем состояние
+        mState = State.RUN;
+        //Делаем невидимым темный экран вместе с кнопкой
+        RelativeLayout layoutStart = (RelativeLayout)findViewById(R.id.layout_start);
+        layoutStart.setVisibility(View.GONE);
+        //Делаем кнопки доступными
+        ImageButton buttonAdd = (ImageButton)findViewById(R.id.button_add_piece);
+        ImageButton buttonInfo = (ImageButton)findViewById(R.id.button_info);
+        buttonAdd.setEnabled(true);
+        buttonInfo.setEnabled(true);
+        //Показываем кусок паззла
+        showNewPiece();
+        //Включаем таймер
+        mTimer.start();
+    }
+
+    //Показываем стартовый экран
+    private void showStartLayout() {
+        RelativeLayout layoutStart = (RelativeLayout)findViewById(R.id.layout_start);
+        layoutStart.setVisibility(View.VISIBLE);
+        //Делаем кнопки недоступными
+        ImageButton buttonAdd = (ImageButton)findViewById(R.id.button_add_piece);
+        ImageButton buttonInfo = (ImageButton)findViewById(R.id.button_info);
+        buttonAdd.setEnabled(false);
+        buttonInfo.setEnabled(false);
     }
 }
