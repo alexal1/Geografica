@@ -38,20 +38,23 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mManager = new GameManager(this, "sfo");
+        //Принимаем в качестве параметра название карты, переданное нам из меню
+        String map_name = getIntent().getExtras().getString("MAP_NAME");
+
+        mManager = new GameManager(this, map_name);
         mImageMap = mManager.getMap();
 
         mTimer = new GameTimer(this);
+
+        RelativeLayout rootLayout = (RelativeLayout)findViewById(R.id.root);
+        rootLayout.setOnDragListener(new MyDragListener()); //Теперь мы можем перетаскивать кусочки паззла
+        rootLayout.setOnTouchListener(new MyZoomTouchListener()); //Теперь мы можем зуммировать layout
 
         //Если приложение запущено впервые
         if (savedInstanceState == null) {
             mState = State.START;
             showStartLayout();
         }
-
-        RelativeLayout rootLayout = (RelativeLayout)findViewById(R.id.root);
-        rootLayout.setOnDragListener(new MyDragListener()); //Теперь мы можем перетаскивать кусочки паззла
-        rootLayout.setOnTouchListener(new MyZoomTouchListener()); //Теперь мы можем зуммировать layout
     }
 
     //Класс MyDragTouchListener, вешается на PieceImageView для DragAndDrop'a
