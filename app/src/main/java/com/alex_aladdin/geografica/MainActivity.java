@@ -1,10 +1,14 @@
 package com.alex_aladdin.geografica;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ObjectAnimator;
 import android.annotation.TargetApi;
 import android.content.ClipData;
 import android.graphics.Point;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
 import android.util.TypedValue;
 import android.view.Display;
@@ -15,6 +19,7 @@ import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -409,21 +414,13 @@ public class MainActivity extends AppCompatActivity {
         mImageMap.changeMapInfo(this);
     }
 
-    //Клик на кнопку НАЧАТЬ
-    public void onButtonStartClick(View view) {
+    //Клик на стартовый экран
+    public void onLayoutStartClick(View view) {
         //Обновляем состояние
         mState = State.RUN;
-        //Делаем невидимым темный экран вместе с кнопкой
+        //Делаем невидимым темный экран вместе с кругом
         RelativeLayout layoutStart = (RelativeLayout)findViewById(R.id.layout_start);
         layoutStart.setVisibility(View.GONE);
-        //Делаем кнопки доступными
-        ImageButton buttonAdd = (ImageButton)findViewById(R.id.button_add_piece);
-        ImageButton buttonInfo = (ImageButton)findViewById(R.id.button_info);
-        buttonAdd.setEnabled(true);
-        buttonInfo.setEnabled(true);
-        //Разрешаем зуммирование
-        RelativeLayout rootLayout = (RelativeLayout)findViewById(R.id.root);
-        rootLayout.setOnTouchListener(new MyZoomTouchListener());
         //Показываем кусок паззла
         showNewPiece();
         //Включаем таймер
@@ -432,15 +429,31 @@ public class MainActivity extends AppCompatActivity {
 
     //Показываем стартовый экран
     private void showStartLayout() {
-        RelativeLayout layoutStart = (RelativeLayout)findViewById(R.id.layout_start);
+        final RelativeLayout layoutStart = (RelativeLayout)findViewById(R.id.layout_start);
         layoutStart.setVisibility(View.VISIBLE);
-        //Делаем кнопки недоступными
-        ImageButton buttonAdd = (ImageButton)findViewById(R.id.button_add_piece);
-        ImageButton buttonInfo = (ImageButton)findViewById(R.id.button_info);
-        buttonAdd.setEnabled(false);
-        buttonInfo.setEnabled(false);
-        //Запрещаем зуммирование
-        RelativeLayout rootLayout = (RelativeLayout)findViewById(R.id.root);
-        rootLayout.setOnTouchListener(null);
+        //Включаем обратный отсчет
+        final TextView textStart = (TextView)findViewById(R.id.text_start);
+        new CountDownTimer(4000, 1000) {
+
+            public void onTick(final long millisUntilFinished) {
+                textStart.setText(String.valueOf(millisUntilFinished/1000));
+                textStart.setAlpha(1.0f);
+                //Затухание
+                ObjectAnimator alphaAnimator = ObjectAnimator.ofFloat(textStart, "alpha", 0);
+                alphaAnimator.setDuration(1200);
+                //Поторапливаем onFinish()
+                if (millisUntilFinished/1000 == 1) alphaAnimator.addListener(new AnimatorListenerAdapter() {
+                    public void onAnimationEnd(Animator animation) {
+                        onFinish();
+                    }
+                });
+                alphaAnimator.start();
+            }
+
+            public void onFinish() {
+                //Делаем проверку на то, не было ли ещё нажатия на экран
+                if (mState == State.START) onLayoutStartClick(layoutStart);
+            }
+        }.start();
     }
 }

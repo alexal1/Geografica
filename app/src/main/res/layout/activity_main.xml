@@ -85,26 +85,26 @@
         android:onClick="onButtonInfoClick"
         tools:ignore="ContentDescription"/>
 
-    <!-- Темный экран с кнопкой, отображающийся на старте !-->
+    <!-- Темный экран с обратным отсчетом, отображающийся на старте !-->
     <RelativeLayout
         android:id="@+id/layout_start"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/dark_screen"
-        android:visibility="gone">
+        android:visibility="gone"
+        android:onClick="onLayoutStartClick">
 
-        <Button
-            android:id="@+id/button_start"
+        <TextView
+            android:id="@+id/text_start"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:background="@drawable/button_start_shape"
+            android:gravity="center"
+            android:background="@drawable/circle_start"
             android:minWidth="300dp"
-            android:minHeight="60dp"
-            android:text="@string/button_start"
-            android:textSize="20sp"
-            android:textColor="@drawable/button_start_text"
-            android:onClick="onButtonStartClick"/>
+            android:minHeight="300dp"
+            android:textSize="80sp"
+            android:textColor="@color/white" />
 
     </RelativeLayout>
 

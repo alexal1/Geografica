@@ -5,10 +5,9 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_margin="10dp"
-    android:background="@drawable/button_start_shape"
+    android:background="@drawable/button_menu_shape"
     android:minWidth="300dp"
     android:minHeight="60dp"
-    android:text="@string/button_start"
     android:textSize="20sp"
-    android:textColor="@drawable/button_start_text">
+    android:textColor="@drawable/button_menu_text">
 </Button>
