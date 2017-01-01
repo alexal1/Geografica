@@ -108,4 +108,72 @@
 
     </RelativeLayout>
 
+    <!-- Темный экран с окном, отображающийся на финише !-->
+    <LinearLayout
+        android:id="@+id/layout_finish"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:weightSum="5"
+        android:gravity="center"
+        android:background="@color/dark_screen"
+        android:visibility="gone"
+        android:baselineAligned="false">
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="4"
+            android:background="@drawable/window_finish"
+            android:paddingTop="10dp"
+            android:paddingBottom="20dp">
+
+            <TextView
+                android:id="@+id/text_result"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:gravity="center_horizontal"
+                android:textSize="30sp"
+                android:textColor="@color/white"/>
+
+            <ImageButton
+                android:id="@+id/button_finish_restart"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/text_result"
+                android:padding="10dp"
+                android:src="@drawable/button_finish_restart"
+                android:background="@color/transparent"
+                tools:ignore="ContentDescription"/>
+
+            <ImageButton
+                android:id="@+id/button_finish_menu"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@+id/text_result"
+                android:padding="10dp"
+                android:src="@drawable/button_finish_menu"
+                android:background="@color/transparent"
+                tools:ignore="ContentDescription"/>
+
+            <ImageButton
+                android:id="@+id/button_finish_next"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:layout_below="@+id/text_result"
+                android:padding="10dp"
+                android:src="@drawable/button_finish_next"
+                android:background="@color/transparent"
+                tools:ignore="ContentDescription"/>
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
 </com.alex_aladdin.geografica.ZoomableRelativeLayout>

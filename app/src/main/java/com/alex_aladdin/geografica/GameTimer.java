@@ -12,6 +12,8 @@ class GameTimer {
 
     private Chronometer mChronometer;
     private TextView mTextCaption;
+    private long mCurrentTime;
+    private Boolean mStarted = false;
 
     GameTimer(Context context) {
         mChronometer = (Chronometer)((Activity)context).findViewById(R.id.chronometer);
@@ -22,14 +24,27 @@ class GameTimer {
         //Обнуляем и запускаем
         mChronometer.setBase(SystemClock.elapsedRealtime());
         mChronometer.start();
+        mStarted = true;
     }
 
-    long getBase() {
-        return mChronometer.getBase();
+    void stop() {
+        //Не обновляем показания таймера, если он уже остановлен
+        if (!mStarted) return;
+        //Останавливаем и обновляем
+        mChronometer.stop();
+        mCurrentTime = SystemClock.elapsedRealtime() - mChronometer.getBase();
+        mStarted = false;
     }
 
-    void setBase(long base) {
-        mChronometer.setBase(base);
+    long getTime() {
+        //Синхронизируем и возвращаем значение
+        setTime(mCurrentTime);
+        return mCurrentTime;
+    }
+
+    void setTime(long time) {
+        mCurrentTime = time;
+        mChronometer.setBase(SystemClock.elapsedRealtime() - mCurrentTime);
     }
 
     //Метод, показывающий вместо таймера название

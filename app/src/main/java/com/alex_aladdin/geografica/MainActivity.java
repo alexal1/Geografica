@@ -18,9 +18,11 @@ import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -165,7 +167,16 @@ public class MainActivity extends AppCompatActivity {
     //Добавляем на экран новый кусочек паззла
     private void showNewPiece() {
         PieceImageView imagePiece;
-        if ((imagePiece = mManager.getPiece()) == null) return;
+        //Новых кусочков не осталось
+        if ((imagePiece = mManager.getPiece()) == null) {
+            //Не пристыкованных тоже не осталось
+            if (!mManager.hasVisiblePieces()) {
+                mState = State.FINISH;
+                mTimer.stop();
+                showFinishLayout();
+            }
+            return;
+        }
         //Вешаем обработчик
         imagePiece.setOnTouchListener(new MyDragTouchListener());
         //Делаем видимым и включаем подсветку
@@ -212,7 +223,8 @@ public class MainActivity extends AppCompatActivity {
         saveInstanceState.putIntegerArrayList("SETTLED_PIECES", array);
 
         //Сохраняем текущее время таймера
-        saveInstanceState.putLong("TIMER", mTimer.getBase());
+        mTimer.stop();
+        saveInstanceState.putLong("TIMER", mTimer.getTime());
     }
 
     //Восстанавливаем сохраненные значения из метода onSaveInstanceState
@@ -268,20 +280,24 @@ public class MainActivity extends AppCompatActivity {
 
         //Далее выполняем действия в зависимости от состояния игры
         mState = State.valueOf(savedInstanceState.getString("STATE"));
+        long time = savedInstanceState.getLong("TIMER");
         switch (mState){
             case START:
                 //Показываем стартовый экран
                 showStartLayout();
                 break;
             case RUN:
+                //Выставляем нужное время таймера
+                mTimer.start();
+                mTimer.setTime(time);
                 //Показываем новый кусок паззла
                 showNewPiece();
-                //Выставляем нужное время таймера
-                long base = savedInstanceState.getLong("TIMER");
-                mTimer.start();
-                mTimer.setBase(base);
                 break;
             case FINISH:
+                //Выставляем нужное время таймера
+                mTimer.setTime(time);
+                //Показываем финишный экран
+                showFinishLayout();
                 break;
         }
     }
@@ -455,5 +471,42 @@ public class MainActivity extends AppCompatActivity {
                 if (mState == State.START) onLayoutStartClick(layoutStart);
             }
         }.start();
+    }
+
+    //Показываем финишный экран
+    private void showFinishLayout() {
+        final LinearLayout layoutFinish = (LinearLayout)findViewById(R.id.layout_finish);
+        layoutFinish.setVisibility(View.VISIBLE);
+        //Делаем кнопки недоступными и запрещаем зуммирование
+        final ImageButton buttonAdd = (ImageButton)findViewById(R.id.button_add_piece);
+        final ImageButton buttonInfo = (ImageButton)findViewById(R.id.button_info);
+        final RelativeLayout rootLayout = (RelativeLayout)findViewById(R.id.root);
+        buttonAdd.setEnabled(false);
+        buttonInfo.setEnabled(false);
+        rootLayout.setOnTouchListener(null);
+        //Показываем результат
+        final TextView textResult = (TextView)findViewById(R.id.text_result);
+        long time = mTimer.getTime();
+        DecimalFormat df = new DecimalFormat("00");
+        String text = "Ваш результат:\n";
+
+        int hours = (int)(time / (3600 * 1000));
+        int remaining = (int)(time % (3600 * 1000));
+
+        int minutes = remaining / (60 * 1000);
+        remaining = remaining % (60 * 1000);
+
+        int seconds = remaining / 1000;
+        int milliseconds = ((int)time % 1000) / 10;
+
+        if (hours > 0) {
+            text += df.format(hours) + ":";
+        }
+
+        text += df.format(minutes) + ":";
+        text += df.format(seconds) + ":";
+        text += df.format(milliseconds);
+
+        textResult.setText(text);
     }
 }
