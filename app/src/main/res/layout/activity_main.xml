@@ -120,10 +120,11 @@
         android:visibility="gone"
         android:baselineAligned="false">
 
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="4"
+            android:orientation="vertical"
             android:background="@drawable/window_finish"
             android:paddingTop="10dp"
             android:paddingBottom="20dp">
@@ -137,43 +138,46 @@
                 android:textSize="30sp"
                 android:textColor="@color/white"/>
 
-            <ImageButton
-                android:id="@+id/button_finish_restart"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:layout_below="@+id/text_result"
-                android:padding="10dp"
-                android:src="@drawable/button_finish_restart"
-                android:background="@color/transparent"
-                tools:ignore="ContentDescription"/>
+                android:orientation="horizontal"
+                android:weightSum="3">
 
-            <ImageButton
-                android:id="@+id/button_finish_menu"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:layout_below="@+id/text_result"
-                android:padding="10dp"
-                android:src="@drawable/button_finish_menu"
-                android:background="@color/transparent"
-                tools:ignore="ContentDescription"/>
+                <ImageButton
+                    android:id="@+id/button_finish_restart"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:padding="10dp"
+                    android:src="@drawable/button_finish_restart"
+                    android:background="@color/transparent"
+                    android:onClick="onButtonRestartClick"
+                    tools:ignore="ContentDescription"/>
 
-            <ImageButton
-                android:id="@+id/button_finish_next"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentEnd="true"
-                android:layout_below="@+id/text_result"
-                android:padding="10dp"
-                android:src="@drawable/button_finish_next"
-                android:background="@color/transparent"
-                tools:ignore="ContentDescription"/>
+                <ImageButton
+                    android:id="@+id/button_finish_menu"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:padding="10dp"
+                    android:src="@drawable/button_finish_menu"
+                    android:background="@color/transparent"
+                    android:onClick="onButtonMenuClick"
+                    tools:ignore="ContentDescription"/>
 
-        </RelativeLayout>
+                <ImageButton
+                    android:id="@+id/button_finish_next"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:padding="10dp"
+                    android:src="@drawable/button_finish_next"
+                    android:background="@color/transparent"
+                    tools:ignore="ContentDescription"/>
 
+            </LinearLayout>
+        </LinearLayout>
     </LinearLayout>
 
 </com.alex_aladdin.geografica.ZoomableRelativeLayout>

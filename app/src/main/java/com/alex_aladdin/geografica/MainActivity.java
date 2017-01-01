@@ -509,4 +509,19 @@ public class MainActivity extends AppCompatActivity {
 
         textResult.setText(text);
     }
+
+    //Клик на кнопку МЕНЮ финишного экрана
+    public void onButtonMenuClick(View view) {
+        finish();
+    }
+
+    //Клик на кнопку РЕСТАРТ финишного экрана
+    public void onButtonRestartClick(View view) {
+        mState = State.START;
+
+        String map_name = getIntent().getExtras().getString("MAP_NAME");
+        mManager = new GameManager(this, map_name);
+
+        this.recreate();
+    }
 }
