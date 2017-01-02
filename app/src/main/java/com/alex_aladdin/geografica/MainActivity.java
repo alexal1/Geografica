@@ -5,6 +5,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.annotation.TargetApi;
 import android.content.ClipData;
+import android.content.Intent;
 import android.graphics.Point;
 import android.os.Build;
 import android.os.Bundle;
@@ -523,5 +524,34 @@ public class MainActivity extends AppCompatActivity {
         mManager = new GameManager(this, map_name);
 
         this.recreate();
+    }
+
+    //Клик на кнопку ДАЛЕЕ финишного экрана
+    public void onButtonNextClick(View view) {
+        String map_name = getIntent().getExtras().getString("MAP_NAME");
+        String next_map_name = "";
+
+        //Проходим по массиву всех пунктов меню
+        MenuActivity.Menu[] menu = MenuActivity.Menu.values();
+        for (MenuActivity.Menu item : menu) {
+            if (item.toString().toLowerCase().equals(map_name)) {
+                int i = item.ordinal();
+                //Если мы уже на последнем, возвращаемся в меню
+                if (i+1 == menu.length) {
+                    finish();
+                    return;
+                }
+                //Если нет, получаем название следующего
+                MenuActivity.Menu next_item = menu[i+1];
+                next_map_name = next_item.toString().toLowerCase();
+                break;
+            }
+        }
+
+        //Запускаем эту же активность, но с другим параметром
+        Intent intent = new Intent(MainActivity.this, MainActivity.class);
+        intent.putExtra("MAP_NAME", next_map_name);
+        startActivity(intent);
+        finish();
     }
 }

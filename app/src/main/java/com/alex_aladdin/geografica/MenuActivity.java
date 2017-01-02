@@ -10,7 +10,7 @@ import android.widget.LinearLayout;
 
 public class MenuActivity extends AppCompatActivity {
 
-    private enum Menu {
+    enum Menu {
 
         DVO("Дальневосточный"),
         SFO("Сибирский"),
