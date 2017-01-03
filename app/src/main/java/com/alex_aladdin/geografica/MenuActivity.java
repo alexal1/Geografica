@@ -15,7 +15,8 @@ public class MenuActivity extends AppCompatActivity {
         DVO("Дальневосточный"),
         SFO("Сибирский"),
         UFO("Уральский"),
-        PRFO("Приволжский");
+        PRFO("Приволжский"),
+        SZFO("Северо-западный");
 
         private String caption;
 
