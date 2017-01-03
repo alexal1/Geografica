@@ -485,11 +485,26 @@ public class MainActivity extends AppCompatActivity {
         buttonAdd.setEnabled(false);
         buttonInfo.setEnabled(false);
         rootLayout.setOnTouchListener(null);
+
+        //Показываем заголовок
+        final TextView textCaption = (TextView)findViewById(R.id.text_finish_caption);
+        String caption = "";
+        String map_name = getIntent().getExtras().getString("MAP_NAME");
+        MenuActivity.Menu[] menu = MenuActivity.Menu.values();
+        for (MenuActivity.Menu item : menu) {
+            if (item.toString().toLowerCase().equals(map_name)) {
+                caption = item.getCaption().toUpperCase();
+                break;
+            }
+        }
+        caption += " " + getString(R.string.finish_federal_district);
+        textCaption.setText(caption);
+
         //Показываем результат
-        final TextView textResult = (TextView)findViewById(R.id.text_result);
+        final TextView textResult = (TextView)findViewById(R.id.text_finish_result);
         long time = mTimer.getTime();
         DecimalFormat df = new DecimalFormat("00");
-        String text = "Ваш результат:\n";
+        String text = getString(R.string.finish_result) + "\n";
 
         int hours = (int)(time / (3600 * 1000));
         int remaining = (int)(time % (3600 * 1000));

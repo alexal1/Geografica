@@ -126,11 +126,23 @@
             android:layout_weight="4"
             android:orientation="vertical"
             android:background="@drawable/window_finish"
-            android:paddingTop="10dp"
+            android:paddingTop="20dp"
             android:paddingBottom="20dp">
 
             <TextView
-                android:id="@+id/text_result"
+                android:id="@+id/text_finish_caption"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:paddingLeft="10dp"
+                android:paddingStart="10dp"
+                android:paddingRight="10dp"
+                android:paddingEnd="10dp"
+                android:textSize="15sp"
+                android:textColor="@color/white_pressed"/>
+
+            <TextView
+                android:id="@+id/text_finish_result"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
