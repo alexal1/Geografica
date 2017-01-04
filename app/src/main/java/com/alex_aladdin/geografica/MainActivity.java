@@ -303,6 +303,14 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    //Запускаем таймер, который был до этого остановлен в методе onSaveInstanceState
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if (mState == State.RUN) mTimer.resume();
+    }
+
     //Класс MyZoomTouchListener, вешается на layout для зуммирования
     private final class MyZoomTouchListener implements View.OnTouchListener {
         private ScaleGestureDetector scaleGestureDetector = new ScaleGestureDetector(MainActivity.this, new OnPinchListener());

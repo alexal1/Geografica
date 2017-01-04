@@ -27,6 +27,13 @@ class GameTimer {
         mStarted = true;
     }
 
+    void resume() {
+        //Восстанавливаем и запускаем
+        setTime(mCurrentTime);
+        mChronometer.start();
+        mStarted = true;
+    }
+
     void stop() {
         //Не обновляем показания таймера, если он уже остановлен
         if (!mStarted) return;
@@ -43,6 +50,7 @@ class GameTimer {
     }
 
     void setTime(long time) {
+        //Устанавливаем время
         mCurrentTime = time;
         mChronometer.setBase(SystemClock.elapsedRealtime() - mCurrentTime);
     }
