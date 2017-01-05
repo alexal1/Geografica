@@ -1,12 +1,17 @@
 package com.alex_aladdin.geografica;
 
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.util.Log;
+import android.graphics.Point;
+import android.view.Display;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
 
 import java.util.HashMap;
@@ -29,10 +34,13 @@ public class PieceImageView extends ImageView {
     public void loadPiece(HashMap<String, String> map) {
         //Берем значения из map
         String name = map.get("name");
-        mTargetX = Float.parseFloat(map.get("x"));
-        mTargetY = Float.parseFloat(map.get("y"));
+        float picture_x = Float.parseFloat(map.get("x"));
+        float picture_y = Float.parseFloat(map.get("y"));
         mCaption = map.get("caption");
-        Log.i("PieceImageView", "name = " + name + ", x = " + mTargetX + ", y = " + mTargetY);
+
+        //Вычисляем целевые координаты относительно экрана
+        calculateTargetXY(picture_x, picture_y);
+
         //Получаем id ресурса по строке name
         int resId = getResources().getIdentifier(name, "drawable", mContext.getPackageName());
 
@@ -43,6 +51,36 @@ public class PieceImageView extends ImageView {
         Bitmap bmScaledPiece = Bitmap.createScaledBitmap(bmPiece, mReqWidth, mReqHeight, true);
         bmPiece.recycle();
         this.setImageBitmap(bmScaledPiece);
+    }
+
+    //Метод, получающий на вход координаты относительно картинки, и вычисляющий координаты относительно экрана
+    private void calculateTargetXY(float picture_x, float picture_y) {
+        //Необходимо вычислить координаты верхнего левого угла карты относительно экрана
+        //Мы не можем просто взять эти координаты из объекта MapImageView, потому что у него они пока ещё нулевые
+        //Получаем размеры экрана
+        WindowManager wm = (WindowManager)mContext.getSystemService(Context.WINDOW_SERVICE);
+        Display display = wm.getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        final float screen_w = size.x;
+        final float screen_h = size.y;
+        //Пропорции экрана и картинки
+        float screen_ratio = screen_w/screen_h;
+        float bitmap_ratio = MapImageView.RATIO;
+        //Считаем по-разному в зависимости от того, какие пропорции у экрана и картинки
+        float map_x, map_y;
+        if (bitmap_ratio > screen_ratio) {
+            map_x = 0;
+            map_y = (screen_h - screen_w/bitmap_ratio) / 2;
+        }
+        else {
+            map_x = (screen_w - screen_h*bitmap_ratio) / 2;
+            map_y = 0;
+        }
+
+        //Вычисляем координаты относительно экрана
+        mTargetX = picture_x*MapImageView.K + map_x;
+        mTargetY = picture_y*MapImageView.K + map_y;
     }
 
     //Метод, получающий из ресурсов сразу уменьшенное изображение (в кратное двум число раз), чтобы оно было не меньше
@@ -102,12 +140,54 @@ public class PieceImageView extends ImageView {
         parent.addView(this, 1);
     }
 
+    //Устанавливаем кусок паззла на предназначенное ему место
+    public void settle() {
+        //Получаем размеры экрана
+        WindowManager wm = (WindowManager)mContext.getSystemService(Context.WINDOW_SERVICE);
+        Display display = wm.getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        final float screen_w = size.x;
+        final float screen_h = size.y;
+
+        //Устанавливаем
+        if (getWidth() == 0 && getHeight() == 0) {
+            setX(mTargetX - screen_w/2);
+            setY(mTargetY - screen_h/2);
+        }
+        else {
+            setX(mTargetX - (float)getWidth()/2);
+            setY(mTargetY - (float)getHeight()/2);
+        }
+
+        mSettled = true;
+    }
+
+    //То же самое, но с анимацией
+    public void settle(float x, float y) {
+        //Получаем размеры экрана
+        WindowManager wm = (WindowManager)mContext.getSystemService(Context.WINDOW_SERVICE);
+        Display display = wm.getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        final float screen_w = size.x;
+        final float screen_h = size.y;
+
+        AnimatorSet animSetXY = new AnimatorSet();
+        ObjectAnimator animatorX = ObjectAnimator.ofFloat(this, View.TRANSLATION_X, (x - screen_w/2), (mTargetX - screen_w/2));
+        ObjectAnimator animatorY = ObjectAnimator.ofFloat(this, View.TRANSLATION_Y, (y - screen_h/2), (mTargetY - screen_h/2));
+
+        animSetXY.playTogether(animatorX, animatorY);
+        animSetXY.setInterpolator(new DecelerateInterpolator());
+        animSetXY.setDuration(500);
+        animSetXY.start();
+
+        mSettled = true;
+    }
+
     //Геттеры
     public float getTargetX() { return mTargetX; }
     public float getTargetY() { return mTargetY; }
     public boolean isSettled() { return mSettled; }
     public String getCaption() { return mCaption; }
-
-    //Сеттеры
-    public void settle() { mSettled = true; }
 }

@@ -115,8 +115,8 @@ public class MainActivity extends AppCompatActivity {
             PieceImageView view = (PieceImageView) event.getLocalState();
 
             //Координаты цели
-            final float target_x = view.getTargetX()*MapImageView.K + mImageMap.getX();
-            final float target_y = view.getTargetY()*MapImageView.K + mImageMap.getY();
+            final float target_x = view.getTargetX();
+            final float target_y = view.getTargetY();
 
             switch (event.getAction()) {
                 case DragEvent.ACTION_DRAG_STARTED:
@@ -133,10 +133,8 @@ public class MainActivity extends AppCompatActivity {
 
                     //Прилипание
                     if ((Math.abs(x - target_x) < delta) && (Math.abs(y - target_y) < delta)) {
-                        x = target_x;
-                        y = target_y;
                         //Этот кусочек встал на свое место, ура
-                        view.settle();
+                        view.settle(x, y);
                         //Показываем его позади всех остальных
                         view.toBack();
                         //Теперь можно показать следующий кусочек, но только если нет других доступных
@@ -148,10 +146,12 @@ public class MainActivity extends AppCompatActivity {
                     else {
                         //Включаем подсветку
                         view.setBackgroundResource(R.drawable.backlight);
+                        //Задаем новые координаты
+                        view.setX(x - (float)view.getWidth()/2);
+                        view.setY(y - (float)view.getHeight()/2);
                     }
 
-                    view.setX(x - (float)view.getWidth()/2);
-                    view.setY(y - (float)view.getHeight()/2);
+                    //Делаем видимым
                     view.setVisibility(View.VISIBLE);
 
                     //Показываем таймер вместо названия
@@ -236,42 +236,11 @@ public class MainActivity extends AppCompatActivity {
         ArrayList<Integer> array = savedInstanceState.getIntegerArrayList("SETTLED_PIECES");
         if (array == null) return;
 
-        //Необходимо вычислить координаты верхнего левого угла карты относительно экрана
-        //Мы не можем просто взять эти координаты из объекта MapImageView, потому что у него они пока ещё нулевые
-        //Получаем размеры экрана
-        Display display = getWindowManager().getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
-        final float screen_w = size.x;
-        final float screen_h = size.y;
-        //Пропорции экрана и картинки
-        float screen_ratio = screen_w/screen_h;
-        float bitmap_ratio = MapImageView.RATIO;
-        //Считаем по-разному в зависимости от того, какие пропорции у экрана и картинки
-        float map_x, map_y;
-        if (bitmap_ratio > screen_ratio) {
-            map_x = 0;
-            map_y = (screen_h - screen_w/bitmap_ratio) / 2;
-        }
-        else {
-            map_x = (screen_w - screen_h*bitmap_ratio) / 2;
-            map_y = 0;
-        }
-
         //Берем кусочки паззла с номерами из array и втыкаем их на нужные места
         for (int i : array) {
+            //Берем
             PieceImageView view = mManager.getPiece(i);
-
-            //Координаты относительно картинки
-            float picture_x = view.getTargetX();
-            float picture_y = view.getTargetY();
-            //Координаты относительно экрана
-            final float target_x = picture_x*MapImageView.K + map_x;
-            final float target_y = picture_y*MapImageView.K + map_y;
-            //Устанавливаем их
-            view.setX(target_x - screen_w/2);
-            view.setY(target_y - screen_h/2);
-            //И снова подтверждаем, что кусочек на своем месте
+            //И втыкаем
             view.settle();
             //Делаем его видимым
             view.setVisibility(View.VISIBLE);
