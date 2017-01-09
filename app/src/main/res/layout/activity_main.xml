@@ -15,6 +15,16 @@
         android:layout_centerInParent="true"
         tools:ignore="ContentDescription" />
 
+    <ImageView
+        android:id="@+id/image_nav"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:padding="10dp"
+        tools:ignore="ContentDescription"/>
+
     <gr.antoniom.chronometer.Chronometer
         android:id="@+id/chronometer"
         android:layout_width="wrap_content"
@@ -40,7 +50,8 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:gravity="center_horizontal"
+        android:layout_toLeftOf="@id/image_nav"
+        android:layout_toStartOf="@id/image_nav"
         android:paddingTop="20dp"
         android:paddingLeft="10dp"
         android:paddingStart="10dp"
@@ -48,16 +59,6 @@
         android:paddingEnd="0dp"
         android:textSize="20sp"
         android:textColor="@color/white"/>
-
-    <ImageView
-        android:id="@+id/image_nav"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:padding="10dp"
-        tools:ignore="ContentDescription"/>
 
     <ImageButton
         android:id="@+id/button_add_piece"

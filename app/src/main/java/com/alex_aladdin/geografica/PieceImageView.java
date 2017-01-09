@@ -179,7 +179,7 @@ public class PieceImageView extends ImageView {
 
         animSetXY.playTogether(animatorX, animatorY);
         animSetXY.setInterpolator(new DecelerateInterpolator());
-        animSetXY.setDuration(500);
+        animSetXY.setDuration(200);
         animSetXY.start();
 
         mSettled = true;
