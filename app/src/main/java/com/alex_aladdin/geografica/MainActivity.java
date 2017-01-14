@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.annotation.TargetApi;
+import android.app.FragmentManager;
 import android.content.ClipData;
 import android.content.Intent;
 import android.graphics.Point;
@@ -114,6 +115,10 @@ public class MainActivity extends AppCompatActivity {
 
             PieceImageView view = (PieceImageView) event.getLocalState();
 
+            //Фрагмент-подсказка
+            FragmentManager fragmentManager = getFragmentManager();
+            FragmentTip fragmentTip = (FragmentTip) fragmentManager.findFragmentById(R.id.fragment_tip);
+
             //Координаты цели
             final float target_x = view.getTargetX();
             final float target_y = view.getTargetY();
@@ -121,10 +126,19 @@ public class MainActivity extends AppCompatActivity {
             switch (event.getAction()) {
                 case DragEvent.ACTION_DRAG_STARTED:
                     view.setVisibility(View.INVISIBLE);
+                    //Включаем подсказку
+                    fragmentTip.init(view);
                     //Поднимаем этот кусок над остальными
                     view.toFront();
                     //Показываем название вместо таймера
                     mTimer.showCaption(view);
+                    break;
+
+                case DragEvent.ACTION_DRAG_LOCATION:
+                    //Подсказка
+                    x = event.getX();
+                    y = event.getY();
+                    fragmentTip.set(x, y);
                     break;
 
                 case DragEvent.ACTION_DROP:
@@ -153,6 +167,8 @@ public class MainActivity extends AppCompatActivity {
 
                     //Делаем видимым
                     view.setVisibility(View.VISIBLE);
+                    //Убираем подсказку
+                    fragmentTip.close();
 
                     //Показываем таймер вместо названия
                     mTimer.showTimer();
