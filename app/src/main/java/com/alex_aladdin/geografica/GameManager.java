@@ -2,6 +2,7 @@ package com.alex_aladdin.geografica;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.SystemClock;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -11,10 +12,16 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 
+import gr.antoniom.chronometer.Chronometer;
+
 class GameManager {
 
     private MapImageView mCurrentMap;
     private ArrayList<PieceImageView> mArrayPieces = new ArrayList<>();
+
+    private Chronometer mChronometer;
+    private long mCurrentTime;
+    private Boolean mStarted = false;
 
     GameManager(Context context, String map_name) {
         //Загружаем карту
@@ -25,6 +32,9 @@ class GameManager {
         ImageView imageNav = (ImageView)((Activity)context).findViewById(R.id.image_nav);
         int resId = context.getResources().getIdentifier("nav_" + map_name, "drawable", context.getPackageName());
         imageNav.setImageResource(resId);
+
+        //Получаем экземпляр хронометра
+        mChronometer = (Chronometer)((Activity)context).findViewById(R.id.chronometer);
 
         /* --- Создаем все PieceImageView --- */
         ExcelParser parser = new ExcelParser(context, map_name);
@@ -74,6 +84,7 @@ class GameManager {
         }
         return null;
     }
+
     //Возвращает либо кусок с нужным индексом, либо null
     PieceImageView getPiece(int number) {
         if (number < mArrayPieces.size())
@@ -91,5 +102,42 @@ class GameManager {
                 array.add(mArrayPieces.indexOf(piece));
         }
         return array;
+    }
+
+    /* --- Работаем с хронометром --- */
+
+    void startTimer() {
+        //Обнуляем и запускаем
+        mChronometer.setBase(SystemClock.elapsedRealtime());
+        mChronometer.start();
+        mStarted = true;
+    }
+
+    void resumeTimer() {
+        //Восстанавливаем и запускаем
+        setTime(mCurrentTime);
+        mChronometer.start();
+        mStarted = true;
+    }
+
+    void stopTimer() {
+        //Не обновляем показания таймера, если он уже остановлен
+        if (!mStarted) return;
+        //Останавливаем и обновляем
+        mChronometer.stop();
+        mCurrentTime = SystemClock.elapsedRealtime() - mChronometer.getBase();
+        mStarted = false;
+    }
+
+    long getTime() {
+        //Синхронизируем и возвращаем значение
+        setTime(mCurrentTime);
+        return mCurrentTime;
+    }
+
+    void setTime(long time) {
+        //Устанавливаем время
+        mCurrentTime = time;
+        mChronometer.setBase(SystemClock.elapsedRealtime() - mCurrentTime);
     }
 }

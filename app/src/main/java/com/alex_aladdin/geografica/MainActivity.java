@@ -32,7 +32,6 @@ public class MainActivity extends AppCompatActivity {
     private GameManager mManager;
     private MapImageView mImageMap;
     private boolean mPiecesEnabled = true; //Разрешено ли перетаскивание кусочков (запрещается при зуммировании)
-    private GameTimer mTimer;
     private State mState; //Состояние игры
 
     private enum State {
@@ -49,8 +48,6 @@ public class MainActivity extends AppCompatActivity {
 
         mManager = new GameManager(this, map_name);
         mImageMap = mManager.getMap();
-
-        mTimer = new GameTimer(this);
 
         RelativeLayout rootLayout = (RelativeLayout)findViewById(R.id.root);
         rootLayout.setOnDragListener(new MyDragListener()); //Теперь мы можем перетаскивать кусочки паззла
@@ -94,8 +91,6 @@ public class MainActivity extends AppCompatActivity {
                     fragmentTip.init(view);
                     //Поднимаем этот кусок над остальными
                     view.toFront();
-                    //Показываем название вместо таймера
-                    mTimer.showCaption(view);
                     break;
 
                 case DragEvent.ACTION_DRAG_LOCATION:
@@ -133,9 +128,6 @@ public class MainActivity extends AppCompatActivity {
                     view.setVisibility(View.VISIBLE);
                     //Убираем подсказку
                     fragmentTip.close();
-
-                    //Показываем таймер вместо названия
-                    mTimer.showTimer();
                     break;
 
                 default:
@@ -153,7 +145,7 @@ public class MainActivity extends AppCompatActivity {
             //Не пристыкованных тоже не осталось
             if (!mManager.hasVisiblePieces()) {
                 mState = State.FINISH;
-                mTimer.stop();
+                mManager.stopTimer();
                 showFinishLayout();
             }
             return;
@@ -202,8 +194,8 @@ public class MainActivity extends AppCompatActivity {
         saveInstanceState.putIntegerArrayList("SETTLED_PIECES", array);
 
         //Сохраняем текущее время таймера
-        mTimer.stop();
-        saveInstanceState.putLong("TIMER", mTimer.getTime());
+        mManager.stopTimer();
+        saveInstanceState.putLong("TIMER", mManager.getTime());
     }
 
     //Восстанавливаем сохраненные значения из метода onSaveInstanceState
@@ -236,14 +228,14 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case RUN:
                 //Выставляем нужное время таймера
-                mTimer.start();
-                mTimer.setTime(time);
+                mManager.startTimer();
+                mManager.setTime(time);
                 //Показываем новый кусок паззла
                 showNewPiece();
                 break;
             case FINISH:
                 //Выставляем нужное время таймера
-                mTimer.setTime(time);
+                mManager.setTime(time);
                 //Показываем финишный экран
                 showFinishLayout();
                 break;
@@ -255,7 +247,7 @@ public class MainActivity extends AppCompatActivity {
     public void onResume() {
         super.onResume();
 
-        if (mState == State.RUN) mTimer.resume();
+        if (mState == State.RUN) mManager.resumeTimer();
     }
 
     //Класс MyZoomTouchListener, вешается на layout для зуммирования
@@ -399,7 +391,7 @@ public class MainActivity extends AppCompatActivity {
         //Показываем кусок паззла
         showNewPiece();
         //Включаем таймер
-        mTimer.start();
+        mManager.startTimer();
     }
 
     //Показываем стартовый экран
@@ -460,7 +452,7 @@ public class MainActivity extends AppCompatActivity {
 
         //Показываем результат
         final TextView textResult = (TextView)findViewById(R.id.text_finish_result);
-        long time = mTimer.getTime();
+        long time = mManager.getTime();
         DecimalFormat df = new DecimalFormat("00");
         String text = getString(R.string.finish_result) + "\n";
 
