@@ -54,6 +54,9 @@ public class ZoomableRelativeLayout extends RelativeLayout {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        //В неувеличенном состоянии не обрабатываем событие
+        if (!isZoomed()) return false;
+
         //Реализуем перемещение
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:

@@ -3,11 +3,13 @@ package com.alex_aladdin.geografica;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.ClipData;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Point;
 import android.os.Build;
 import android.view.Display;
@@ -42,7 +44,7 @@ public class PieceImageView extends ImageView {
             if (mSettled) return false;
 
             ClipData data = ClipData.newPlainText("", "");
-            View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(this);
+            View.DragShadowBuilder shadowBuilder = new MyDragShadowBuilder(this);
             //Выключаем подсветку
             setBackgroundResource(R.color.transparent);
             //Запускаем DragAndDrop
@@ -67,6 +69,51 @@ public class PieceImageView extends ImageView {
     @SuppressWarnings("deprecation")
     private void oldDragAndDrop(View view, ClipData data, View.DragShadowBuilder shadowBuilder, Object myLocalState, int flags) {
         view.startDrag(data, shadowBuilder, myLocalState, flags);
+    }
+
+    //Делаем кастомный DragShadowBuilder
+    //Он увеличивает "тень" во время перетаскивания в зуме
+    private class MyDragShadowBuilder extends View.DragShadowBuilder {
+        private final float mZoom = ZoomableRelativeLayout.MAX_ZOOM;
+        private ZoomableRelativeLayout mLayoutZoom;
+        private Point mScaleFactor;
+
+        MyDragShadowBuilder(View view) {
+            super(view);
+
+            mLayoutZoom = (ZoomableRelativeLayout) ((Activity)mContext).findViewById(R.id.root);
+        }
+
+        @Override
+        public void onProvideShadowMetrics(Point size, Point touch) {
+            //Если нет увеличения, запускаем метод по умолчанию
+            if (!mLayoutZoom.isZoomed()) {
+                super.onProvideShadowMetrics(size, touch);
+                return;
+            }
+
+            int width, height;
+
+            width = Math.round(getView().getWidth() * mZoom);
+            height = Math.round(getView().getHeight() * mZoom);
+
+            size.set(width, height);
+            mScaleFactor = size;
+
+            touch.set(width / 2, height / 2);
+        }
+
+        @Override
+        public void onDrawShadow(Canvas canvas) {
+            //Если нет увеличения, запускаем метод по умолчанию
+            if (!mLayoutZoom.isZoomed()) {
+                super.onDrawShadow(canvas);
+                return;
+            }
+
+            canvas.scale(mScaleFactor.x / (float) getView().getWidth(), mScaleFactor.y / (float) getView().getHeight());
+            getView().draw(canvas);
+        }
     }
 
     //Метод, загружающий нужную часть паззла
