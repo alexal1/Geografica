@@ -2,12 +2,16 @@ package com.alex_aladdin.geografica;
 
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.annotation.TargetApi;
+import android.content.ClipData;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
+import android.os.Build;
 import android.view.Display;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -28,6 +32,41 @@ public class PieceImageView extends ImageView {
     public PieceImageView(Context context) {
         super(context);
         mContext = context;
+    }
+
+    //При касании
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            //Если этот кусок уже установлен, ничего не делаем
+            if (mSettled) return true;
+
+            ClipData data = ClipData.newPlainText("", "");
+            View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(this);
+            //Выключаем подсветку
+            setBackgroundResource(R.color.transparent);
+            //Запускаем DragAndDrop
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                newDragAndDrop(this, data, shadowBuilder, this, 0);
+            }
+            else {
+                oldDragAndDrop(this, data, shadowBuilder, this, 0);
+            }
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    //Метод DragAndDrop для старых и новых API
+    @TargetApi(24)
+    private void newDragAndDrop(View view, ClipData data, View.DragShadowBuilder shadowBuilder, Object myLocalState, int flags) {
+        view.startDragAndDrop(data, shadowBuilder, myLocalState, flags);
+    }
+    @SuppressWarnings("deprecation")
+    private void oldDragAndDrop(View view, ClipData data, View.DragShadowBuilder shadowBuilder, Object myLocalState, int flags) {
+        view.startDrag(data, shadowBuilder, myLocalState, flags);
     }
 
     //Метод, загружающий нужную часть паззла
@@ -116,8 +155,8 @@ public class PieceImageView extends ImageView {
             final int halfWidth = width / 2;
 
             //Вычисляем наибольшее значение inSampleSize, являющееся степенью двойки, такое чтобы при этом одновременно
-            //высота и ширина итоговой картинки были больше, чем reqHeight и reqWidth
-            while ((halfHeight / inSampleSize) > mReqHeight && (halfWidth / inSampleSize) > mReqWidth) {
+            //высота и ширина итоговой картинки были больше, чем mReqHeight и mReqWidth
+            while ((halfHeight / inSampleSize) >= mReqHeight && (halfWidth / inSampleSize) >= mReqWidth) {
                 inSampleSize *= 2;
             }
         }

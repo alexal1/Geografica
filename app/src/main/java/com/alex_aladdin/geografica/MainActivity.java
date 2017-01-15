@@ -3,12 +3,9 @@ package com.alex_aladdin.geografica;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
-import android.annotation.TargetApi;
 import android.app.FragmentManager;
-import android.content.ClipData;
 import android.content.Intent;
 import android.graphics.Point;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
@@ -63,39 +60,6 @@ public class MainActivity extends AppCompatActivity {
         if (savedInstanceState == null) {
             mState = State.START;
             showStartLayout();
-        }
-    }
-
-    //Класс MyDragTouchListener, вешается на PieceImageView для DragAndDrop'a
-    private final class MyDragTouchListener implements View.OnTouchListener {
-        public boolean onTouch(View view, MotionEvent motionEvent) {
-            if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-                ClipData data = ClipData.newPlainText("", "");
-                View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(view);
-                //Выключаем подсветку
-                view.setBackgroundResource(R.color.transparent);
-                //Запускаем DragAndDrop
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    newDragAndDrop(view, data, shadowBuilder, view, 0);
-                }
-                else {
-                    oldDragAndDrop(view, data, shadowBuilder, view, 0);
-                }
-                return true;
-            }
-            else {
-                return false;
-            }
-        }
-
-        //Метод DragAndDrop для старых и новых API
-        @TargetApi(24)
-        private void newDragAndDrop(View view, ClipData data, View.DragShadowBuilder shadowBuilder, Object myLocalState, int flags) {
-            view.startDragAndDrop(data, shadowBuilder, myLocalState, flags);
-        }
-        @SuppressWarnings("deprecation")
-        private void oldDragAndDrop(View view, ClipData data, View.DragShadowBuilder shadowBuilder, Object myLocalState, int flags) {
-            view.startDrag(data, shadowBuilder, myLocalState, flags);
         }
     }
 
@@ -194,8 +158,6 @@ public class MainActivity extends AppCompatActivity {
             }
             return;
         }
-        //Вешаем обработчик
-        imagePiece.setOnTouchListener(new MyDragTouchListener());
         //Делаем видимым и включаем подсветку
         imagePiece.setVisibility(View.VISIBLE);
         imagePiece.setBackgroundResource(R.drawable.backlight);
@@ -375,9 +337,11 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    //TODO: Сделать зум с помощью кнопки и убрать этот метод за ненадобностью
     //Метод, снимающий/вешающий слушатели на PieceImageView до/после зуммирования
     //А также блокирующий все кнопки
     private void setPiecesEnabled(boolean enabled) {
+        /*
         mPiecesEnabled = enabled;
 
         ImageButton buttonAdd = (ImageButton)findViewById(R.id.button_add_piece);
@@ -412,6 +376,7 @@ public class MainActivity extends AppCompatActivity {
             buttonAdd.setEnabled(false);
             buttonInfo.setEnabled(false);
         }
+        */
     }
 
     //Клик на кнопку, добавляющую новый кусок паззла
