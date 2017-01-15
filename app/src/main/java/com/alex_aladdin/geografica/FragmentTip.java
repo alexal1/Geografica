@@ -28,7 +28,6 @@ public class FragmentTip extends Fragment {
     public void init(PieceImageView view) {
         mCurrentPiece = view;
         mTextView.setText(view.getCaption());
-        mLayout.setVisibility(View.VISIBLE);
     }
 
     //Во время перетаскивания получаем координаты центра кусочка, и задаем координаты нашему фрагменту
@@ -42,6 +41,8 @@ public class FragmentTip extends Fragment {
 
         mLayout.setX(fragment_x);
         mLayout.setY(fragment_y);
+
+        mLayout.setVisibility(View.VISIBLE);
     }
 
     //Завершаем показ
