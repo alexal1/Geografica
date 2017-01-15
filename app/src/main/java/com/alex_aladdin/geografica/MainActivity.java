@@ -12,9 +12,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.TypedValue;
 import android.view.Display;
 import android.view.DragEvent;
-import android.view.GestureDetector;
-import android.view.MotionEvent;
-import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -31,7 +28,6 @@ public class MainActivity extends AppCompatActivity {
 
     private GameManager mManager;
     private MapImageView mImageMap;
-    private boolean mPiecesEnabled = true; //Разрешено ли перетаскивание кусочков (запрещается при зуммировании)
     private State mState; //Состояние игры
 
     private enum State {
@@ -51,7 +47,6 @@ public class MainActivity extends AppCompatActivity {
 
         RelativeLayout rootLayout = (RelativeLayout)findViewById(R.id.root);
         rootLayout.setOnDragListener(new MyDragListener()); //Теперь мы можем перетаскивать кусочки паззла
-        rootLayout.setOnTouchListener(new MyZoomTouchListener()); //Теперь мы можем зуммировать layout
 
         //Если приложение запущено впервые
         if (savedInstanceState == null) {
@@ -250,127 +245,6 @@ public class MainActivity extends AppCompatActivity {
         if (mState == State.RUN) mManager.resumeTimer();
     }
 
-    //Класс MyZoomTouchListener, вешается на layout для зуммирования
-    private final class MyZoomTouchListener implements View.OnTouchListener {
-        private ScaleGestureDetector scaleGestureDetector = new ScaleGestureDetector(MainActivity.this, new OnPinchListener());
-        private GestureDetector doubleTapGestureDetector = new GestureDetector(MainActivity.this, new GestureDoubleTap());
-        private ZoomableRelativeLayout rootLayout = (ZoomableRelativeLayout)findViewById(R.id.root);
-        private float x0, y0, x, y;
-
-        @Override
-        public boolean onTouch(View v, MotionEvent event) {
-            scaleGestureDetector.onTouchEvent(event);
-            doubleTapGestureDetector.onTouchEvent(event);
-
-            //Реализуем перемещение
-            switch (event.getAction()) {
-                case MotionEvent.ACTION_DOWN:
-                    x0 = event.getX();
-                    y0 = event.getY();
-                    break;
-                case MotionEvent.ACTION_MOVE:
-                    x = event.getX();
-                    y = event.getY();
-
-                    rootLayout.move(x0-x, y0-y);
-
-                    x0 = x;
-                    y0 = y;
-                    break;
-            }
-
-            return true;
-        }
-    }
-
-    //Класс OnPinchListener, нужный для зуммирования
-    private class OnPinchListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
-        private ZoomableRelativeLayout rootLayout = (ZoomableRelativeLayout)findViewById(R.id.root);
-        private float currentSpan;
-        private float startFocusX;
-        private float startFocusY;
-
-        public boolean onScaleBegin(ScaleGestureDetector detector) {
-            setPiecesEnabled(false); //Делаем невозможным перетаскивание кусочков
-
-            currentSpan = detector.getCurrentSpan();
-            startFocusX = detector.getFocusX();
-            startFocusY = detector.getFocusY();
-            return true;
-        }
-
-        public boolean onScale(ScaleGestureDetector detector) {
-            rootLayout.relativeScale(detector.getCurrentSpan() / currentSpan, startFocusX, startFocusY);
-            currentSpan = detector.getCurrentSpan();
-            return true;
-        }
-
-        public void onScaleEnd(ScaleGestureDetector detector) {
-            if (rootLayout.getScaleFactor() <= ZoomableRelativeLayout.MIN_SCALE)
-                setPiecesEnabled(true); //Если вернулись в нормальный масштаб, делаем кусочки снова доступными
-
-            rootLayout.release();
-        }
-    }
-
-    //Класс GestureDoubleTap, нужный для определения двойного клика
-    private class GestureDoubleTap extends GestureDetector.SimpleOnGestureListener {
-        private ZoomableRelativeLayout rootLayout = (ZoomableRelativeLayout)findViewById(R.id.root);
-
-        @Override
-        public boolean onDoubleTap(MotionEvent event) {
-            float x = event.getX();
-            float y = event.getY();
-
-            rootLayout.restore(x, y);
-
-            setPiecesEnabled(!mPiecesEnabled); //Делаем кусочки доступными/недоступными в зависимости от состояния
-            return true;
-        }
-    }
-
-    //TODO: Сделать зум с помощью кнопки и убрать этот метод за ненадобностью
-    //Метод, снимающий/вешающий слушатели на PieceImageView до/после зуммирования
-    //А также блокирующий все кнопки
-    private void setPiecesEnabled(boolean enabled) {
-        /*
-        mPiecesEnabled = enabled;
-
-        ImageButton buttonAdd = (ImageButton)findViewById(R.id.button_add_piece);
-        ImageButton buttonInfo = (ImageButton)findViewById(R.id.button_info);
-        PieceImageView piece;
-        int i = 0;
-        //Если true, вешаем слушатели
-        if (enabled) {
-            //При этом НЕ НАДО вешать слушатели на те кусочки, которые уже стоят на своих местах
-            ArrayList<Integer> settled_pieces = mManager.getListOfSettledPieces();
-
-            while ((piece = mManager.getPiece(i)) != null) {
-                //Если этот кусочек ещё не на своем месте, вешаем слушатель
-                if (!settled_pieces.contains(i))
-                    piece.setOnTouchListener(new MyDragTouchListener());
-
-                i++;
-            }
-
-            //Разблокируем кнопки
-            buttonAdd.setEnabled(true);
-            buttonInfo.setEnabled(true);
-        }
-        //Если false, снимаем слушатели
-        else {
-            while ((piece = mManager.getPiece(i)) != null) {
-                piece.setOnTouchListener(null);
-                i++;
-            }
-
-            //Блокируем кнопки
-            buttonAdd.setEnabled(false);
-            buttonInfo.setEnabled(false);
-        }
-        */
-    }
-
     //Клик на кнопку, добавляющую новый кусок паззла
     public void onButtonAddClick(View view) {
         showNewPiece();
@@ -379,6 +253,15 @@ public class MainActivity extends AppCompatActivity {
     //Клик на кнопку, меняющую картинку карты
     public void onButtonInfoClick(View view) {
         mImageMap.changeMapInfo(this);
+    }
+
+    //Клик на кнопку зуммирования
+    public void onButtonZoomClick(View view) {
+        ZoomableRelativeLayout layoutZoom = (ZoomableRelativeLayout) findViewById(R.id.root);
+        if (layoutZoom.isZoomed())
+            layoutZoom.zoomOut();
+        else
+            layoutZoom.zoomIn();
     }
 
     //Клик на стартовый экран

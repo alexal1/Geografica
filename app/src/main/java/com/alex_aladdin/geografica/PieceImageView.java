@@ -39,7 +39,7 @@ public class PieceImageView extends ImageView {
     public boolean onTouchEvent(MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
             //Если этот кусок уже установлен, ничего не делаем
-            if (mSettled) return true;
+            if (mSettled) return false;
 
             ClipData data = ClipData.newPlainText("", "");
             View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(this);

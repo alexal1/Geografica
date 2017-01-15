@@ -1,23 +1,18 @@
 package com.alex_aladdin.geografica;
 
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.content.Context;
-import android.graphics.Canvas;
 import android.util.AttributeSet;
-import android.view.animation.Animation;
-import android.view.animation.Transformation;
+import android.view.MotionEvent;
+import android.view.View;
 import android.widget.RelativeLayout;
 
 //Зуммируемый RelativeLayout
-//Класс взят отсюда:
-//http://stackoverflow.com/a/10029320/7271660
-//...и немного доработан
 public class ZoomableRelativeLayout extends RelativeLayout {
-    public static final float MIN_SCALE = 1.0f;
-    public static final float MAX_SCALE = 2.0f;
-
-    private float mScaleFactor = 1;
-    private float mPivotX;
-    private float mPivotY;
+    public static final float MAX_ZOOM = 2.0f;
+    private float mX0, mY0;
+    private boolean mZoomed = false;
 
     public ZoomableRelativeLayout(Context context) {
         super(context);
@@ -31,110 +26,55 @@ public class ZoomableRelativeLayout extends RelativeLayout {
         super(context, attrs, defStyle);
     }
 
-    protected void dispatchDraw(Canvas canvas) {
-        canvas.save(Canvas.MATRIX_SAVE_FLAG);
-        canvas.scale(mScaleFactor, mScaleFactor, mPivotX, mPivotY);
-        super.dispatchDraw(canvas);
-        canvas.restore();
+    public void zoomIn() {
+        AnimatorSet animSetScale = new AnimatorSet();
+
+        ObjectAnimator scaleAnimatorX = ObjectAnimator.ofFloat(this, View.SCALE_X, 1.0f, MAX_ZOOM);
+        ObjectAnimator scaleAnimatorY = ObjectAnimator.ofFloat(this, View.SCALE_Y, 1.0f, MAX_ZOOM);
+
+        animSetScale.playTogether(scaleAnimatorX, scaleAnimatorY);
+        animSetScale.setDuration(300);
+        animSetScale.start();
+
+        mZoomed = true;
     }
 
-    public void scale(float scaleFactor, float pivotX, float pivotY) {
-        mScaleFactor = scaleFactor;
-        mPivotX = pivotX;
-        mPivotY = pivotY;
-        this.invalidate();
+    public void zoomOut() {
+        AnimatorSet animSetScale = new AnimatorSet();
+
+        ObjectAnimator scaleAnimatorX = ObjectAnimator.ofFloat(this, View.SCALE_X, MAX_ZOOM, 1.0f);
+        ObjectAnimator scaleAnimatorY = ObjectAnimator.ofFloat(this, View.SCALE_Y, MAX_ZOOM, 1.0f);
+
+        animSetScale.playTogether(scaleAnimatorX, scaleAnimatorY);
+        animSetScale.setDuration(300);
+        animSetScale.start();
+
+        mZoomed = false;
     }
 
-    //Вызывается по двойному клику. Либо возвращаем в исходное состояние, либо увеличиваем до максимума
-    public void restore(final float pivotX, final float pivotY) {
-        if(mScaleFactor == MIN_SCALE) {
-            Animation a = new Animation()
-            {
-                @Override
-                protected void applyTransformation(float interpolatedTime, Transformation t)
-                {
-                    scale(MIN_SCALE + (MAX_SCALE - MIN_SCALE)*interpolatedTime, pivotX, pivotY);
-                }
-            };
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        //Реализуем перемещение
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                mX0 = event.getX();
+                mY0 = event.getY();
+                break;
 
-            a.setDuration(300);
-            startAnimation(a);
-        }
-        else if(mScaleFactor == MAX_SCALE) {
-            Animation a = new Animation()
-            {
-                @Override
-                protected void applyTransformation(float interpolatedTime, Transformation t)
-                {
-                    scale(MAX_SCALE + (MIN_SCALE - MAX_SCALE)*interpolatedTime, pivotX, pivotY);
-                }
-            };
+            case MotionEvent.ACTION_MOVE:
+                //Умножаем на 2 для скорости
+                float diff_x = (mX0 - event.getX())*2;
+                float diff_y = (mY0 - event.getY())*2;
 
-            a.setDuration(300);
-            startAnimation(a);
+                setPivotX(getPivotX() + diff_x);
+                setPivotY(getPivotY() + diff_y);
+
+                break;
         }
+        return true;
     }
 
-    public void relativeScale(float scaleFactor, float pivotX, float pivotY) {
-        mScaleFactor *= scaleFactor;
-
-        if(scaleFactor >= 1)
-        {
-            mPivotX = mPivotX + (pivotX - mPivotX) * (1 - 1 / scaleFactor);
-            mPivotY = mPivotY + (pivotY - mPivotY) * (1 - 1 / scaleFactor);
-        }
-        else
-        {
-            pivotX = getWidth()/2;
-            pivotY = getHeight()/2;
-
-            mPivotX = mPivotX + (pivotX - mPivotX) * (1 - scaleFactor);
-            mPivotY = mPivotY + (pivotY - mPivotY) * (1 - scaleFactor);
-        }
-
-        this.invalidate();
+    public boolean isZoomed() {
+        return mZoomed;
     }
-
-    public void release() {
-        if(mScaleFactor < MIN_SCALE) {
-            final float startScaleFactor = mScaleFactor;
-
-            Animation a = new Animation()
-            {
-                @Override
-                protected void applyTransformation(float interpolatedTime, Transformation t)
-                {
-                    scale(startScaleFactor + (MIN_SCALE - startScaleFactor)*interpolatedTime,mPivotX,mPivotY);
-                }
-            };
-
-            a.setDuration(300);
-            startAnimation(a);
-        }
-        else if(mScaleFactor > MAX_SCALE) {
-            final float startScaleFactor = mScaleFactor;
-
-            Animation a = new Animation()
-            {
-                @Override
-                protected void applyTransformation(float interpolatedTime, Transformation t)
-                {
-                    scale(startScaleFactor + (MAX_SCALE - startScaleFactor)*interpolatedTime,mPivotX,mPivotY);
-                }
-            };
-
-            a.setDuration(300);
-            startAnimation(a);
-        }
-    }
-
-    //Перемещение
-    public void move(float diff_x, float diff_y) {
-        mPivotX += diff_x;
-        mPivotY += diff_y;
-        this.invalidate();
-    }
-
-    //Геттер
-    public float getScaleFactor() { return mScaleFactor; }
 }
