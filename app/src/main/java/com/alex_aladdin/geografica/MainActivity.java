@@ -28,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
 
     private GameManager mManager;
     private MapImageView mImageMap;
+    private ZoomableRelativeLayout mLayoutZoom;
     private State mState; //Состояние игры
 
     private enum State {
@@ -45,8 +46,8 @@ public class MainActivity extends AppCompatActivity {
         mManager = new GameManager(this, map_name);
         mImageMap = mManager.getMap();
 
-        RelativeLayout rootLayout = (RelativeLayout)findViewById(R.id.root);
-        rootLayout.setOnDragListener(new MyDragListener()); //Теперь мы можем перетаскивать кусочки паззла
+        mLayoutZoom = (ZoomableRelativeLayout)findViewById(R.id.layout_zoom);
+        mLayoutZoom.setOnDragListener(new MyDragListener()); //Теперь мы можем перетаскивать кусочки паззла
 
         //Если приложение запущено впервые
         if (savedInstanceState == null) {
@@ -103,13 +104,11 @@ public class MainActivity extends AppCompatActivity {
                     if ((Math.abs(x - target_x) < delta) && (Math.abs(y - target_y) < delta)) {
                         //Этот кусочек встал на свое место, ура
                         view.settle(x, y);
-                        //Показываем его позади всех остальных
+                        //Опускаем его вниз, чтобы он не мог загородить собой другой кусок
                         view.toBack();
                         //Теперь можно показать следующий кусочек, но только если нет других доступных
                         if (!mManager.hasVisiblePieces())
                             showNewPiece();
-                        //А с этого уже можно снять обработчик
-                        view.setOnTouchListener(null);
                     }
                     else {
                         //Включаем подсветку
@@ -209,8 +208,6 @@ public class MainActivity extends AppCompatActivity {
             view.settle();
             //Делаем его видимым
             view.setVisibility(View.VISIBLE);
-            //Отодвигаем его на задний план, чтоб он не мог перекрыть элементы интерфейса
-            view.toBack();
         }
 
         //Далее выполняем действия в зависимости от состояния игры
@@ -257,11 +254,10 @@ public class MainActivity extends AppCompatActivity {
 
     //Клик на кнопку зуммирования
     public void onButtonZoomClick(View view) {
-        ZoomableRelativeLayout layoutZoom = (ZoomableRelativeLayout) findViewById(R.id.root);
-        if (layoutZoom.isZoomed())
-            layoutZoom.zoomOut();
+        if (mLayoutZoom.isZoomed())
+            mLayoutZoom.zoomOut();
         else
-            layoutZoom.zoomIn();
+            mLayoutZoom.zoomIn();
     }
 
     //Клик на стартовый экран
@@ -311,13 +307,15 @@ public class MainActivity extends AppCompatActivity {
     private void showFinishLayout() {
         final LinearLayout layoutFinish = (LinearLayout)findViewById(R.id.layout_finish);
         layoutFinish.setVisibility(View.VISIBLE);
-        //Делаем кнопки недоступными и запрещаем зуммирование
+        //Делаем кнопки недоступными
         final ImageButton buttonAdd = (ImageButton)findViewById(R.id.button_add_piece);
         final ImageButton buttonInfo = (ImageButton)findViewById(R.id.button_info);
-        final RelativeLayout rootLayout = (RelativeLayout)findViewById(R.id.root);
+        final ImageButton buttonZoom = (ImageButton)findViewById(R.id.button_zoom);
         buttonAdd.setEnabled(false);
         buttonInfo.setEnabled(false);
-        rootLayout.setOnTouchListener(null);
+        buttonZoom.setEnabled(false);
+        //Если были в зуме, возвращаемся
+        if (mLayoutZoom.isZoomed()) mLayoutZoom.zoomOut();
 
         //Показываем заголовок
         final TextView textCaption = (TextView)findViewById(R.id.text_finish_caption);

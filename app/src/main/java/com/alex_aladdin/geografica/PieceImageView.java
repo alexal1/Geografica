@@ -81,7 +81,7 @@ public class PieceImageView extends ImageView {
         MyDragShadowBuilder(View view) {
             super(view);
 
-            mLayoutZoom = (ZoomableRelativeLayout) ((Activity)mContext).findViewById(R.id.root);
+            mLayoutZoom = (ZoomableRelativeLayout) ((Activity)mContext).findViewById(R.id.layout_zoom);
         }
 
         @Override

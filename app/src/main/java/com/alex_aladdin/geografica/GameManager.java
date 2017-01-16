@@ -41,7 +41,7 @@ class GameManager {
         //Объявяем отображение HashMap, в которое parser'ом будет вкладываться требуемая информация о каждом PieceImageView
         HashMap<String, String> map;
         //Вспомогательные объекты для программного создания View
-        RelativeLayout layout = (RelativeLayout)((Activity)context).findViewById(R.id.root);
+        RelativeLayout layout = (RelativeLayout)((Activity)context).findViewById(R.id.layout_zoom);
 
         while ((map = parser.getNextMap()) != null) {
             //Создаем PieceImageView

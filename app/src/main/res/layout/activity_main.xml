@@ -1,25 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.alex_aladdin.geografica.ZoomableRelativeLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/root"
+    android:id="@+id/layout_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background"
     tools:context="com.alex_aladdin.geografica.MainActivity">
 
-    <com.alex_aladdin.geografica.MapImageView
-        android:id="@+id/image_map"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        tools:ignore="ContentDescription" />
+    <com.alex_aladdin.geografica.ZoomableRelativeLayout
+        android:id="@+id/layout_zoom"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/background">
 
-    <fragment
-        android:id="@+id/fragment_tip"
-        android:name="com.alex_aladdin.geografica.FragmentTip"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        <com.alex_aladdin.geografica.MapImageView
+            android:id="@+id/image_map"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            tools:ignore="ContentDescription" />
+
+        <fragment
+            android:id="@+id/fragment_tip"
+            android:name="com.alex_aladdin.geografica.FragmentTip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+    </com.alex_aladdin.geografica.ZoomableRelativeLayout>
 
     <ImageView
         android:id="@+id/image_nav"
@@ -198,4 +205,4 @@
         </LinearLayout>
     </LinearLayout>
 
-</com.alex_aladdin.geografica.ZoomableRelativeLayout>
+</RelativeLayout>

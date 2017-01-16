@@ -28,6 +28,12 @@ public class FragmentTip extends Fragment {
     public void init(PieceImageView view) {
         mCurrentPiece = view;
         mTextView.setText(view.getCaption());
+
+        //Поднимаем подсказку
+        View parent = (View)mLayout.getParent();
+        mLayout.bringToFront();
+        parent.requestLayout();
+        parent.invalidate();
     }
 
     //Во время перетаскивания получаем координаты центра кусочка, и задаем координаты нашему фрагменту
