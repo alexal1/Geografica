@@ -8,11 +8,14 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.RelativeLayout;
 
+import java.util.Stack;
+
 //Зуммируемый RelativeLayout
 public class ZoomableRelativeLayout extends RelativeLayout {
     public static final float MAX_ZOOM = 2.0f;
     private float mX0, mY0;
     private boolean mZoomed = false;
+    private Stack<PieceImageView> mStack = new Stack<>(); //Стек из ссылок на PieceImageView, на верхнюю будем центрировать зум
 
     public ZoomableRelativeLayout(Context context) {
         super(context);
@@ -27,6 +30,15 @@ public class ZoomableRelativeLayout extends RelativeLayout {
     }
 
     public void zoomIn() {
+        //Получаем координаты для центрирования зума
+        //Для этого берем верхний кусок из стека
+        PieceImageView imagePiece = getCurrentPiece();
+        //Эмпирическая формула
+        float x = (imagePiece.getX() + (float) imagePiece.getWidth() / 2) * 2 - (float) getWidth() / 2;
+        float y = (imagePiece.getY() + (float) imagePiece.getHeight() / 2) * 2 - (float) getHeight() / 2;
+        setPivotX(x);
+        setPivotY(y);
+
         AnimatorSet animSetScale = new AnimatorSet();
 
         ObjectAnimator scaleAnimatorX = ObjectAnimator.ofFloat(this, View.SCALE_X, 1.0f, MAX_ZOOM);
@@ -79,5 +91,27 @@ public class ZoomableRelativeLayout extends RelativeLayout {
 
     public boolean isZoomed() {
         return mZoomed;
+    }
+
+    /* --- Работаем со стеком --- */
+
+    //Новый кусок стал актуальным (касание либо появление)
+    //Добавляем его в стек
+    public void setCurrentPiece(PieceImageView imagePiece) {
+        mStack.push(imagePiece);
+    }
+
+    //Извлекаем верхний кусок из стека
+    //Установленные куски выкидываем из стека
+    private PieceImageView getCurrentPiece() {
+        while (true) {
+            PieceImageView imagePiece = mStack.peek();
+            //Если установлен, выкидываем
+            if (imagePiece.isSettled()) {
+                mStack.pop();
+                continue;
+            }
+            return imagePiece;
+        }
     }
 }

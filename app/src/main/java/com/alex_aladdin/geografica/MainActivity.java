@@ -87,6 +87,8 @@ public class MainActivity extends AppCompatActivity {
                     fragmentTip.init(view);
                     //Поднимаем этот кусок над остальными
                     view.toFront();
+                    //Делаем его актуальным для зума
+                    mLayoutZoom.setCurrentPiece(view);
                     break;
 
                 case DragEvent.ACTION_DRAG_LOCATION:
@@ -120,6 +122,9 @@ public class MainActivity extends AppCompatActivity {
 
                     //Делаем видимым
                     view.setVisibility(View.VISIBLE);
+                    break;
+
+                case DragEvent.ACTION_DRAG_ENDED:
                     //Убираем подсказку
                     fragmentTip.close();
                     break;
@@ -149,6 +154,8 @@ public class MainActivity extends AppCompatActivity {
         imagePiece.setBackgroundResource(R.drawable.backlight);
         //Поднимаем этот кусок над остальными
         imagePiece.toFront();
+        //Делаем его актуальным для зума
+        mLayoutZoom.setCurrentPiece(imagePiece);
 
         //Хотим, чтобы он показывался в случайном месте
         int piece_w = imagePiece.getWidth();
