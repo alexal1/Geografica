@@ -21,6 +21,8 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Random;
 
+import gr.antoniom.chronometer.Chronometer;
+
 public class MainActivity extends AppCompatActivity {
 
     public static final float DELTA_MM = 5.0f; //Дельта прилипания в миллиметрах
@@ -38,6 +40,12 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //Видимость таймера и кнопки buttonInfo
+        Chronometer chronometer = (Chronometer) findViewById(R.id.chronometer);
+        ImageButton buttonInfo = (ImageButton) findViewById(R.id.button_info);
+        if (getIntent().getBooleanExtra("SHOW_TIMER", false)) chronometer.setVisibility(View.VISIBLE);
+        if (getIntent().getBooleanExtra("SHOW_BUTTON_INFO", false)) buttonInfo.setVisibility(View.VISIBLE);
 
         //Принимаем в качестве параметра название карты, переданное нам из меню
         String map_name = getIntent().getExtras().getString("MAP_NAME");

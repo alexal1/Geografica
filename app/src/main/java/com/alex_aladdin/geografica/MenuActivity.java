@@ -60,6 +60,8 @@ public class MenuActivity extends AppCompatActivity {
                     Intent intent = new Intent(MenuActivity.this, MainActivity.class);
                     intent.putExtra("MAP_NAME", item.toString().toLowerCase());
                     intent.putExtra("MAP_CAPTION", item.getCaption());
+                    intent.putExtra("SHOW_TIMER", false);
+                    intent.putExtra("SHOW_BUTTON_INFO", true);
 
                     startActivityForResult(intent, 0);
                     mCurrentItem = item.ordinal();
@@ -87,6 +89,8 @@ public class MenuActivity extends AppCompatActivity {
             Intent intent = new Intent(MenuActivity.this, MainActivity.class);
             intent.putExtra("MAP_NAME", item.toString().toLowerCase());
             intent.putExtra("MAP_CAPTION", item.getCaption());
+            intent.putExtra("SHOW_TIMER", false);
+            intent.putExtra("SHOW_BUTTON_INFO", true);
 
             startActivityForResult(intent, 0);
         }

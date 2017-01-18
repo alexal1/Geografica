@@ -54,7 +54,22 @@
         android:paddingRight="0dp"
         android:paddingEnd="0dp"
         android:drawablePadding="10dp"
-        android:textSize="20sp"/>
+        android:textSize="20sp"
+        android:visibility="gone"/> <!-- Изначально невидим, зависит от параметра SHOW_TIMER !-->
+
+    <ImageButton
+        android:id="@+id/button_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:src="@drawable/button_info"
+        android:background="@color/transparent"
+        android:padding="10dp"
+        android:onClick="onButtonInfoClick"
+        tools:ignore="ContentDescription"
+        android:visibility="gone"/> <!-- Изначально невидима, зависит от параметра SHOW_BUTTON_INFO !-->
 
     <ImageButton
         android:id="@+id/button_add_piece"
@@ -68,21 +83,6 @@
         android:padding="10dp"
         android:onClick="onButtonAddClick"
         tools:ignore="ContentDescription"/>
-
-<!-- TODO: Сделать эту кнопку видимой только в режиме тренировки, разместить в левом верхнем углу !-->
-    <ImageButton
-        android:id="@+id/button_info"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:src="@drawable/button_info"
-        android:background="@color/transparent"
-        android:padding="10dp"
-        android:onClick="onButtonInfoClick"
-        tools:ignore="ContentDescription"
-        android:visibility="gone"/>
 
     <ImageButton
         android:id="@+id/button_zoom"
