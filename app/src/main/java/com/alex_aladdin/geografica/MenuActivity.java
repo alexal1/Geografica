@@ -1,5 +1,6 @@
 package com.alex_aladdin.geografica;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -10,7 +11,9 @@ import android.widget.LinearLayout;
 
 public class MenuActivity extends AppCompatActivity {
 
-    enum Menu {
+    private int mCurrentItem; //Номер пункта меню, карта которого запущена в данный момент
+
+    private enum Menu {
 
         DVO("Дальневосточный"),
         SFO("Сибирский"),
@@ -56,9 +59,36 @@ public class MenuActivity extends AppCompatActivity {
                 public void onClick(View view) {
                     Intent intent = new Intent(MenuActivity.this, MainActivity.class);
                     intent.putExtra("MAP_NAME", item.toString().toLowerCase());
-                    startActivity(intent);
+                    intent.putExtra("MAP_CAPTION", item.getCaption());
+
+                    startActivityForResult(intent, 0);
+                    mCurrentItem = item.ordinal();
                 }
             });
+        }
+    }
+
+    //Ожидаем ответ от MainActivity
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        //Была выбрана кнопка ДАЛЕЕ
+        if (resultCode == Activity.RESULT_OK) {
+            Menu[] menu = Menu.values();
+
+            //Если это уже был последний пункт меню, прерываем
+            if (mCurrentItem == menu.length - 1) return;
+
+            mCurrentItem++;
+            Menu item = menu[mCurrentItem];
+
+            //Снова запускаем активность
+            Intent intent = new Intent(MenuActivity.this, MainActivity.class);
+            intent.putExtra("MAP_NAME", item.toString().toLowerCase());
+            intent.putExtra("MAP_CAPTION", item.getCaption());
+
+            startActivityForResult(intent, 0);
         }
     }
 }
