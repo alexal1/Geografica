@@ -111,4 +111,20 @@ public class MenuActivity extends AppCompatActivity {
 
         startActivityForResult(intent, 0);
     }
+
+    //Сохраняем значение переменной mCurrentItem при повороте экрана
+    @Override
+    public void onSaveInstanceState(Bundle saveInstanceState) {
+        super.onSaveInstanceState(saveInstanceState);
+
+        saveInstanceState.putInt("CURRENT_ITEM", mCurrentItem);
+    }
+
+    //Восстанавливаем значение переменной mCurrentItem после поворота экрана
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+        mCurrentItem = savedInstanceState.getInt("CURRENT_ITEM");
+    }
 }

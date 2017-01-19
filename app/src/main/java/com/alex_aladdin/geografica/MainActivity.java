@@ -196,16 +196,18 @@ public class MainActivity extends AppCompatActivity implements FragmentStart.OnC
         int screen_w = size.x;
         int screen_h = size.y;
         //Высота кнопок
-        ImageButton buttonAdd = (ImageButton)findViewById(R.id.button_add_piece);
-        int buttons_h = buttonAdd.getHeight();
+        ImageButton buttonAdd = (ImageButton) findViewById(R.id.button_add_piece);
+        ImageButton buttonInfo = (ImageButton) findViewById(R.id.button_info);
+        int down_h = buttonAdd.getHeight();
+        int up_h = buttonInfo.getHeight();
         //Диапазон
         //Берем max, чтобы не получить отрицательных значений
         int range_x = Math.max(screen_w - piece_w, 1);
-        int range_y = Math.max(screen_h - piece_h - buttons_h, 1);
+        int range_y = Math.max(screen_h - piece_h - down_h - up_h, 1);
         //Берем случайные значения из диапазона
         Random random = new Random();
         int x = random.nextInt(range_x);
-        int y = random.nextInt(range_y);
+        int y = up_h + random.nextInt(range_y);
         imagePiece.setX(x);
         imagePiece.setY(y);
     }
