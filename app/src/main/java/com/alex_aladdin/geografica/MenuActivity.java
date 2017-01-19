@@ -62,6 +62,7 @@ public class MenuActivity extends AppCompatActivity {
                     intent.putExtra("MAP_CAPTION", item.getCaption());
                     intent.putExtra("SHOW_TIMER", false);
                     intent.putExtra("SHOW_BUTTON_INFO", true);
+                    intent.putExtra("START_SCREEN", true);
 
                     startActivityForResult(intent, 0);
                     mCurrentItem = item.ordinal();
@@ -91,6 +92,7 @@ public class MenuActivity extends AppCompatActivity {
             intent.putExtra("MAP_CAPTION", item.getCaption());
             intent.putExtra("SHOW_TIMER", false);
             intent.putExtra("SHOW_BUTTON_INFO", true);
+            intent.putExtra("START_SCREEN", true);
 
             startActivityForResult(intent, 0);
         }

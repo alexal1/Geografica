@@ -1,12 +1,8 @@
 package com.alex_aladdin.geografica;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.animation.ObjectAnimator;
 import android.app.FragmentManager;
 import android.graphics.Point;
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
 import android.util.TypedValue;
 import android.view.Display;
@@ -14,7 +10,6 @@ import android.view.DragEvent;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.text.DecimalFormat;
@@ -23,7 +18,7 @@ import java.util.Random;
 
 import gr.antoniom.chronometer.Chronometer;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements FragmentStart.OnCompleteListener {
 
     public static final float DELTA_MM = 5.0f; //Дельта прилипания в миллиметрах
 
@@ -59,7 +54,11 @@ public class MainActivity extends AppCompatActivity {
         //Если приложение запущено впервые
         if (savedInstanceState == null) {
             mState = State.START;
-            showStartLayout();
+            //Подключаем к активности стартовый фрагмент
+            FragmentStart fragmentStart = new FragmentStart();
+            getFragmentManager().beginTransaction()
+                    .add(R.id.layout_root, fragmentStart, "FRAGMENT_START")
+                    .commit();
         }
     }
 
@@ -229,8 +228,7 @@ public class MainActivity extends AppCompatActivity {
         long time = savedInstanceState.getLong("TIMER");
         switch (mState){
             case START:
-                //Показываем стартовый экран
-                showStartLayout();
+                //Ничего не делаем
                 break;
             case RUN:
                 //Выставляем нужное время таймера
@@ -272,49 +270,6 @@ public class MainActivity extends AppCompatActivity {
             mLayoutZoom.zoomOut();
         else
             mLayoutZoom.zoomIn();
-    }
-
-    //Клик на стартовый экран
-    public void onLayoutStartClick(View view) {
-        //Обновляем состояние
-        mState = State.RUN;
-        //Делаем невидимым темный экран вместе с кругом
-        RelativeLayout layoutStart = (RelativeLayout)findViewById(R.id.layout_start);
-        layoutStart.setVisibility(View.GONE);
-        //Показываем кусок паззла
-        showNewPiece();
-        //Включаем таймер
-        mManager.startTimer();
-    }
-
-    //Показываем стартовый экран
-    private void showStartLayout() {
-        final RelativeLayout layoutStart = (RelativeLayout)findViewById(R.id.layout_start);
-        layoutStart.setVisibility(View.VISIBLE);
-        //Включаем обратный отсчет
-        final TextView textStart = (TextView)findViewById(R.id.text_start);
-        new CountDownTimer(4000, 1000) {
-
-            public void onTick(final long millisUntilFinished) {
-                textStart.setText(String.valueOf(millisUntilFinished/1000));
-                textStart.setAlpha(1.0f);
-                //Затухание
-                ObjectAnimator alphaAnimator = ObjectAnimator.ofFloat(textStart, "alpha", 0);
-                alphaAnimator.setDuration(1200);
-                //Поторапливаем onFinish()
-                if (millisUntilFinished/1000 == 1) alphaAnimator.addListener(new AnimatorListenerAdapter() {
-                    public void onAnimationEnd(Animator animation) {
-                        onFinish();
-                    }
-                });
-                alphaAnimator.start();
-            }
-
-            public void onFinish() {
-                //Делаем проверку на то, не было ли ещё нажатия на экран
-                if (mState == State.START) onLayoutStartClick(layoutStart);
-            }
-        }.start();
     }
 
     //Показываем финишный экран
@@ -383,5 +338,21 @@ public class MainActivity extends AppCompatActivity {
     public void onButtonNextClick(View view) {
         setResult(RESULT_OK);
         finish();
+    }
+
+    //Стартовый фрагмент закончил свою работу
+    @Override
+    public void onFragmentStartComplete() {
+        //Обновляем состояние
+        mState = State.RUN;
+        //Удаляем из активности стартовый фрагмент
+        FragmentStart fragmentStart = (FragmentStart) getFragmentManager().findFragmentByTag("FRAGMENT_START");
+        getFragmentManager().beginTransaction()
+                .remove(fragmentStart)
+                .commitAllowingStateLoss();
+        //Показываем кусок паззла
+        showNewPiece();
+        //Включаем таймер
+        mManager.startTimer();
     }
 }

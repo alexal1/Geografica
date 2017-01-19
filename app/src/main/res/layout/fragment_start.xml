@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layout_start"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/dark_screen">
+
+    <TextView
+        android:id="@+id/text_start"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:gravity="center"
+        android:background="@drawable/circle_start"
+        android:minWidth="300dp"
+        android:minHeight="300dp"
+        android:textSize="80sp"
+        android:textColor="@color/white" />
+
+</RelativeLayout>
