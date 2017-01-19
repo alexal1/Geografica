@@ -13,8 +13,8 @@
         android:layout_centerInParent="true"
         android:gravity="center"
         android:background="@drawable/circle_start"
-        android:minWidth="300dp"
-        android:minHeight="300dp"
+        android:minWidth="200dp"
+        android:minHeight="200dp"
         android:textSize="80sp"
         android:textColor="@color/white" />
 

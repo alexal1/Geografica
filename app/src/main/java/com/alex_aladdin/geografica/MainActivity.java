@@ -16,7 +16,7 @@ import java.util.Random;
 import gr.antoniom.chronometer.Chronometer;
 
 public class MainActivity extends AppCompatActivity implements FragmentStart.OnCompleteListener,
-        FragmentFinishTraining.OnCompleteListener {
+        FragmentFinishTraining.OnCompleteListener, FragmentFinishCheck.OnCompleteListener {
 
     public static final float DELTA_MM = 5.0f; //Дельта прилипания в миллиметрах
 
@@ -172,6 +172,12 @@ public class MainActivity extends AppCompatActivity implements FragmentStart.OnC
                     FragmentFinishTraining fragmentFinishTraining = FragmentFinishTraining.newInstance(caption, time);
                     getFragmentManager().beginTransaction()
                             .add(R.id.layout_root, fragmentFinishTraining)
+                            .commit();
+                }
+                if (getIntent().getBooleanExtra("FRAGMENT_FINISH_CHECK", false)) {
+                    FragmentFinishCheck fragmentFinishCheck = new FragmentFinishCheck();
+                    getFragmentManager().beginTransaction()
+                            .add(R.id.layout_root, fragmentFinishCheck)
                             .commit();
                 }
             }

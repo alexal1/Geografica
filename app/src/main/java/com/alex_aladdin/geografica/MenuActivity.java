@@ -63,7 +63,8 @@ public class MenuActivity extends AppCompatActivity {
                     intent.putExtra("SHOW_TIMER", false);
                     intent.putExtra("SHOW_BUTTON_INFO", true);
                     intent.putExtra("FRAGMENT_START", true);
-                    intent.putExtra("FRAGMENT_FINISH_TRAINING", true);
+                    intent.putExtra("FRAGMENT_FINISH_TRAINING", false);
+                    intent.putExtra("FRAGMENT_FINISH_CHECK", true);
 
                     startActivityForResult(intent, 0);
                     mCurrentItem = item.ordinal();
@@ -107,7 +108,8 @@ public class MenuActivity extends AppCompatActivity {
         intent.putExtra("SHOW_TIMER", false);
         intent.putExtra("SHOW_BUTTON_INFO", true);
         intent.putExtra("FRAGMENT_START", true);
-        intent.putExtra("FRAGMENT_FINISH_TRAINING", true);
+        intent.putExtra("FRAGMENT_FINISH_TRAINING", false);
+        intent.putExtra("FRAGMENT_FINISH_CHECK", true);
 
         startActivityForResult(intent, 0);
     }
