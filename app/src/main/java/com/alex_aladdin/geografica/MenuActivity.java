@@ -62,7 +62,8 @@ public class MenuActivity extends AppCompatActivity {
                     intent.putExtra("MAP_CAPTION", item.getCaption());
                     intent.putExtra("SHOW_TIMER", false);
                     intent.putExtra("SHOW_BUTTON_INFO", true);
-                    intent.putExtra("START_SCREEN", true);
+                    intent.putExtra("FRAGMENT_START", true);
+                    intent.putExtra("FRAGMENT_FINISH_TRAINING", true);
 
                     startActivityForResult(intent, 0);
                     mCurrentItem = item.ordinal();
@@ -76,25 +77,38 @@ public class MenuActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        //Была выбрана кнопка ДАЛЕЕ
-        if (resultCode == Activity.RESULT_OK) {
-            Menu[] menu = Menu.values();
+        Menu[] menu = Menu.values();
 
-            //Если это уже был последний пункт меню, прерываем
-            if (mCurrentItem == menu.length - 1) return;
+        switch (resultCode) {
+            //Была выбрана кнопка ДАЛЕЕ
+            case Activity.RESULT_OK:
+                //Если это уже был последний пункт меню, прерываем
+                if (mCurrentItem == menu.length - 1) return;
 
-            mCurrentItem++;
-            Menu item = menu[mCurrentItem];
+                mCurrentItem++;
 
-            //Снова запускаем активность
-            Intent intent = new Intent(MenuActivity.this, MainActivity.class);
-            intent.putExtra("MAP_NAME", item.toString().toLowerCase());
-            intent.putExtra("MAP_CAPTION", item.getCaption());
-            intent.putExtra("SHOW_TIMER", false);
-            intent.putExtra("SHOW_BUTTON_INFO", true);
-            intent.putExtra("START_SCREEN", true);
+                break;
 
-            startActivityForResult(intent, 0);
+            //Была выбрана кнопка МЕНЮ
+            case Activity.RESULT_CANCELED:
+                return;
+
+            //Была выбрана кнопка РЕСТАРТ
+            case Activity.RESULT_FIRST_USER:
+                break;
         }
+
+        Menu item = menu[mCurrentItem];
+
+        //Снова запускаем активность
+        Intent intent = new Intent(MenuActivity.this, MainActivity.class);
+        intent.putExtra("MAP_NAME", item.toString().toLowerCase());
+        intent.putExtra("MAP_CAPTION", item.getCaption());
+        intent.putExtra("SHOW_TIMER", false);
+        intent.putExtra("SHOW_BUTTON_INFO", true);
+        intent.putExtra("FRAGMENT_START", true);
+        intent.putExtra("FRAGMENT_FINISH_TRAINING", true);
+
+        startActivityForResult(intent, 0);
     }
 }

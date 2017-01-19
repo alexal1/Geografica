@@ -69,11 +69,8 @@ public class FragmentStart extends Fragment {
             }
         });
 
-        //Запускаем, если стоит соответствующий флаг
-        if (getActivity().getIntent().getBooleanExtra("START_SCREEN", false))
-            show();
-        else
-            mListener.onFragmentStartComplete();
+        //Запускаем
+        show();
 
         return rootView;
     }

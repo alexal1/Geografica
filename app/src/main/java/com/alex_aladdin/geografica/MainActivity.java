@@ -9,16 +9,14 @@ import android.view.Display;
 import android.view.DragEvent;
 import android.view.View;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Random;
 
 import gr.antoniom.chronometer.Chronometer;
 
-public class MainActivity extends AppCompatActivity implements FragmentStart.OnCompleteListener {
+public class MainActivity extends AppCompatActivity implements FragmentStart.OnCompleteListener,
+        FragmentFinishTraining.OnCompleteListener {
 
     public static final float DELTA_MM = 5.0f; //Дельта прилипания в миллиметрах
 
@@ -54,11 +52,21 @@ public class MainActivity extends AppCompatActivity implements FragmentStart.OnC
         //Если приложение запущено впервые
         if (savedInstanceState == null) {
             mState = State.START;
-            //Подключаем к активности стартовый фрагмент
-            FragmentStart fragmentStart = new FragmentStart();
-            getFragmentManager().beginTransaction()
-                    .add(R.id.layout_root, fragmentStart, "FRAGMENT_START")
-                    .commit();
+            //Подключаем к активности стартовый фрагмент, если стоит соответствующий флаг
+            if (getIntent().getBooleanExtra("FRAGMENT_START", false)) {
+                FragmentStart fragmentStart = new FragmentStart();
+                getFragmentManager().beginTransaction()
+                        .add(R.id.layout_root, fragmentStart, "START")
+                        .commit();
+            }
+            else {
+                //Обновляем состояние
+                mState = State.RUN;
+                //Показываем кусок паззла
+                showNewPiece();
+                //Включаем таймер
+                mManager.startTimer();
+            }
         }
     }
 
@@ -149,9 +157,23 @@ public class MainActivity extends AppCompatActivity implements FragmentStart.OnC
         if ((imagePiece = mManager.getPiece()) == null) {
             //Не пристыкованных тоже не осталось
             if (!mManager.hasVisiblePieces()) {
+                /* --- ФИНИШ --- */
                 mState = State.FINISH;
                 mManager.stopTimer();
-                showFinishLayout();
+
+                //Если были в зуме, возвращаемся
+                if (mLayoutZoom.isZoomed()) mLayoutZoom.zoomOut();
+
+                //Показываем один из финишных экранов
+                if (getIntent().getBooleanExtra("FRAGMENT_FINISH_TRAINING", false)) {
+                    String caption = getIntent().getStringExtra("MAP_CAPTION").toUpperCase() + " " +
+                            getString(R.string.finish_federal_district);
+                    long time = mManager.getTime();
+                    FragmentFinishTraining fragmentFinishTraining = FragmentFinishTraining.newInstance(caption, time);
+                    getFragmentManager().beginTransaction()
+                            .add(R.id.layout_root, fragmentFinishTraining)
+                            .commit();
+                }
             }
             return;
         }
@@ -240,8 +262,6 @@ public class MainActivity extends AppCompatActivity implements FragmentStart.OnC
             case FINISH:
                 //Выставляем нужное время таймера
                 mManager.setTime(time);
-                //Показываем финишный экран
-                showFinishLayout();
                 break;
         }
     }
@@ -272,81 +292,13 @@ public class MainActivity extends AppCompatActivity implements FragmentStart.OnC
             mLayoutZoom.zoomIn();
     }
 
-    //Показываем финишный экран
-    private void showFinishLayout() {
-        final LinearLayout layoutFinish = (LinearLayout)findViewById(R.id.layout_finish);
-        layoutFinish.setVisibility(View.VISIBLE);
-        //Делаем кнопки недоступными
-        final ImageButton buttonAdd = (ImageButton)findViewById(R.id.button_add_piece);
-        final ImageButton buttonInfo = (ImageButton)findViewById(R.id.button_info);
-        final ImageButton buttonZoom = (ImageButton)findViewById(R.id.button_zoom);
-        buttonAdd.setEnabled(false);
-        buttonInfo.setEnabled(false);
-        buttonZoom.setEnabled(false);
-        //Если были в зуме, возвращаемся
-        if (mLayoutZoom.isZoomed()) mLayoutZoom.zoomOut();
-
-        //Показываем заголовок
-        final TextView textCaption = (TextView)findViewById(R.id.text_finish_caption);
-        String caption = getIntent().getStringExtra("MAP_CAPTION").toUpperCase();
-        caption += " " + getString(R.string.finish_federal_district);
-        textCaption.setText(caption);
-
-        //Показываем результат
-        final TextView textResult = (TextView)findViewById(R.id.text_finish_result);
-        long time = mManager.getTime();
-        DecimalFormat df = new DecimalFormat("00");
-        String text = getString(R.string.finish_result) + "\n";
-
-        int hours = (int)(time / (3600 * 1000));
-        int remaining = (int)(time % (3600 * 1000));
-
-        int minutes = remaining / (60 * 1000);
-        remaining = remaining % (60 * 1000);
-
-        int seconds = remaining / 1000;
-        int milliseconds = ((int)time % 1000) / 10;
-
-        if (hours > 0) {
-            text += df.format(hours) + ":";
-        }
-
-        text += df.format(minutes) + ":";
-        text += df.format(seconds) + ":";
-        text += df.format(milliseconds);
-
-        textResult.setText(text);
-    }
-
-    //Клик на кнопку МЕНЮ финишного экрана
-    public void onButtonMenuClick(View view) {
-        setResult(RESULT_CANCELED);
-        finish();
-    }
-
-    //Клик на кнопку РЕСТАРТ финишного экрана
-    public void onButtonRestartClick(View view) {
-        mState = State.START;
-
-        String map_name = getIntent().getExtras().getString("MAP_NAME");
-        mManager = new GameManager(this, map_name);
-
-        this.recreate();
-    }
-
-    //Клик на кнопку ДАЛЕЕ финишного экрана
-    public void onButtonNextClick(View view) {
-        setResult(RESULT_OK);
-        finish();
-    }
-
     //Стартовый фрагмент закончил свою работу
     @Override
     public void onFragmentStartComplete() {
         //Обновляем состояние
         mState = State.RUN;
         //Удаляем из активности стартовый фрагмент
-        FragmentStart fragmentStart = (FragmentStart) getFragmentManager().findFragmentByTag("FRAGMENT_START");
+        FragmentStart fragmentStart = (FragmentStart) getFragmentManager().findFragmentByTag("START");
         getFragmentManager().beginTransaction()
                 .remove(fragmentStart)
                 .commitAllowingStateLoss();
@@ -354,5 +306,12 @@ public class MainActivity extends AppCompatActivity implements FragmentStart.OnC
         showNewPiece();
         //Включаем таймер
         mManager.startTimer();
+    }
+
+    //Финишный фрагмент закончил свою работу
+    @Override
+    public void onFragmentFinishComplete(int resultCode) {
+        setResult(resultCode);
+        finish();
     }
 }
