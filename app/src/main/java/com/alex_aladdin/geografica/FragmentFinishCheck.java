@@ -1,5 +1,8 @@
 package com.alex_aladdin.geografica;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ObjectAnimator;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Fragment;
@@ -11,9 +14,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 public class FragmentFinishCheck extends Fragment {
 
+    private TextView mTextView;
     //Определяем слушатель типа нашего интерфейса. Это будет сама активность
     private FragmentFinishCheck.OnCompleteListener mListener;
 
@@ -53,6 +58,7 @@ public class FragmentFinishCheck extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_finish_check, container, false);
+        mTextView = (TextView) rootView.findViewById(R.id.text_finish_check);
         RelativeLayout layout = (RelativeLayout) rootView.findViewById(R.id.layout_finish);
 
         //Обработчик клика на layout
@@ -70,12 +76,23 @@ public class FragmentFinishCheck extends Fragment {
     }
 
     private void show() {
-        //Через секунду выключаем
-        new CountDownTimer(1000, 1000) {
-            @Override
-            public void onTick(long l) {}
+        //Ждем 3 секунды и делаем затухание
+        new CountDownTimer(4000, 1000) {
 
-            @Override
+            public void onTick(final long millisUntilFinished) {
+                //Затухание
+                ObjectAnimator alphaAnimator = ObjectAnimator.ofFloat(mTextView, "alpha", 0);
+                alphaAnimator.setDuration(1200);
+                //Поторапливаем onFinish()
+                alphaAnimator.addListener(new AnimatorListenerAdapter() {
+                    public void onAnimationEnd(Animator animation) {
+                        onFinish();
+                    }
+                });
+
+                if (millisUntilFinished/1000 == 1) alphaAnimator.start();
+            }
+
             public void onFinish() {
                 if (FragmentFinishCheck.this.isAdded()) mListener.onFragmentFinishComplete(Activity.RESULT_OK);
             }

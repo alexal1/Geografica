@@ -4,4 +4,6 @@
     <string name="finish_federal_district">ФЕДЕРАЛЬНЫЙ ОКРУГ</string>
     <string name="finish_result">Время сборки:</string>
     <string name="finish_check">\u2713</string>
+
+    <string name="submenu_federal_districts">Федеральные округа России</string>
 </resources>
