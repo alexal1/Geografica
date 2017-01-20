@@ -40,10 +40,11 @@ public class MainActivity extends AppCompatActivity implements FragmentStart.OnC
         if (getIntent().getBooleanExtra("SHOW_TIMER", false)) chronometer.setVisibility(View.VISIBLE);
         if (getIntent().getBooleanExtra("SHOW_BUTTON_INFO", false)) buttonInfo.setVisibility(View.VISIBLE);
 
-        //Принимаем в качестве параметра название карты, переданное нам из меню
+        //Принимаем в качестве параметров уровень сложности и название карты
+        MapImageView.Level level = (MapImageView.Level) getIntent().getSerializableExtra("LEVEL");
         String map_name = getIntent().getExtras().getString("MAP_NAME");
 
-        mManager = new GameManager(this, map_name);
+        mManager = new GameManager(this, level, map_name);
         mImageMap = mManager.getMap();
 
         mLayoutZoom = (ZoomableRelativeLayout)findViewById(R.id.layout_zoom);

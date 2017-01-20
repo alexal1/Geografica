@@ -58,6 +58,7 @@ public class MenuActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View view) {
                     Intent intent = new Intent(MenuActivity.this, MainActivity.class);
+                    intent.putExtra("LEVEL", MapImageView.Level.NORMAL);
                     intent.putExtra("MAP_NAME", item.toString().toLowerCase());
                     intent.putExtra("MAP_CAPTION", item.getCaption());
                     intent.putExtra("SHOW_TIMER", false);
@@ -103,6 +104,7 @@ public class MenuActivity extends AppCompatActivity {
 
         //Снова запускаем активность
         Intent intent = new Intent(MenuActivity.this, MainActivity.class);
+        intent.putExtra("LEVEL", MapImageView.Level.NORMAL);
         intent.putExtra("MAP_NAME", item.toString().toLowerCase());
         intent.putExtra("MAP_CAPTION", item.getCaption());
         intent.putExtra("SHOW_TIMER", false);

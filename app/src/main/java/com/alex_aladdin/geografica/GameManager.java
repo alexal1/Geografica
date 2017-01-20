@@ -23,10 +23,10 @@ class GameManager {
     private long mCurrentTime;
     private Boolean mStarted = false;
 
-    GameManager(Context context, String map_name) {
+    GameManager(Context context, MapImageView.Level level, String map_name) {
         //Загружаем карту
         mCurrentMap = (MapImageView)((Activity)context).findViewById(R.id.image_map);
-        mCurrentMap.loadMap(context, map_name);
+        mCurrentMap.loadMap(context, level, map_name);
 
         //Загружаем навигатор
         ImageView imageNav = (ImageView)((Activity)context).findViewById(R.id.image_nav);

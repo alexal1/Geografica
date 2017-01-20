@@ -16,23 +16,37 @@ public class MapImageView extends ImageView {
     public static float K; //Отношение ширины реального изображения к ширине оригинального
     public static float RATIO; //Пропорции картинки
     private float mOriginalWidth; //Длина оригинального изображения
-    private int mType = 2; //Текущий тип информационности карты (с надписями, без напдписей, и т.д.)
-    private String mName;
+    private Level mLevel; //Уровень сложности
+    private String mName; //Название карты
+
+    public enum Level{
+
+        EASY(1),
+        NORMAL(2),
+        HARD(3);
+
+        private int value;
+
+        Level(int value) {
+            this.value = value;
+        }
+
+        int getValue() {
+            return this.value;
+        }
+    }
 
     public MapImageView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    //Метод, вызывающий loadMap(context, name, type) со значением type по умолчанию
-    public void loadMap(Context context, String name) {
-        loadMap(context, name, mType);
-        mName = name;
-    }
-
     //Метод, загружающий нужную карту
-    private void loadMap(Context context, String name, int type) {
-        //Получаем id ресурса по строке name и числу type
-        int resId = getResources().getIdentifier(name + type, "drawable", context.getPackageName());
+    public void loadMap(Context context, Level level, String name) {
+        //Сохраняем уровень сложности и название карты
+        mLevel = level;
+        mName = name;
+        //Получаем id ресурса по строке name и уровню сложности
+        int resId = getResources().getIdentifier(name + level.getValue(), "drawable", context.getPackageName());
 
         //Получаем размеры экрана
         WindowManager wm = (WindowManager)context.getSystemService(Context.WINDOW_SERVICE);
@@ -116,13 +130,14 @@ public class MapImageView extends ImageView {
 
     //Метод, меняющий картинку карты
     public void changeMapInfo(Context context) {
-        mType++;
-        mType = mType % 4;
-        if (mType == 0)
-            this.setVisibility(INVISIBLE);
-        else {
-            this.setVisibility(VISIBLE);
-            loadMap(context, mName, mType);
-        }
+        Level[] levels = Level.values();
+        int current = mLevel.ordinal();
+
+        if (current == levels.length - 1)
+            current = 0;
+        else
+            current++;
+
+        loadMap(context, levels[current], mName);
     }
 }
