@@ -15,13 +15,14 @@ public class MenuActivity extends AppCompatActivity {
 
     private enum Menu {
 
-        DVO("Дальневосточный"),
-        SFO("Сибирский"),
-        UFO("Уральский"),
-        PRFO("Приволжский"),
-        SZFO("Северо-Западный"),
+        SKFO("Северо-Кавказский"),
         YUFO("Южный"),
-        SKFO("Северо-Кавказский");
+        CFO("Центральный"),
+        SZFO("Северо-Западный"),
+        PRFO("Приволжский"),
+        UFO("Уральский"),
+        SFO("Сибирский"),
+        DVO("Дальневосточный");
 
         private String caption;
 
