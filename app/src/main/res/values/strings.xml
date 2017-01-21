@@ -6,4 +6,8 @@
     <string name="finish_check">\u2713</string>
 
     <string name="submenu_federal_districts">Федеральные округа России</string>
+
+    <string name="menu_championship">Чемпионат</string>
+    <string name="menu_training">Тренировка</string>
+    <string name="menu_rate">Оставить отзыв</string>
 </resources>

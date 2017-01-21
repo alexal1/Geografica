@@ -1,51 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background"
     tools:context="com.alex_aladdin.geografica.MenuActivity">
 
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:orientation="vertical"
         android:gravity="center_horizontal"
-        android:paddingTop="10dp"
-        android:paddingBottom="15dp"
-        android:text="@string/submenu_federal_districts"
-        android:textSize="30sp"
-        android:textColor="@color/white_pressed"/>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:background="@color/white_pressed"/>
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
         android:background="@color/background">
 
-        <ScrollView
-            android:layout_width="match_parent"
+        <Button
+            android:id="@+id/button_championship"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:scrollbarThumbVertical="@drawable/scrollbar"
-            android:scrollbarSize="2dp"
-            android:background="@color/background">
+            android:layout_margin="10dp"
+            android:background="@drawable/button_menu_shape_red"
+            android:minWidth="300dp"
+            android:minHeight="60dp"
+            android:text="@string/menu_championship"
+            android:textSize="20sp"
+            android:textColor="@drawable/button_menu_text_red">
+        </Button>
 
-            <LinearLayout
-                android:id="@+id/menu"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:gravity="center_horizontal"
-                android:paddingTop="10dp"
-                android:paddingBottom="10dp">
+        <Button
+            android:id="@+id/button_training"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:background="@drawable/button_menu_shape"
+            android:minWidth="300dp"
+            android:minHeight="60dp"
+            android:text="@string/menu_training"
+            android:textSize="20sp"
+            android:textColor="@drawable/button_menu_text"
+            android:onClick="onButtonTrainingClick">
+        </Button>
 
-            </LinearLayout>
-        </ScrollView>
-    </RelativeLayout>
-</LinearLayout>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            android:layout_margin="10dp"/>
+
+        <Button
+            android:id="@+id/button_rate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:background="@drawable/button_menu_shape"
+            android:minWidth="300dp"
+            android:minHeight="60dp"
+            android:text="@string/menu_rate"
+            android:textSize="20sp"
+            android:textColor="@drawable/button_menu_text"
+            android:onClick="onButtonRateClick">
+        </Button>
+
+    </LinearLayout>
+</RelativeLayout>

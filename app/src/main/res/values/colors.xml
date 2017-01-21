@@ -7,4 +7,6 @@
     <color name="dark_screen">#99000000</color>
     <color name="white_pressed">#99ffffff</color>
     <color name="circle_check">#00a00b</color>
+    <color name="red">#ff5050</color>
+    <color name="red_pressed">#99ff5050</color>
 </resources>
