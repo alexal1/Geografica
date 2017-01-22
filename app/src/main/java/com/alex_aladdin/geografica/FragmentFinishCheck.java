@@ -76,21 +76,22 @@ public class FragmentFinishCheck extends Fragment {
     }
 
     private void show() {
-        //Ждем 3 секунды и делаем затухание
-        new CountDownTimer(4000, 1000) {
+        //Ждем 2 секунды и делаем затухание
+        new CountDownTimer(3000, 1000) {
 
             public void onTick(final long millisUntilFinished) {
-                //Затухание
-                ObjectAnimator alphaAnimator = ObjectAnimator.ofFloat(mTextView, "alpha", 0);
-                alphaAnimator.setDuration(1200);
-                //Поторапливаем onFinish()
-                alphaAnimator.addListener(new AnimatorListenerAdapter() {
-                    public void onAnimationEnd(Animator animation) {
-                        onFinish();
-                    }
-                });
-
-                if (millisUntilFinished/1000 == 1) alphaAnimator.start();
+                if (millisUntilFinished/1000 == 1) {
+                    //Затухание
+                    ObjectAnimator alphaAnimator = ObjectAnimator.ofFloat(mTextView, "alpha", 0);
+                    alphaAnimator.setDuration(1200);
+                    //Поторапливаем onFinish()
+                    alphaAnimator.addListener(new AnimatorListenerAdapter() {
+                        public void onAnimationEnd(Animator animation) {
+                            onFinish();
+                        }
+                    });
+                    alphaAnimator.start();
+                }
             }
 
             public void onFinish() {
