@@ -14,6 +14,22 @@ public class MenuActivity extends AppCompatActivity {
         setContentView(R.layout.activity_menu);
     }
 
+    //Запускаем чемпионат
+    public void onButtonChampionshipClick(View view) {
+        //Сначала запускаем карту всей России
+        Intent intent = new Intent(MenuActivity.this, MainActivity.class);
+        intent.putExtra("LEVEL", MapImageView.Level.NORMAL);
+        intent.putExtra("MAP_NAME", "russia");
+        intent.putExtra("MAP_CAPTION", "Российская Федерация");
+        intent.putExtra("SHOW_TIMER", false);
+        intent.putExtra("SHOW_BUTTON_INFO", true);
+        intent.putExtra("FRAGMENT_START", true);
+        intent.putExtra("FRAGMENT_FINISH_TRAINING", false);
+        intent.putExtra("FRAGMENT_FINISH_CHECK", true);
+
+        startActivityForResult(intent, 0);
+    }
+
     //Переходим в подменю
     public void onButtonTrainingClick(View view) {
         Intent intent = new Intent(MenuActivity.this, SubMenuActivity.class);

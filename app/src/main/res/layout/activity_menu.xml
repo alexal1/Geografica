@@ -24,7 +24,8 @@
             android:minHeight="60dp"
             android:text="@string/menu_championship"
             android:textSize="20sp"
-            android:textColor="@drawable/button_menu_text_red">
+            android:textColor="@drawable/button_menu_text_red"
+            android:onClick="onButtonChampionshipClick">
         </Button>
 
         <Button

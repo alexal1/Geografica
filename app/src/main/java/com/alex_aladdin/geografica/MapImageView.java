@@ -21,9 +21,9 @@ public class MapImageView extends ImageView {
 
     public enum Level{
 
-        EASY(1),
+        EASY(3),
         NORMAL(2),
-        HARD(3);
+        HARD(1);
 
         private int value;
 
