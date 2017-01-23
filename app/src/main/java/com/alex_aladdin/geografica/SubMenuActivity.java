@@ -13,7 +13,7 @@ public class SubMenuActivity extends AppCompatActivity {
 
     private int mCurrentItem; //Номер пункта меню, карта которого запущена в данный момент
 
-    private enum Menu {
+    enum Menu {
 
         SKFO("Северо-Кавказский"),
         YUFO("Южный"),

@@ -9,6 +9,7 @@ import android.view.Display;
 import android.view.DragEvent;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -202,11 +203,11 @@ public class MainActivity extends AppCompatActivity implements FragmentStart.OnC
         display.getSize(size);
         int screen_w = size.x;
         int screen_h = size.y;
-        //Высота кнопок
+        //Высота верхней и нижней областей интерфейса
         ImageButton buttonAdd = (ImageButton) findViewById(R.id.button_add_piece);
-        ImageButton buttonInfo = (ImageButton) findViewById(R.id.button_info);
+        ImageView imageNav = (ImageView) findViewById(R.id.image_nav);
         int down_h = buttonAdd.getHeight();
-        int up_h = buttonInfo.getHeight();
+        int up_h = imageNav.getHeight();
         //Диапазон
         //Берем max, чтобы не получить отрицательных значений
         int range_x = Math.max(screen_w - piece_w, 1);
