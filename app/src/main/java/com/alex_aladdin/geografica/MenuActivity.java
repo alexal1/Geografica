@@ -10,10 +10,11 @@ import android.view.View;
 import java.util.Arrays;
 import java.util.Collections;
 
-public class MenuActivity extends AppCompatActivity {
+public class MenuActivity extends AppCompatActivity implements FragmentLevels.OnChooseListener {
 
     private SubMenuActivity.Menu[] mMenu; //Перечисление всех пунктов меню из SubMenuActivity
     private int mCurrentItem; //Номер пункта меню, карта которого запущена в данный момент
+    private MapImageView.Level mLevel; //Выбранный уровень сложности
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,8 +26,27 @@ public class MenuActivity extends AppCompatActivity {
             mMenu = SubMenuActivity.Menu.values();
     }
 
-    //Запускаем чемпионат
+    //Кнопка ЧЕМПИОНАТ
     public void onButtonChampionshipClick(View view) {
+        //Запускаем фрагмент выбора уровня сложности
+        FragmentLevels fragmentLevels = new FragmentLevels();
+        getFragmentManager().beginTransaction()
+                .add(R.id.layout_menu, fragmentLevels, "LEVELS")
+                .addToBackStack("")
+                .commit();
+    }
+
+    //Пользователь выбрал уровень сложности
+    @Override
+    public void onLevelChoose(MapImageView.Level level) {
+        //Удаляем из активности фрагмент выбора уровня сложности
+        FragmentLevels fragmentLevels = (FragmentLevels) getFragmentManager().findFragmentByTag("LEVELS");
+        getFragmentManager().beginTransaction()
+                .remove(fragmentLevels)
+                .commitAllowingStateLoss();
+
+        //Сохраняем выбранный уровень сложности
+        mLevel = level;
         //Перемешиваем последовательность пунктов меню
         Collections.shuffle(Arrays.asList(mMenu));
         //Задаем текущий пункт
@@ -34,9 +54,9 @@ public class MenuActivity extends AppCompatActivity {
 
         //Запускаем карту всей России
         Intent intent = new Intent(MenuActivity.this, MainActivity.class);
-        intent.putExtra("LEVEL", MapImageView.Level.NORMAL);
+        intent.putExtra("LEVEL", level);
         intent.putExtra("MAP_NAME", "russia");
-        intent.putExtra("MAP_CAPTION", "Российская Федерация");
+        intent.putExtra("MAP_CAPTION", "");
         intent.putExtra("SHOW_TIMER", false);
         intent.putExtra("SHOW_BUTTON_INFO", true);
         intent.putExtra("FRAGMENT_START", true);
@@ -63,7 +83,7 @@ public class MenuActivity extends AppCompatActivity {
         }
         //Остался один
         else if (mCurrentItem == mMenu.length - 1) {
-            intent.putExtra("LEVEL", MapImageView.Level.NORMAL);
+            intent.putExtra("LEVEL", mLevel);
             intent.putExtra("MAP_NAME", mMenu[mCurrentItem].toString().toLowerCase());
             intent.putExtra("MAP_CAPTION", mMenu[mCurrentItem].getCaption());
             intent.putExtra("SHOW_TIMER", false);
@@ -74,7 +94,7 @@ public class MenuActivity extends AppCompatActivity {
         }
         //Осталось больше одного
         else {
-            intent.putExtra("LEVEL", MapImageView.Level.NORMAL);
+            intent.putExtra("LEVEL", mLevel);
             intent.putExtra("MAP_NAME", mMenu[mCurrentItem].toString().toLowerCase());
             intent.putExtra("MAP_CAPTION", mMenu[mCurrentItem].getCaption());
             intent.putExtra("SHOW_TIMER", false);
@@ -87,22 +107,24 @@ public class MenuActivity extends AppCompatActivity {
         startActivityForResult(intent, 0);
     }
 
-    //Сохраняем массив и текущий элемент при повороте
+    //Сохраняем данные
     @Override
     public void onSaveInstanceState(Bundle saveInstanceState) {
         super.onSaveInstanceState(saveInstanceState);
 
         saveInstanceState.putSerializable("MENU", mMenu);
         saveInstanceState.putInt("CURRENT_ITEM", mCurrentItem);
+        saveInstanceState.putSerializable("LEVEL", mLevel);
     }
 
-    //Восстанавливаем массив и текущий элемент после поворота
+    //Восстанавливаем данные
     @Override
     public void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
 
         mMenu = (SubMenuActivity.Menu[]) savedInstanceState.getSerializable("MENU");
         mCurrentItem = savedInstanceState.getInt("CURRENT_ITEM");
+        mLevel = (MapImageView.Level) savedInstanceState.getSerializable("LEVEL");
     }
 
     //Переходим в подменю
