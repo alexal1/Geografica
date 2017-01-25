@@ -1,11 +1,20 @@
 package com.alex_aladdin.geografica;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Point;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.Display;
 import android.view.View;
+import android.view.ViewTreeObserver;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -21,9 +30,53 @@ public class MenuActivity extends AppCompatActivity implements FragmentLevels.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu);
 
+        final LinearLayout layoutInner = (LinearLayout) findViewById(R.id.layout_inner);
+        final ImageView imageLogo = (ImageView) findViewById(R.id.image_logo);
+        final TextView textLogo = (TextView) findViewById(R.id.text_logo);
+
+        //Отслеживаем момент, когда layoutInner полностью загружается
+        ViewTreeObserver viewTreeObserver = layoutInner.getViewTreeObserver();
+        viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                //Снимаем слушатель
+                if (Build.VERSION.SDK_INT < 16)
+                    removeOnGlobalLayoutListenerPre16(layoutInner, this);
+                else
+                    removeOnGlobalLayoutListenerPost16(layoutInner, this);
+
+                //Берем высоту layoutInner
+                int inner_h = layoutInner.getHeight();
+
+                //Берем высоту экрана
+                Display display = getWindowManager().getDefaultDisplay();
+                Point size = new Point();
+                display.getSize(size);
+                int outer_h = size.y;
+
+                Log.i("LoadingMenu", "inner_h = " + inner_h + ", outer_h = " + outer_h);
+
+                //Если layoutInner такой большой, что не умещается в экран, убираем лого
+                if (inner_h == outer_h) {
+                    imageLogo.setVisibility(View.GONE);
+                    textLogo.setVisibility(View.GONE);
+                }
+            }
+        });
+
         //Если приложение запущено впервые
         if (savedInstanceState == null)
             mMenu = SubMenuActivity.Menu.values();
+    }
+
+    @SuppressWarnings("deprecation")
+    private void removeOnGlobalLayoutListenerPre16(View view, ViewTreeObserver.OnGlobalLayoutListener listener) {
+        view.getViewTreeObserver().removeGlobalOnLayoutListener(listener);
+    }
+
+    @TargetApi(16)
+    private void removeOnGlobalLayoutListenerPost16(View view, ViewTreeObserver.OnGlobalLayoutListener listener) {
+        view.getViewTreeObserver().removeOnGlobalLayoutListener(listener);
     }
 
     //Кнопка ЧЕМПИОНАТ

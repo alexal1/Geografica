@@ -38,7 +38,7 @@ public class FragmentFinishTraining extends Fragment {
         }
         else
             throw new ClassCastException(context.toString() +
-                    " должен реализовывать интерфейс FragmentStart.OnDoneListener");
+                    " должен реализовывать интерфейс FragmentFinishTraining.OnCompleteListener");
     }
 
     @SuppressWarnings("deprecation")
@@ -51,7 +51,7 @@ public class FragmentFinishTraining extends Fragment {
         }
         else
             throw new ClassCastException(activity.toString() +
-                    " должен реализовывать интерфейс FragmentStart.OnDoneListener");
+                    " должен реализовывать интерфейс FragmentFinishTraining.OnCompleteListener");
     }
 
     //Метод для получения аргументов из активности

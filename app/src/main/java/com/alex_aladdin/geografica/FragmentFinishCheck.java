@@ -38,7 +38,7 @@ public class FragmentFinishCheck extends Fragment {
         }
         else
             throw new ClassCastException(context.toString() +
-                    " должен реализовывать интерфейс FragmentStart.OnDoneListener");
+                    " должен реализовывать интерфейс FragmentFinishCheck.OnCompleteListener");
     }
 
     @SuppressWarnings("deprecation")
@@ -51,7 +51,7 @@ public class FragmentFinishCheck extends Fragment {
         }
         else
             throw new ClassCastException(activity.toString() +
-                    " должен реализовывать интерфейс FragmentStart.OnDoneListener");
+                    " должен реализовывать интерфейс FragmentFinishCheck.OnCompleteListener");
     }
 
     @Nullable

@@ -20,7 +20,7 @@ public class FragmentStart extends Fragment {
 
     private TextView mTextView;
     //Определяем слушатель типа нашего интерфейса. Это будет сама активность
-    private OnCompleteListener mListener;
+    private FragmentStart.OnCompleteListener mListener;
 
     //Определяем событие, которое фрагмент будет использовать для связи с активностью
     public interface OnCompleteListener {
@@ -33,12 +33,12 @@ public class FragmentStart extends Fragment {
     public void onAttach(Context context) {
         super.onAttach(context);
 
-        if (context instanceof OnCompleteListener) {
-            mListener = (OnCompleteListener) context;
+        if (context instanceof FragmentStart.OnCompleteListener) {
+            mListener = (FragmentStart.OnCompleteListener) context;
         }
         else
             throw new ClassCastException(context.toString() +
-                    " должен реализовывать интерфейс FragmentStart.OnDoneListener");
+                    " должен реализовывать интерфейс FragmentStart.OnCompleteListener");
     }
 
     @SuppressWarnings("deprecation")
@@ -46,12 +46,12 @@ public class FragmentStart extends Fragment {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
 
-        if (activity instanceof OnCompleteListener) {
-            mListener = (OnCompleteListener) activity;
+        if (activity instanceof FragmentStart.OnCompleteListener) {
+            mListener = (FragmentStart.OnCompleteListener) activity;
         }
         else
             throw new ClassCastException(activity.toString() +
-                    " должен реализовывать интерфейс FragmentStart.OnDoneListener");
+                    " должен реализовывать интерфейс FragmentStart.OnCompleteListener");
     }
 
     @Nullable

@@ -8,6 +8,7 @@
     tools:context="com.alex_aladdin.geografica.MenuActivity">
 
     <LinearLayout
+        android:id="@+id/layout_inner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
@@ -15,17 +16,34 @@
         android:gravity="center_horizontal"
         android:background="@color/background">
 
+        <ImageView
+            android:id="@+id/image_logo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/logo"
+            tools:ignore="ContentDescription"/>
+
+        <TextView
+            android:id="@+id/text_logo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="40dp"
+            android:textStyle="bold"
+            android:text="@string/menu_caption"
+            android:textSize="40sp"
+            android:textColor="@color/white"/>
+
         <Button
             android:id="@+id/button_championship"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:background="@drawable/button_menu_shape_red"
+            android:background="@drawable/button_menu_shape_bold"
             android:minWidth="300dp"
             android:minHeight="60dp"
             android:text="@string/menu_championship"
             android:textSize="20sp"
-            android:textColor="@drawable/button_menu_text_red"
+            android:textColor="@color/background"
             android:onClick="onButtonChampionshipClick">
         </Button>
 
@@ -33,7 +51,7 @@
             android:id="@+id/button_training"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="10dp"
+            android:layout_marginTop="20dp"
             android:background="@drawable/button_menu_shape"
             android:minWidth="300dp"
             android:minHeight="60dp"
@@ -43,16 +61,11 @@
             android:onClick="onButtonTrainingClick">
         </Button>
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="20dp"
-            android:layout_margin="10dp"/>
-
         <Button
             android:id="@+id/button_rate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="10dp"
+            android:layout_marginTop="40dp"
             android:background="@drawable/button_menu_shape"
             android:minWidth="300dp"
             android:minHeight="60dp"
