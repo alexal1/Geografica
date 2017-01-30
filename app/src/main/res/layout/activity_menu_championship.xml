@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background"
+    tools:context="com.alex_aladdin.geografica.MenuChampionshipActivity">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:paddingTop="10dp"
+        android:paddingBottom="15dp"
+        android:text="@string/menu_championship_caption"
+        android:textSize="30sp"
+        android:textColor="@color/white_pressed"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@color/white_pressed"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/background">
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:scrollbarThumbVertical="@drawable/scrollbar"
+            android:scrollbarSize="2dp"
+            android:background="@color/background">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:orientation="vertical"
+                android:gravity="center_horizontal"
+                android:paddingTop="20dp"
+                android:paddingBottom="20dp"
+                android:paddingLeft="10dp"
+                android:paddingStart="10dp"
+                android:paddingRight="10dp"
+                android:paddingEnd="10dp">
+
+                <!-- Заголовок задает ширину !-->
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:minWidth="300dp"
+                    android:text="@string/menu_championship_level"
+                    android:textSize="30sp"
+                    android:textColor="@color/white"/>
+
+                <!-- Пункт ШКОЛЬНИК !-->
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="40dp"
+                    android:onClick="onLayoutEasyClick">
+
+                    <ImageView
+                        android:id="@+id/image_easy"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_alignParentEnd="true"
+                        android:src="@drawable/level_easy"
+                        tools:ignore="ContentDescription"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_toLeftOf="@id/image_easy"
+                        android:layout_toStartOf="@id/image_easy"
+                        android:gravity="center"
+                        android:text="@string/menu_championship_easy"
+                        android:textSize="20sp"
+                        android:textColor="@color/white"/>
+
+                </RelativeLayout>
+
+                <!-- Пункт СТУДЕНТ !-->
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:onClick="onLayoutNormalClick">
+
+                    <ImageView
+                        android:id="@+id/image_normal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_alignParentEnd="true"
+                        android:src="@drawable/level_normal"
+                        tools:ignore="ContentDescription"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_toLeftOf="@id/image_normal"
+                        android:layout_toStartOf="@id/image_normal"
+                        android:gravity="center"
+                        android:text="@string/menu_championship_normal"
+                        android:textSize="20sp"
+                        android:textColor="@color/white"/>
+
+                </RelativeLayout>
+
+                <!-- Пункт ПРОФЕССОР !-->
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:onClick="onLayoutHardClick">
+
+                    <ImageView
+                        android:id="@+id/image_hard"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_alignParentEnd="true"
+                        android:src="@drawable/level_hard"
+                        tools:ignore="ContentDescription"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_toLeftOf="@id/image_hard"
+                        android:layout_toStartOf="@id/image_hard"
+                        android:gravity="center"
+                        android:text="@string/menu_championship_hard"
+                        android:textSize="20sp"
+                        android:textColor="@color/white"/>
+
+                </RelativeLayout>
+
+                <!-- Кнопка НАЧАТЬ !-->
+
+                <Button
+                    android:id="@+id/button_go"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="80dp"
+                    android:background="@drawable/button_menu_shape"
+                    android:minWidth="300dp"
+                    android:minHeight="60dp"
+                    android:text="@string/menu_championship_go"
+                    android:textSize="20sp"
+                    android:textColor="@drawable/button_menu_text"
+                    android:onClick="onButtonGoClick">
+                </Button>
+
+            </LinearLayout>
+        </ScrollView>
+    </RelativeLayout>
+</LinearLayout>

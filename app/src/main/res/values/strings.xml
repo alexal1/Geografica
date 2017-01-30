@@ -5,16 +5,17 @@
     <string name="finish_result">Время сборки:</string>
     <string name="finish_check">\u2713</string>
 
-    <string name="submenu_federal_districts">Федеральные округа России</string>
-
     <string name="menu_caption">Geografica</string>
     <string name="menu_championship">Чемпионат</string>
     <string name="menu_training">Тренировка</string>
     <string name="menu_rate">Оставить отзыв</string>
 
-    <string name="levels_caption">СОБЕРИ РОССИЮ</string>
-    <string name="levels_choose_level">Уровень сложности:</string>
-    <string name="level_easy">ШКОЛЯР</string>
-    <string name="level_normal">СТУДИОЗУС</string>
-    <string name="level_hard">ПРОФЕССОР</string>
+    <string name="menu_training_caption">Федеральные округа России</string>
+
+    <string name="menu_championship_caption">Собери Россию</string>
+    <string name="menu_championship_level">Уровень сложности:</string>
+    <string name="menu_championship_easy">ШКОЛЬНИК</string>
+    <string name="menu_championship_normal">СТУДЕНТ</string>
+    <string name="menu_championship_hard">ПРОФЕССОР</string>
+    <string name="menu_championship_go">НАЧАТЬ</string>
 </resources>
