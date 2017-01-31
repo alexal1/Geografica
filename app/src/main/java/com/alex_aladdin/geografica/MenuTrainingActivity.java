@@ -40,11 +40,13 @@ public class MenuTrainingActivity extends AppCompatActivity {
                     intent.putExtra("LEVEL", MapImageView.Level.NORMAL);
                     intent.putExtra("MAP_NAME", item.toString().toLowerCase());
                     intent.putExtra("MAP_CAPTION", item.getCaption());
+                    intent.putExtra("TIME", 0);
                     intent.putExtra("SHOW_TIMER", false);
                     intent.putExtra("SHOW_BUTTON_INFO", true);
                     intent.putExtra("FRAGMENT_START", true);
-                    intent.putExtra("FRAGMENT_FINISH_TRAINING", false);
-                    intent.putExtra("FRAGMENT_FINISH_CHECK", true);
+                    intent.putExtra("FRAGMENT_FINISH_TRAINING", true);
+                    intent.putExtra("FRAGMENT_FINISH_CHECK", false);
+                    intent.putExtra("FRAGMENT_FINISH_CHAMPIONSHIP", false);
 
                     startActivityForResult(intent, 0);
                     mCurrentItem = item.ordinal();
@@ -86,11 +88,13 @@ public class MenuTrainingActivity extends AppCompatActivity {
         intent.putExtra("LEVEL", MapImageView.Level.NORMAL);
         intent.putExtra("MAP_NAME", item.toString().toLowerCase());
         intent.putExtra("MAP_CAPTION", item.getCaption());
+        intent.putExtra("TIME", 0);
         intent.putExtra("SHOW_TIMER", false);
         intent.putExtra("SHOW_BUTTON_INFO", true);
         intent.putExtra("FRAGMENT_START", true);
-        intent.putExtra("FRAGMENT_FINISH_TRAINING", false);
-        intent.putExtra("FRAGMENT_FINISH_CHECK", true);
+        intent.putExtra("FRAGMENT_FINISH_TRAINING", true);
+        intent.putExtra("FRAGMENT_FINISH_CHECK", false);
+        intent.putExtra("FRAGMENT_FINISH_CHAMPIONSHIP", false);
 
         startActivityForResult(intent, 0);
     }

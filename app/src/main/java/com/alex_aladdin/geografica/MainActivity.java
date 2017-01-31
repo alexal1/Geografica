@@ -1,6 +1,7 @@
 package com.alex_aladdin.geografica;
 
 import android.app.FragmentManager;
+import android.content.Intent;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -17,7 +18,8 @@ import java.util.Random;
 import gr.antoniom.chronometer.Chronometer;
 
 public class MainActivity extends AppCompatActivity implements FragmentStart.OnCompleteListener,
-        FragmentFinishTraining.OnCompleteListener, FragmentFinishCheck.OnCompleteListener {
+        FragmentFinishTraining.OnCompleteListener, FragmentFinishCheck.OnCompleteListener,
+        FragmentFinishChampionship.OnCompleteListener {
 
     public static final float DELTA_MM = 5.0f; //Дельта прилипания в миллиметрах
 
@@ -182,6 +184,14 @@ public class MainActivity extends AppCompatActivity implements FragmentStart.OnC
                             .add(R.id.layout_root, fragmentFinishCheck)
                             .commit();
                 }
+                if (getIntent().getBooleanExtra("FRAGMENT_FINISH_CHAMPIONSHIP", false)) {
+                    //Время складывается из времени за эту карту и за предыдущие
+                    long time = mManager.getTime() + getIntent().getLongExtra("TIME", 0);
+                    FragmentFinishChampionship fragmentFinishChampionship = FragmentFinishChampionship.newInstance(time);
+                    getFragmentManager().beginTransaction()
+                            .add(R.id.layout_root, fragmentFinishChampionship)
+                            .commit();
+                }
             }
             return;
         }
@@ -321,7 +331,11 @@ public class MainActivity extends AppCompatActivity implements FragmentStart.OnC
     //Финишный фрагмент закончил свою работу
     @Override
     public void onFragmentFinishComplete(int resultCode) {
-        setResult(resultCode);
+        //Передаем обратно время сборки, но используется оно только в режиме чемпионата
+        Intent answerIntent = new Intent();
+        answerIntent.putExtra("TIME", mManager.getTime());
+
+        setResult(resultCode, answerIntent);
         finish();
     }
 }
