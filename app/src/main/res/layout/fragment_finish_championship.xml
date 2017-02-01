@@ -24,14 +24,30 @@
             android:id="@+id/text_finish_caption"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
             android:gravity="center_horizontal"
+            android:paddingTop="2dp"
+            android:paddingBottom="2dp"
             android:paddingLeft="10dp"
             android:paddingStart="10dp"
             android:paddingRight="10dp"
             android:paddingEnd="10dp"
             android:text="@string/finish_russian_federation"
             android:textSize="15sp"
-            android:textColor="@color/white_pressed"/>
+            android:textColor="@color/black"
+            android:background="@color/white"/>
+
+        <TextView
+            android:id="@+id/text_finish_level"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:paddingLeft="10dp"
+            android:paddingStart="10dp"
+            android:paddingRight="10dp"
+            android:paddingEnd="10dp"
+            android:textSize="15sp"
+            android:textColor="@color/white"/>
 
         <TextView
             android:id="@+id/text_finish_result"
@@ -43,12 +59,12 @@
             android:textColor="@color/white"/>
 
         <ImageButton
-            android:id="@+id/button_finish_menu"
+            android:id="@+id/button_finish_flag"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:padding="10dp"
-            android:src="@drawable/button_finish_menu"
+            android:src="@drawable/button_finish_flag"
             android:background="@color/transparent"
             tools:ignore="ContentDescription"/>
 

@@ -16,8 +16,9 @@ import java.text.DecimalFormat;
 
 public class FragmentFinishChampionship extends Fragment {
 
-    private TextView mTextResult;
+    private TextView mTextResult, mTextLevel;
     long mTime;
+    String mLevel;
     //Определяем слушатель типа нашего интерфейса. Это будет сама активность
     private FragmentFinishChampionship.OnCompleteListener mListener;
 
@@ -54,10 +55,11 @@ public class FragmentFinishChampionship extends Fragment {
     }
 
     //Метод для получения аргументов из активности
-    public static FragmentFinishChampionship newInstance(long time) {
+    public static FragmentFinishChampionship newInstance(long time, String level) {
         FragmentFinishChampionship fragmentFinishChampionship = new FragmentFinishChampionship();
         Bundle args = new Bundle();
         args.putLong("TIME", time);
+        args.putString("LEVEL", level);
         fragmentFinishChampionship.setArguments(args);
         return fragmentFinishChampionship;
     }
@@ -68,6 +70,7 @@ public class FragmentFinishChampionship extends Fragment {
 
         //Получаем аргументы обратно
         mTime = getArguments().getLong("TIME");
+        mLevel = getArguments().getString("LEVEL");
     }
 
     @Nullable
@@ -75,6 +78,7 @@ public class FragmentFinishChampionship extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_finish_championship, container, false);
         mTextResult = (TextView) rootView.findViewById(R.id.text_finish_result);
+        mTextLevel = (TextView) rootView.findViewById(R.id.text_finish_level);
 
         //Делаем кнопки активности недоступными
         final ImageButton buttonAdd = (ImageButton) getActivity().findViewById(R.id.button_add_piece);
@@ -84,9 +88,9 @@ public class FragmentFinishChampionship extends Fragment {
         buttonInfo.setEnabled(false);
         buttonZoom.setEnabled(false);
 
-        //Кнопка МЕНЮ
-        ImageButton buttonMenu = (ImageButton) rootView.findViewById(R.id.button_finish_menu);
-        buttonMenu.setOnClickListener(new View.OnClickListener() {
+        //Кнопка с флагом
+        ImageButton buttonFlag = (ImageButton) rootView.findViewById(R.id.button_finish_flag);
+        buttonFlag.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 mListener.onFragmentFinishComplete(Activity.RESULT_OK);
@@ -100,6 +104,9 @@ public class FragmentFinishChampionship extends Fragment {
     }
 
     public void show() {
+        //Показываем уровень сложности
+        mTextLevel.setText(mLevel);
+
         //Показываем результат
         DecimalFormat df = new DecimalFormat("00");
         String text = getString(R.string.finish_result) + "\n";

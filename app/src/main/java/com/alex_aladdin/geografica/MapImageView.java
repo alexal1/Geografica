@@ -21,18 +21,23 @@ public class MapImageView extends ImageView {
 
     public enum Level{
 
-        EASY(3),
-        NORMAL(2),
-        HARD(1);
+        EASY(3, "ШКОЛЬНИК"),
+        NORMAL(2, "СТУДЕНТ"),
+        HARD(1, "ПРОФЕССОР");
 
         private int value;
+        private String caption;
 
-        Level(int value) {
+        Level(int value, String caption) {
             this.value = value;
+            this.caption = caption;
         }
 
         int getValue() {
             return this.value;
+        }
+        String getCaption() {
+            return this.caption;
         }
     }
 

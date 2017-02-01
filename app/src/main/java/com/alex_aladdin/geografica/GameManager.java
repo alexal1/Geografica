@@ -130,8 +130,6 @@ class GameManager {
     }
 
     long getTime() {
-        //Синхронизируем и возвращаем значение
-        setTime(mCurrentTime);
         return mCurrentTime;
     }
 

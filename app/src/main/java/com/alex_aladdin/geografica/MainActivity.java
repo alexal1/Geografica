@@ -185,9 +185,11 @@ public class MainActivity extends AppCompatActivity implements FragmentStart.OnC
                             .commit();
                 }
                 if (getIntent().getBooleanExtra("FRAGMENT_FINISH_CHAMPIONSHIP", false)) {
+                    String level = getString(R.string.finish_level) + " " +
+                            ((MapImageView.Level) getIntent().getSerializableExtra("LEVEL")).getCaption();
                     //Время складывается из времени за эту карту и за предыдущие
                     long time = mManager.getTime() + getIntent().getLongExtra("TIME", 0);
-                    FragmentFinishChampionship fragmentFinishChampionship = FragmentFinishChampionship.newInstance(time);
+                    FragmentFinishChampionship fragmentFinishChampionship = FragmentFinishChampionship.newInstance(time, level);
                     getFragmentManager().beginTransaction()
                             .add(R.id.layout_root, fragmentFinishChampionship)
                             .commit();
