@@ -1,14 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background"
     tools:context="com.alex_aladdin.geografica.MenuTrainingActivity">
 
+    <!-- Фон !-->
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/background"
+        android:scaleType="fitXY"
+        tools:ignore="ContentDescription"/>
+
     <TextView
+        android:id="@+id/menu_caption"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
@@ -19,14 +25,17 @@
         android:textColor="@color/white_pressed"/>
 
     <View
+        android:id="@+id/menu_line"
         android:layout_width="match_parent"
         android:layout_height="2dp"
+        android:layout_below="@+id/menu_caption"
         android:background="@color/white_pressed"/>
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/background">
+        android:layout_below="@id/menu_line"
+        android:background="@color/transparent">
 
         <ScrollView
             android:layout_width="match_parent"
@@ -34,7 +43,7 @@
             android:layout_centerVertical="true"
             android:scrollbarThumbVertical="@drawable/scrollbar"
             android:scrollbarSize="2dp"
-            android:background="@color/background">
+            android:background="@color/transparent">
 
             <LinearLayout
                 android:id="@+id/layout_menu"
@@ -48,4 +57,4 @@
             </LinearLayout>
         </ScrollView>
     </RelativeLayout>
-</LinearLayout>
+</RelativeLayout>

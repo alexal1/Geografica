@@ -10,8 +10,15 @@
     <com.alex_aladdin.geografica.ZoomableRelativeLayout
         android:id="@+id/layout_zoom"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/background">
+        android:layout_height="match_parent">
+
+        <!-- Фон !-->
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/background"
+            android:scaleType="fitXY"
+            tools:ignore="ContentDescription"/>
 
         <com.alex_aladdin.geografica.MapImageView
             android:id="@+id/image_map"
