@@ -223,7 +223,7 @@ public class PieceImageView extends ImageView {
     public void toBack() {
         ViewGroup parent = (ViewGroup) this.getParent();
         parent.removeView(this);
-        parent.addView(this, 1);
+        parent.addView(this, 2);
     }
 
     //Устанавливаем кусок паззла на предназначенное ему место
