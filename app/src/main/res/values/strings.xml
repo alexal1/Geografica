@@ -20,4 +20,7 @@
     <string name="menu_championship_normal">СТУДЕНТ</string>
     <string name="menu_championship_hard">ПРОФЕССОР</string>
     <string name="menu_championship_go">НАЧАТЬ</string>
+
+    <string name="exit_caption">КНОПКА «НАЗАД»</string>
+    <string name="exit_text">Выйти из игры?</string>
 </resources>

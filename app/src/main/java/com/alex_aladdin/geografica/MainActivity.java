@@ -1,5 +1,6 @@
 package com.alex_aladdin.geografica;
 
+import android.app.Activity;
 import android.app.FragmentManager;
 import android.content.Intent;
 import android.graphics.Point;
@@ -19,7 +20,7 @@ import gr.antoniom.chronometer.Chronometer;
 
 public class MainActivity extends AppCompatActivity implements FragmentStart.OnCompleteListener,
         FragmentFinishTraining.OnCompleteListener, FragmentFinishCheck.OnCompleteListener,
-        FragmentFinishChampionship.OnCompleteListener {
+        FragmentFinishChampionship.OnCompleteListener, FragmentExit.OnCompleteListener {
 
     public static final float DELTA_MM = 5.0f; //Дельта прилипания в миллиметрах
 
@@ -29,7 +30,7 @@ public class MainActivity extends AppCompatActivity implements FragmentStart.OnC
     private State mState; //Состояние игры
 
     private enum State {
-        START, RUN, FINISH
+        START, RUN, PAUSE, FINISH
     }
 
     @Override
@@ -281,6 +282,11 @@ public class MainActivity extends AppCompatActivity implements FragmentStart.OnC
                 //Показываем новый кусок паззла
                 showNewPiece();
                 break;
+            case PAUSE:
+                mManager.setTime(time);
+                //Показываем новый кусок паззла
+                showNewPiece();
+                break;
             case FINISH:
                 //Выставляем нужное время таймера
                 mManager.setTime(time);
@@ -339,5 +345,50 @@ public class MainActivity extends AppCompatActivity implements FragmentStart.OnC
 
         setResult(resultCode, answerIntent);
         finish();
+    }
+
+    //Нажатие на аппаратную кнопку НАЗАД
+    @Override
+    public void onBackPressed() {
+        //Если игра в процессе
+        if (mState == State.RUN) {
+            //Останавливаем
+            mState = State.PAUSE;
+            mManager.stopTimer();
+            mManager.setTime(mManager.getTime()); //синхронизируем (странный баг)
+            //Вызываем диалоговый фрагмент
+            FragmentExit fragmentExit = new FragmentExit();
+            getFragmentManager().beginTransaction()
+                    .add(R.id.layout_root, fragmentExit, "EXIT")
+                    .addToBackStack("EXIT")
+                    .commit();
+        }
+        //Если игра остановлена (уже вызван диалоговый фрагмент)
+        else if (mState == State.PAUSE) {
+            mState = State.RUN;
+            mManager.resumeTimer();
+            super.onBackPressed();
+        }
+        else
+            super.onBackPressed();
+    }
+
+    //Получаем ответ от фрагмента
+    @Override
+    public void onExitAttempt(Boolean exit) {
+        if (exit) {
+            setResult(Activity.RESULT_CANCELED);
+            finish();
+        }
+        else {
+            //Удаляем из активности диалоговый фрагмент
+            FragmentExit fragmentExit = (FragmentExit) getFragmentManager().findFragmentByTag("EXIT");
+            getFragmentManager().beginTransaction()
+                    .remove(fragmentExit)
+                    .commitAllowingStateLoss();
+            //Запускаем
+            mState = State.RUN;
+            mManager.resumeTimer();
+        }
     }
 }

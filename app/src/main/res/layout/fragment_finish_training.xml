@@ -16,7 +16,7 @@
         android:layout_height="wrap_content"
         android:layout_weight="4"
         android:orientation="vertical"
-        android:background="@drawable/window_finish"
+        android:background="@drawable/window"
         android:paddingTop="20dp"
         android:paddingBottom="20dp">
 
