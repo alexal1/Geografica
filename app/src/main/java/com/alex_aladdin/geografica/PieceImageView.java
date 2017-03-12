@@ -12,18 +12,18 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Point;
 import android.os.Build;
+import android.support.v7.widget.AppCompatImageView;
 import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.DecelerateInterpolator;
-import android.widget.ImageView;
 
 import java.util.HashMap;
 
 // Этот класс объявляется публичым, т.к на него ссылается файл разметки activity_main.xml
-public class PieceImageView extends ImageView {
+public class PieceImageView extends AppCompatImageView {
 
     private Boolean mSettled = false; //Кусочек установлен на предназначенное для него место
     private float mTargetX, mTargetY;

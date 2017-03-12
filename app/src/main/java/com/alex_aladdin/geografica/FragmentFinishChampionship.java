@@ -23,7 +23,7 @@ public class FragmentFinishChampionship extends Fragment {
     private FragmentFinishChampionship.OnCompleteListener mListener;
 
     //Определяем событие, которое фрагмент будет использовать для связи с активностью
-    public interface OnCompleteListener {
+    interface OnCompleteListener {
         void onFragmentFinishComplete(int resultCode);
     }
 

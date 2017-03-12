@@ -5,13 +5,13 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
+import android.support.v7.widget.AppCompatImageView;
 import android.util.AttributeSet;
 import android.view.Display;
 import android.view.WindowManager;
-import android.widget.ImageView;
 
 // Этот класс объявляется публичым, т.к на него ссылается файл разметки activity_main.xml
-public class MapImageView extends ImageView {
+public class MapImageView extends AppCompatImageView {
 
     public static float K; //Отношение ширины реального изображения к ширине оригинального
     public static float RATIO; //Пропорции картинки
@@ -19,7 +19,7 @@ public class MapImageView extends ImageView {
     private Level mLevel; //Уровень сложности
     private String mName; //Название карты
 
-    public enum Level{
+    enum Level{
 
         EASY(3, "ШКОЛЬНИК"),
         NORMAL(2, "СТУДЕНТ"),

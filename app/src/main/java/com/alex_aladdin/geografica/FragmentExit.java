@@ -18,7 +18,7 @@ public class FragmentExit extends Fragment {
     private FragmentExit.OnCompleteListener mListener;
 
     //Определяем событие, которое фрагмент будет использовать для связи с активностью
-    public interface OnCompleteListener {
+    interface OnCompleteListener {
         void onExitAttempt(Boolean exit);
     }
 

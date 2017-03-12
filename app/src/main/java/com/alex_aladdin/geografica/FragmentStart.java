@@ -23,7 +23,7 @@ public class FragmentStart extends Fragment {
     private FragmentStart.OnCompleteListener mListener;
 
     //Определяем событие, которое фрагмент будет использовать для связи с активностью
-    public interface OnCompleteListener {
+    interface OnCompleteListener {
         void onFragmentStartComplete();
     }
 
