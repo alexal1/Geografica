@@ -31,7 +31,15 @@
             android:id="@+id/fragment_tip"
             android:name="com.alex_aladdin.geografica.FragmentTip"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            tools:layout="@layout/fragment_tip" />
+
+        <fragment
+            android:id="@+id/fragment_test"
+            android:name="com.alex_aladdin.geografica.FragmentTest"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:layout="@layout/fragment_test" />
 
     </com.alex_aladdin.geografica.ZoomableRelativeLayout>
 

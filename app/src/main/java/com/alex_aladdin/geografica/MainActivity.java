@@ -79,21 +79,25 @@ public class MainActivity extends AppCompatActivity implements FragmentStart.OnC
     private class MyDragListener implements View.OnDragListener {
 
         private final float delta;
+        private final FragmentTip fragmentTip;
+        private final FragmentTest fragmentTest;
 
         //Конструктор
         MyDragListener() {
             //Переводим величину прилипания из миллиметров в пиксели
             delta = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_MM, DELTA_MM, getResources().getDisplayMetrics());
+
+            FragmentManager fragmentManager = getFragmentManager();
+            //Фрагмент-подсказка
+            fragmentTip = (FragmentTip) fragmentManager.findFragmentById(R.id.fragment_tip);
+            //Фрагмент-тест
+            fragmentTest = (FragmentTest) fragmentManager.findFragmentById(R.id.fragment_test);
         }
 
         public boolean onDrag(View v, DragEvent event) {
             float x, y; //Текущие координаты DragAndDrop'a
 
             PieceImageView view = (PieceImageView) event.getLocalState();
-
-            //Фрагмент-подсказка
-            FragmentManager fragmentManager = getFragmentManager();
-            FragmentTip fragmentTip = (FragmentTip) fragmentManager.findFragmentById(R.id.fragment_tip);
 
             //Координаты цели
             final float target_x = view.getTargetX();
@@ -128,8 +132,10 @@ public class MainActivity extends AppCompatActivity implements FragmentStart.OnC
                         //Опускаем его вниз, чтобы он не мог загородить собой другой кусок
                         view.toBack();
                         //Теперь можно показать следующий кусочек, но только если нет других доступных
-                        if (!mManager.hasVisiblePieces())
+                        if (!mManager.hasVisiblePieces()) {
                             showNewPiece();
+                            fragmentTest.set(view);
+                        }
                     }
                     else {
                         //Включаем подсветку
