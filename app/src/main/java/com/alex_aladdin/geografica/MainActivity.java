@@ -135,6 +135,7 @@ public class MainActivity extends AppCompatActivity implements FragmentStart.OnC
                         if (!mManager.hasVisiblePieces()) {
                             showNewPiece();
                             fragmentTest.set(view);
+                            mLayoutZoom.centerAt(fragmentTest);
                         }
                     }
                     else {

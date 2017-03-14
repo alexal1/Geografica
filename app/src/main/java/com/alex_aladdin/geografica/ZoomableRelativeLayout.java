@@ -29,6 +29,55 @@ public class ZoomableRelativeLayout extends RelativeLayout {
         super(context, attrs, defStyle);
     }
 
+    /**
+     *  Центрировать экран по фрагменту FragmentTest.
+     *  Поскольку FragmentTest находится вне ZoomableRelativeLayout, его тоже надо перемещать.
+     */
+    public void centerAt(FragmentTest fragmentTest) {
+        final RelativeLayout fragmentTestLayout = fragmentTest.getLayout();
+
+        // Начальные координаты фрагмента
+        final float fragment_x = fragmentTestLayout.getX();
+        final float fragment_y = fragmentTestLayout.getY();
+
+        // Центр фрагмента
+        final float pivotX = fragment_x + (float) fragmentTestLayout.getWidth() / 2;
+        final float pivotY = fragment_y + (float) fragmentTestLayout.getHeight() / 2;
+
+        // Смещение для этого layout'а
+        final float x = (float) this.getWidth() / 2 - pivotX;
+        final float y = (float) this.getHeight() / 2 - pivotY;
+
+        AnimatorSet animSetTranslate = new AnimatorSet();
+
+        ObjectAnimator translateLayoutX = ObjectAnimator.ofFloat(this, View.TRANSLATION_X, 0, x);
+        ObjectAnimator translateLayoutY = ObjectAnimator.ofFloat(this, View.TRANSLATION_Y, 0, y);
+        ObjectAnimator translateFragmentX = ObjectAnimator.ofFloat(fragmentTestLayout, View.TRANSLATION_X,
+                fragment_x, x + fragment_x);
+        ObjectAnimator translateFragmentY = ObjectAnimator.ofFloat(fragmentTestLayout, View.TRANSLATION_Y,
+                fragment_y, y + fragment_y);
+
+        animSetTranslate.playTogether(translateLayoutX, translateLayoutY, translateFragmentX, translateFragmentY);
+        animSetTranslate.setDuration(300);
+        animSetTranslate.start();
+    }
+
+    // Вернуть экран в исходное положение
+    public void centerDefault() {
+        // Начальные координаты этого layout'а
+        final float x = this.getX();
+        final float y = this.getY();
+
+        AnimatorSet animSetTranslate = new AnimatorSet();
+
+        ObjectAnimator translateLayoutX = ObjectAnimator.ofFloat(this, View.TRANSLATION_X, x, 0);
+        ObjectAnimator translateLayoutY = ObjectAnimator.ofFloat(this, View.TRANSLATION_Y, y, 0);
+
+        animSetTranslate.playTogether(translateLayoutX, translateLayoutY);
+        animSetTranslate.setDuration(300);
+        animSetTranslate.start();
+    }
+
     public void zoomIn() {
         //Получаем координаты для центрирования зума
         //Для этого берем верхний кусок из стека
