@@ -7,21 +7,38 @@
     android:layout_height="wrap_content"
     android:visibility="invisible">
 
-    <TextView
-        android:id="@+id/text_test"
+    <LinearLayout
+        android:id="@+id/layout_body"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:textColor="@color/white"
-        android:textSize="15sp"
-        android:text="Test"
-        android:padding="10dp"
-        android:background="@drawable/tip_shape"/>
+        android:orientation="vertical"
+        android:background="@drawable/tip_shape"
+        android:paddingBottom="5dp">
+
+        <TextView
+            android:id="@+id/text_test"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center_horizontal"
+            android:textColor="@color/white"
+            android:textSize="15sp"
+            android:text="Test"
+            android:padding="10dp"/>
+
+        <ListView
+            android:id="@+id/list_variants"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:choiceMode="singleChoice">
+        </ListView>
+
+    </LinearLayout>
 
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/text_test"
+        android:layout_below="@id/layout_body"
         android:layout_centerHorizontal="true"
         android:src="@drawable/tip"
         tools:ignore="ContentDescription"/>

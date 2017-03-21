@@ -108,6 +108,8 @@ public class MainActivity extends AppCompatActivity implements FragmentStart.OnC
                     view.setVisibility(View.INVISIBLE);
                     //Включаем подсказку
                     fragmentTip.init(view);
+                    // Подготавливаем тест
+                    fragmentTest.init();
                     //Поднимаем этот кусок над остальными
                     view.toFront();
                     //Делаем его актуальным для зума
@@ -136,6 +138,8 @@ public class MainActivity extends AppCompatActivity implements FragmentStart.OnC
                             showNewPiece();
                             fragmentTest.set(view);
                             mLayoutZoom.centerAt(fragmentTest);
+                            if (mLayoutZoom.isZoomed())
+                                mLayoutZoom.zoomOut();
                         }
                     }
                     else {
