@@ -109,7 +109,7 @@ public class MainActivity extends AppCompatActivity implements FragmentStart.OnC
                     //Включаем подсказку
                     fragmentTip.init(view);
                     // Подготавливаем тест
-                    fragmentTest.init();
+                    fragmentTest.init(view, mManager.getRandomPieces(view));
                     //Поднимаем этот кусок над остальными
                     view.toFront();
                     //Делаем его актуальным для зума
@@ -136,7 +136,7 @@ public class MainActivity extends AppCompatActivity implements FragmentStart.OnC
                         //Теперь можно показать следующий кусочек, но только если нет других доступных
                         if (!mManager.hasVisiblePieces()) {
                             showNewPiece();
-                            fragmentTest.set(view);
+                            fragmentTest.set();
                             mLayoutZoom.centerAt(fragmentTest);
                             if (mLayoutZoom.isZoomed())
                                 mLayoutZoom.zoomOut();

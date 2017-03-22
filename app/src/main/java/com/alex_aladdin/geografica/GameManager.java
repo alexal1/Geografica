@@ -11,6 +11,7 @@ import android.widget.RelativeLayout;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 
 import gr.antoniom.chronometer.Chronometer;
 
@@ -102,6 +103,18 @@ class GameManager {
                 array.add(mArrayPieces.indexOf(piece));
         }
         return array;
+    }
+
+    // Возвращает три случайных куска, выбранных из множества всех, исключая данный
+    List<PieceImageView> getRandomPieces(PieceImageView excludedPiece) {
+        // Клонируем массив
+        ArrayList<PieceImageView> array_random = new ArrayList<>(mArrayPieces);
+        // Исключаем данный кусок
+        array_random.remove(excludedPiece);
+        // Перемешиваем
+        Collections.shuffle(array_random);
+
+        return array_random.subList(0, 3);
     }
 
     /* --- Работаем с хронометром --- */

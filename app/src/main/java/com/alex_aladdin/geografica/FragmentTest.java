@@ -12,6 +12,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -22,6 +24,7 @@ public class FragmentTest extends Fragment {
     private ArrayAdapter<String> mAdapter;
     private int mCorrectVariant;
     private Timer mTimer = null;
+    private PieceImageView mCurrentPiece;
 
     @Nullable
     @Override
@@ -53,13 +56,18 @@ public class FragmentTest extends Fragment {
     }
 
     // Инициализация фрагмента в тот момент, когда кусок начали тащить
-    public void init() {
-        final String[] variants = new String[] {
-                "Variant1", "Variant2", "Variant3", "AndFinallyVariant4"
-        };
+    public void init(PieceImageView piece, List<PieceImageView> fakes) {
+        mCurrentPiece = piece;
+        fakes.add(piece);
+        Collections.shuffle(fakes);
+        mCorrectVariant = fakes.indexOf(piece);
+        final String[] variants = new String[4];
+        for (int i = 0; i < fakes.size(); i++)
+            variants[i] = fakes.get(i).getCaption();
+
+        // Создаем адаптер для ListView
         mAdapter = new ArrayAdapter<>(getActivity(), R.layout.list_test, variants);
         mListVariants.setAdapter(mAdapter);
-        mCorrectVariant = 0;
 
         // Задаем ширину
         mListVariants.getLayoutParams().width = getWidestView();
@@ -100,10 +108,14 @@ public class FragmentTest extends Fragment {
                 @Override
                 public void run() {
                     if (isChecked) {
+                        // Возвращаем всё как было
                         chosenView.setBackgroundResource(R.drawable.list_test_item);
                         mListVariants.clearChoices();
                         mListVariants.requestLayout();
                         mAdapter.notifyDataSetChanged();
+                        // Разрешаем нажатия
+                        mListVariants.setEnabled(true);
+                        // Отменяем таймер
                         cancel();
                         return;
                     }
@@ -116,6 +128,9 @@ public class FragmentTest extends Fragment {
                         chosenView.setBackgroundResource(R.color.wrong_choice);
                     }
 
+                    // Запрещаем нажатия
+                    mListVariants.setEnabled(false);
+
                     isChecked = true;
                 }
             });
@@ -124,13 +139,13 @@ public class FragmentTest extends Fragment {
     }
 
     // Устанавливаем фрагмент над данным куском паззла
-    public void set(PieceImageView piece) {
+    public void set() {
         float fragment_width = mLayout.getWidth();
         float fragment_height = mLayout.getHeight();
 
         // Вычисляем координаты верхнего левого угла нашего фрагмента
-        float fragment_x = piece.getTargetX() - fragment_width / 2;
-        float fragment_y = piece.getTargetY() - (float) piece.getHeight() / 2 - fragment_height;
+        float fragment_x = mCurrentPiece.getTargetX() - fragment_width / 2;
+        float fragment_y = mCurrentPiece.getTargetY() - (float) mCurrentPiece.getHeight() / 2 - fragment_height;
 
         mLayout.setX(fragment_x);
         mLayout.setY(fragment_y);
