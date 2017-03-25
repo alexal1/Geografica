@@ -1,6 +1,9 @@
 package com.alex_aladdin.geografica;
 
+import android.annotation.TargetApi;
+import android.app.Activity;
 import android.app.Fragment;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -21,10 +24,46 @@ public class FragmentTest extends Fragment {
 
     private RelativeLayout mLayout;
     private ListView mListVariants;
+    private View mBackground;
     private ArrayAdapter<String> mAdapter;
     private int mCorrectVariant;
     private Timer mTimer = null;
     private PieceImageView mCurrentPiece;
+    private Boolean mCompleted;
+    // Определяем слушатель типа нашего интерфейса. Это будет сама активность
+    private FragmentTest.OnCloseListener mListener;
+
+    // Определяем событие, которое фрагмент будет использовать для связи с активностью
+    interface OnCloseListener {
+        void onTestClose(Boolean completed);
+    }
+
+    //Наполняем объект mListener нашей активностью в момент присоединения фрагмента к активности
+    @TargetApi(23)
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        if (context instanceof FragmentTest.OnCloseListener) {
+            mListener = (FragmentTest.OnCloseListener) context;
+        }
+        else
+            throw new ClassCastException(context.toString() +
+                    " должен реализовывать интерфейс FragmentTest.OnCloseListener");
+    }
+
+    @SuppressWarnings("deprecation")
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+
+        if (activity instanceof FragmentTest.OnCloseListener) {
+            mListener = (FragmentTest.OnCloseListener) activity;
+        }
+        else
+            throw new ClassCastException(activity.toString() +
+                    " должен реализовывать интерфейс FragmentTest.OnCloseListener");
+    }
 
     @Nullable
     @Override
@@ -55,6 +94,13 @@ public class FragmentTest extends Fragment {
         return rootView;
     }
 
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        mBackground = getActivity().findViewById(R.id.fragment_test_background);
+    }
+
     // Инициализация фрагмента в тот момент, когда кусок начали тащить
     public void init(PieceImageView piece, List<PieceImageView> fakes) {
         mCurrentPiece = piece;
@@ -71,6 +117,9 @@ public class FragmentTest extends Fragment {
 
         // Задаем ширину
         mListVariants.getLayoutParams().width = getWidestView();
+
+        // Изначально тест в непройденном состоянии
+        mCompleted = false;
     }
 
     // Возвращает ширину самого длинного элемента списка
@@ -117,16 +166,23 @@ public class FragmentTest extends Fragment {
                         mListVariants.setEnabled(true);
                         // Отменяем таймер
                         cancel();
+                        // Если ответ правильный, завершаем тест
+                        if (variant == mCorrectVariant) {
+                            mLayout.setVisibility(View.GONE);
+                            mBackground.setVisibility(View.GONE);
+                            // Выполняем callback-функцию, прописанную в MainActivity
+                            mListener.onTestClose(true);
+                        }
                         return;
                     }
 
                     // Проверка правильности ответа
                     if (variant == mCorrectVariant) {
                         chosenView.setBackgroundResource(R.color.right_choice);
+                        mCompleted = true;
                     }
-                    else {
+                    else
                         chosenView.setBackgroundResource(R.color.wrong_choice);
-                    }
 
                     // Запрещаем нажатия
                     mListVariants.setEnabled(false);
@@ -150,27 +206,25 @@ public class FragmentTest extends Fragment {
         mLayout.setX(fragment_x);
         mLayout.setY(fragment_y);
 
-        // Делаем видимым фрагмент
+        // Делаем видимыми фрагмент и фон
         mLayout.setVisibility(View.VISIBLE);
+        mBackground.setVisibility(View.VISIBLE);
 
-        /* --- Используем отдельный View-элемент в качестве фона для FragmentTest --- */
-
-        final View background = getActivity().findViewById(R.id.fragment_test_background);
-        final ZoomableRelativeLayout layoutZoom = (ZoomableRelativeLayout) getActivity().findViewById(R.id.layout_zoom);
-
-        // Делаем фон видимым
-        background.setVisibility(View.VISIBLE);
-
-        // При касании фона убираем фрагмент, убираем сам фон и возвращаем экран в исходное состояне
-        background.setOnTouchListener(new View.OnTouchListener() {
+        // Вешаем обработчик касаний на фон
+        mBackground.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 mLayout.setVisibility(View.GONE);
-                background.setVisibility(View.GONE);
-                layoutZoom.centerDefault();
-
+                mBackground.setVisibility(View.GONE);
                 // Снимаем обработчик
-                background.setOnTouchListener(null);
+                mBackground.setOnTouchListener(null);
+                // Сбрасываем таймер
+                if (mTimer != null)
+                    mTimer.cancel();
+                // Разрешаем нажатия
+                mListVariants.setEnabled(true);
+                // Выполняем callback-функцию, прописанную в MainActivity
+                mListener.onTestClose(mCompleted);
 
                 return true;
             }

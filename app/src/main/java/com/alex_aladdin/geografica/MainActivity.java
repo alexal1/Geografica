@@ -20,7 +20,7 @@ import gr.antoniom.chronometer.Chronometer;
 
 public class MainActivity extends AppCompatActivity implements FragmentStart.OnCompleteListener,
         FragmentFinishTraining.OnCompleteListener, FragmentFinishCheck.OnCompleteListener,
-        FragmentFinishChampionship.OnCompleteListener, FragmentExit.OnCompleteListener {
+        FragmentFinishChampionship.OnCompleteListener, FragmentExit.OnCompleteListener, FragmentTest.OnCloseListener {
 
     public static final float DELTA_MM = 5.0f; //Дельта прилипания в миллиметрах
 
@@ -401,5 +401,11 @@ public class MainActivity extends AppCompatActivity implements FragmentStart.OnC
             mState = State.RUN;
             mManager.resumeTimer();
         }
+    }
+
+    // Тестовый фрагмент был закрыт
+    @Override
+    public void onTestClose(Boolean completed) {
+        mLayoutZoom.centerDefault();
     }
 }
