@@ -4,12 +4,14 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -31,11 +33,12 @@ public class FragmentTest extends Fragment {
     private PieceImageView mCurrentPiece;
     private Boolean mCompleted;
     // Определяем слушатель типа нашего интерфейса. Это будет сама активность
-    private FragmentTest.OnCloseListener mListener;
+    private FragmentTest.EventListener mListener;
 
-    // Определяем событие, которое фрагмент будет использовать для связи с активностью
-    interface OnCloseListener {
+    // Определяем события, которые фрагмент будет использовать для связи с активностью
+    interface EventListener {
         void onTestClose(Boolean completed);
+        void onAutoSet();
     }
 
     //Наполняем объект mListener нашей активностью в момент присоединения фрагмента к активности
@@ -44,12 +47,12 @@ public class FragmentTest extends Fragment {
     public void onAttach(Context context) {
         super.onAttach(context);
 
-        if (context instanceof FragmentTest.OnCloseListener) {
-            mListener = (FragmentTest.OnCloseListener) context;
+        if (context instanceof FragmentTest.EventListener) {
+            mListener = (FragmentTest.EventListener) context;
         }
         else
             throw new ClassCastException(context.toString() +
-                    " должен реализовывать интерфейс FragmentTest.OnCloseListener");
+                    " должен реализовывать интерфейс FragmentTest.EventListener");
     }
 
     @SuppressWarnings("deprecation")
@@ -57,12 +60,12 @@ public class FragmentTest extends Fragment {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
 
-        if (activity instanceof FragmentTest.OnCloseListener) {
-            mListener = (FragmentTest.OnCloseListener) activity;
+        if (activity instanceof FragmentTest.EventListener) {
+            mListener = (FragmentTest.EventListener) activity;
         }
         else
             throw new ClassCastException(activity.toString() +
-                    " должен реализовывать интерфейс FragmentTest.OnCloseListener");
+                    " должен реализовывать интерфейс FragmentTest.EventListener");
     }
 
     @Nullable
@@ -102,7 +105,25 @@ public class FragmentTest extends Fragment {
     }
 
     // Инициализация фрагмента в тот момент, когда кусок начали тащить
-    public void init(PieceImageView piece, List<PieceImageView> fakes) {
+    public void init(PieceImageView piece, List<PieceImageView> fakes, Boolean autoSet) {
+        // Если передан параметр autoSet = true, дожидаемся пока фрагмент изменит размер и выполняем set()
+        if (autoSet) {
+            ViewTreeObserver observer = mLayout.getViewTreeObserver();
+            observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
+                        mLayout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    else
+                        //noinspection deprecation
+                        mLayout.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+
+                    set();
+                    mListener.onAutoSet();
+                }
+            });
+        }
+
         mCurrentPiece = piece;
         fakes.add(piece);
         Collections.shuffle(fakes);
@@ -168,8 +189,8 @@ public class FragmentTest extends Fragment {
                         cancel();
                         // Если ответ правильный, завершаем тест
                         if (variant == mCorrectVariant) {
-                            mLayout.setVisibility(View.GONE);
-                            mBackground.setVisibility(View.GONE);
+                            mLayout.setVisibility(View.INVISIBLE);
+                            mBackground.setVisibility(View.INVISIBLE);
                             // Выполняем callback-функцию, прописанную в MainActivity
                             mListener.onTestClose(true);
                         }
@@ -180,6 +201,7 @@ public class FragmentTest extends Fragment {
                     if (variant == mCorrectVariant) {
                         chosenView.setBackgroundResource(R.color.right_choice);
                         mCompleted = true;
+                        mCurrentPiece.setChecked();
                     }
                     else
                         chosenView.setBackgroundResource(R.color.wrong_choice);
@@ -214,24 +236,32 @@ public class FragmentTest extends Fragment {
         mBackground.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                mLayout.setVisibility(View.GONE);
-                mBackground.setVisibility(View.GONE);
-                // Снимаем обработчик
-                mBackground.setOnTouchListener(null);
-                // Сбрасываем таймер
-                if (mTimer != null)
-                    mTimer.cancel();
-                // Разрешаем нажатия
-                mListVariants.setEnabled(true);
-                // Выполняем callback-функцию, прописанную в MainActivity
-                mListener.onTestClose(mCompleted);
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                    mLayout.setVisibility(View.INVISIBLE);
+                    mBackground.setVisibility(View.INVISIBLE);
+                    // Снимаем обработчик
+                    mBackground.setOnTouchListener(null);
+                    // Сбрасываем таймер
+                    if (mTimer != null)
+                        mTimer.cancel();
+                    // Разрешаем нажатия
+                    mListVariants.setEnabled(true);
+                    // Выполняем callback-функцию, прописанную в MainActivity
+                    mListener.onTestClose(mCompleted);
 
-                return true;
+                    return true;
+                }
+                else
+                    return false;
             }
         });
     }
 
     public RelativeLayout getLayout() {
         return mLayout;
+    }
+
+    public PieceImageView getCurrentPiece() {
+        return mCurrentPiece;
     }
 }

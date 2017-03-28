@@ -26,6 +26,7 @@ import java.util.HashMap;
 public class PieceImageView extends AppCompatImageView {
 
     private Boolean mSettled = false; //Кусочек установлен на предназначенное для него место
+    private Boolean mChecked = false; // Для этого кусочка пройден тест
     private float mTargetX, mTargetY;
     private String mCaption;
     private int mReqWidth = 0, mReqHeight = 0; //Ширина и высота, которые должны получиться исходя из масштабирования к карте
@@ -271,9 +272,15 @@ public class PieceImageView extends AppCompatImageView {
         mSettled = true;
     }
 
+    // Тест для этого куска был успешно пройден
+    public void setChecked() {
+        mChecked = true;
+    }
+
     //Геттеры
     public float getTargetX() { return mTargetX; }
     public float getTargetY() { return mTargetY; }
     public boolean isSettled() { return mSettled; }
+    public boolean isChecked() { return mChecked; }
     public String getCaption() { return mCaption; }
 }

@@ -72,9 +72,9 @@ class GameManager {
 
     /* --- Геттеры --- */
 
-    //Возвращаем произвольный кусок паззла
+    // Возвращаем произвольный кусок паззла
     // НЕ стоящий на своем месте, и НЕ видимый пользователю
-    PieceImageView getPiece() {
+    PieceImageView getNewRandomPiece() {
         //Клонируем массив
         ArrayList<PieceImageView> array_random = new ArrayList<>(mArrayPieces);
         //Перемешиваем
@@ -86,6 +86,38 @@ class GameManager {
         return null;
     }
 
+    // Возвращаем произвольный кусок паззла
+    // Уже установленный, но для которого ещё не пройден тест
+    PieceImageView getUncheckedRandomPiece() {
+        return getUncheckedRandomPiece(null);
+    }
+
+    // То же самое, но откладываем текущий кусок в конец
+    PieceImageView getUncheckedRandomPiece(PieceImageView currentPiece) {
+        // Клонируем массив индексов установленных кусков
+        ArrayList<Integer> array_indices = new ArrayList<>(getIndicesOfSettledPieces());
+        // Вычитаем массив кусков с пройденным тестом
+        array_indices.removeAll(getIndicesOfCheckedPieces());
+
+        if (array_indices.isEmpty())
+            return null;
+        else {
+            // Перемешиваем
+            Collections.shuffle(array_indices);
+            // Если был передан текущий кусок
+            if (currentPiece != null) {
+                // Ищем его в массиве и откладываем в конец
+                int currentPieceIndex = mArrayPieces.indexOf(currentPiece);
+                if (array_indices.contains(currentPieceIndex)) {
+                    array_indices.remove(Integer.valueOf(currentPieceIndex));
+                    array_indices.add(currentPieceIndex);
+                }
+            }
+
+            return getPiece(array_indices.get(0));
+        }
+    }
+
     //Возвращает либо кусок с нужным индексом, либо null
     PieceImageView getPiece(int number) {
         if (number < mArrayPieces.size())
@@ -95,11 +127,21 @@ class GameManager {
     }
     MapImageView getMap() { return mCurrentMap; }
 
-    //Возвращает массив номеров кусочков паззла, которые уже стоят на своих местах
-    ArrayList<Integer> getListOfSettledPieces() {
+    // Возвращает массив номеров кусочков паззла, которые уже стоят на своих местах
+    ArrayList<Integer> getIndicesOfSettledPieces() {
         ArrayList<Integer> array = new ArrayList<>();
         for (PieceImageView piece : mArrayPieces) {
             if (piece.isSettled())
+                array.add(mArrayPieces.indexOf(piece));
+        }
+        return array;
+    }
+
+    // Возвращает массив номеров кусочков паззла, для которых уже пройден тест
+    ArrayList<Integer> getIndicesOfCheckedPieces() {
+        ArrayList<Integer> array = new ArrayList<>();
+        for (PieceImageView piece : mArrayPieces) {
+            if (piece.isChecked())
                 array.add(mArrayPieces.indexOf(piece));
         }
         return array;

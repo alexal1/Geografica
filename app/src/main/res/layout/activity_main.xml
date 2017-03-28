@@ -110,7 +110,7 @@
         android:id="@+id/fragment_test_background"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="gone" />
+        android:visibility="invisible" />
 
     <fragment
         android:id="@+id/fragment_test"

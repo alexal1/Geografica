@@ -20,7 +20,7 @@ import gr.antoniom.chronometer.Chronometer;
 
 public class MainActivity extends AppCompatActivity implements FragmentStart.OnCompleteListener,
         FragmentFinishTraining.OnCompleteListener, FragmentFinishCheck.OnCompleteListener,
-        FragmentFinishChampionship.OnCompleteListener, FragmentExit.OnCompleteListener, FragmentTest.OnCloseListener {
+        FragmentFinishChampionship.OnCompleteListener, FragmentExit.OnCompleteListener, FragmentTest.EventListener {
 
     public static final float DELTA_MM = 5.0f; //Дельта прилипания в миллиметрах
 
@@ -109,7 +109,7 @@ public class MainActivity extends AppCompatActivity implements FragmentStart.OnC
                     //Включаем подсказку
                     fragmentTip.init(view);
                     // Подготавливаем тест
-                    fragmentTest.init(view, mManager.getRandomPieces(view));
+                    fragmentTest.init(view, mManager.getRandomPieces(view), false);
                     //Поднимаем этот кусок над остальными
                     view.toFront();
                     //Делаем его актуальным для зума
@@ -133,9 +133,8 @@ public class MainActivity extends AppCompatActivity implements FragmentStart.OnC
                         view.settle(x, y);
                         //Опускаем его вниз, чтобы он не мог загородить собой другой кусок
                         view.toBack();
-                        //Теперь можно показать следующий кусочек, но только если нет других доступных
+                        // Если нет других доступных кусков, показываем тест
                         if (!mManager.hasVisiblePieces()) {
-                            showNewPiece();
                             fragmentTest.set();
                             mLayoutZoom.centerAt(fragmentTest);
                             if (mLayoutZoom.isZoomed())
@@ -170,7 +169,7 @@ public class MainActivity extends AppCompatActivity implements FragmentStart.OnC
     private void showNewPiece() {
         PieceImageView imagePiece;
         //Новых кусочков не осталось
-        if ((imagePiece = mManager.getPiece()) == null) {
+        if ((imagePiece = mManager.getNewRandomPiece()) == null) {
             //Не пристыкованных тоже не осталось
             if (!mManager.hasVisiblePieces()) {
                 /* --- ФИНИШ --- */
@@ -244,7 +243,7 @@ public class MainActivity extends AppCompatActivity implements FragmentStart.OnC
         imagePiece.setY(y);
     }
 
-    //Сохраняем промежуточное состоние активности (какие куски паззла уже на своих местах)
+    //Сохраняем промежуточное состоние активности
     @Override
     public void onSaveInstanceState(Bundle saveInstanceState) {
         super.onSaveInstanceState(saveInstanceState);
@@ -253,8 +252,12 @@ public class MainActivity extends AppCompatActivity implements FragmentStart.OnC
         saveInstanceState.putString("STATE", mState.toString());
 
         //Получаем массив индексов кусочков паззла, которые уже стоят на своих местах
-        ArrayList<Integer> array = mManager.getListOfSettledPieces();
-        saveInstanceState.putIntegerArrayList("SETTLED_PIECES", array);
+        ArrayList<Integer> arraySettled = mManager.getIndicesOfSettledPieces();
+        saveInstanceState.putIntegerArrayList("SETTLED_PIECES", arraySettled);
+
+        //Получаем массив индексов кусочков паззла, для которых уже пройден тест
+        ArrayList<Integer> arrayChecked = mManager.getIndicesOfCheckedPieces();
+        saveInstanceState.putIntegerArrayList("CHECKED_PIECES", arrayChecked);
 
         //Сохраняем текущее время таймера
         mManager.stopTimer();
@@ -266,15 +269,19 @@ public class MainActivity extends AppCompatActivity implements FragmentStart.OnC
     public void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
 
-        ArrayList<Integer> array = savedInstanceState.getIntegerArrayList("SETTLED_PIECES");
-        if (array == null) return;
+        ArrayList<Integer> arraySettled = savedInstanceState.getIntegerArrayList("SETTLED_PIECES");
+        ArrayList<Integer> arrayChecked = savedInstanceState.getIntegerArrayList("CHECKED_PIECES");
+        if (arraySettled == null || arrayChecked == null) return;
 
-        //Берем кусочки паззла с номерами из array и втыкаем их на нужные места
-        for (int i : array) {
+        // Берем кусочки паззла с номерами из arraySettled и втыкаем их на нужные места
+        for (int i : arraySettled) {
             //Берем
             PieceImageView view = mManager.getPiece(i);
             //И втыкаем
             view.settle();
+            // Если надо, помечаем что для этого кусочка уже был пройден тест
+            if (arrayChecked.contains(i))
+                view.setChecked();
             //Делаем его видимым
             view.setVisibility(View.VISIBLE);
         }
@@ -406,6 +413,55 @@ public class MainActivity extends AppCompatActivity implements FragmentStart.OnC
     // Тестовый фрагмент был закрыт
     @Override
     public void onTestClose(Boolean completed) {
-        mLayoutZoom.centerDefault();
+        FragmentManager fragmentManager = getFragmentManager();
+        final FragmentTest fragmentTest = (FragmentTest) fragmentManager.findFragmentById(R.id.fragment_test);
+
+        // Тест закрыт с положительным результатом
+        if (completed) {
+            // Проверяем, есть ли ещё куски с непройденным тестом
+            final PieceImageView uncheckedPiece;
+            // Есть непройденные тесты
+            if ((uncheckedPiece = mManager.getUncheckedRandomPiece()) != null) {
+                // Инициализируем тестовый фрагмент с параметром autoSet = true
+                fragmentTest.init(uncheckedPiece, mManager.getRandomPieces(uncheckedPiece), true);
+            }
+            // Непройденных тестов не осталось
+            else {
+                showNewPiece();
+                mLayoutZoom.centerDefault();
+            }
+        }
+        // Тест закрыт с отрицательным результатом
+        else {
+            // Есть новые куски
+            if (mManager.getNewRandomPiece() != null) {
+                showNewPiece();
+                mLayoutZoom.centerDefault();
+            }
+            // Больше кусков не осталось => все уже установлены (т.к. мы только что закрыли тест)
+            else {
+                final PieceImageView uncheckedPiece;
+                // Кусок, к которому привязан тест на данный момент
+                final PieceImageView currentPiece = fragmentTest.getCurrentPiece();
+                // Есть непройденные тесты
+                if ((uncheckedPiece = mManager.getUncheckedRandomPiece(currentPiece)) != null) {
+                    // Инициализируем тестовый фрагмент с параметром autoSet = true
+                    fragmentTest.init(uncheckedPiece, mManager.getRandomPieces(uncheckedPiece), true);
+                }
+                // Непройденных тестов не осталось
+                else {
+                    showNewPiece();
+                    mLayoutZoom.centerDefault();
+                }
+            }
+        }
+    }
+
+    // Тестовый фрагмент был инициализирован с параметром autoAet = true и сигнализирует о том, что выполнил set()
+    @Override
+    public void onAutoSet() {
+        FragmentManager fragmentManager = getFragmentManager();
+        final FragmentTest fragmentTest = (FragmentTest) fragmentManager.findFragmentById(R.id.fragment_test);
+        mLayoutZoom.centerAt(fragmentTest);
     }
 }
