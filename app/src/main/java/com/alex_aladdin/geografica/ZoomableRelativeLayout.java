@@ -36,6 +36,10 @@ public class ZoomableRelativeLayout extends RelativeLayout {
     public void centerAt(FragmentTest fragmentTest) {
         final RelativeLayout fragmentTestLayout = fragmentTest.getLayout();
 
+        // Начальные координаты layout'a
+        final float x_start = this.getX();
+        final float y_start = this.getY();
+
         // Начальные координаты фрагмента
         final float fragment_x = fragmentTestLayout.getX();
         final float fragment_y = fragmentTestLayout.getY();
@@ -44,18 +48,18 @@ public class ZoomableRelativeLayout extends RelativeLayout {
         final float pivotX = fragment_x + (float) fragmentTestLayout.getWidth() / 2;
         final float pivotY = fragment_y + (float) fragmentTestLayout.getHeight() / 2;
 
-        // Смещение для этого layout'а
-        final float x = (float) this.getWidth() / 2 - pivotX;
-        final float y = (float) this.getHeight() / 2 - pivotY;
+        // Конечные координаты layout'а
+        final float x_end = (float) this.getWidth() / 2 - pivotX;
+        final float y_end = (float) this.getHeight() / 2 - pivotY;
 
         AnimatorSet animSetTranslate = new AnimatorSet();
 
-        ObjectAnimator translateLayoutX = ObjectAnimator.ofFloat(this, View.TRANSLATION_X, 0, x);
-        ObjectAnimator translateLayoutY = ObjectAnimator.ofFloat(this, View.TRANSLATION_Y, 0, y);
+        ObjectAnimator translateLayoutX = ObjectAnimator.ofFloat(this, View.TRANSLATION_X, x_start, x_end);
+        ObjectAnimator translateLayoutY = ObjectAnimator.ofFloat(this, View.TRANSLATION_Y, y_start, y_end);
         ObjectAnimator translateFragmentX = ObjectAnimator.ofFloat(fragmentTestLayout, View.TRANSLATION_X,
-                fragment_x, x + fragment_x);
+                x_start + fragment_x, x_end + fragment_x);
         ObjectAnimator translateFragmentY = ObjectAnimator.ofFloat(fragmentTestLayout, View.TRANSLATION_Y,
-                fragment_y, y + fragment_y);
+                y_start + fragment_y, y_end + fragment_y);
 
         animSetTranslate.playTogether(translateLayoutX, translateLayoutY, translateFragmentX, translateFragmentY);
         animSetTranslate.setDuration(300);
