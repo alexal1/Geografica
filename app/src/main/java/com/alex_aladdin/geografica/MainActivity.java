@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Display;
 import android.view.DragEvent;
@@ -22,6 +23,7 @@ public class MainActivity extends AppCompatActivity implements FragmentStart.OnC
         FragmentFinishTraining.OnCompleteListener, FragmentFinishCheck.OnCompleteListener,
         FragmentFinishChampionship.OnCompleteListener, FragmentExit.OnCompleteListener, FragmentTest.EventListener {
 
+    public static final String ERROR_TAG = "GeograficaError";
     public static final float DELTA_MM = 5.0f; //Дельта прилипания в миллиметрах
 
     private GameManager mManager;
@@ -165,49 +167,18 @@ public class MainActivity extends AppCompatActivity implements FragmentStart.OnC
         }
     }
 
-    //Добавляем на экран новый кусочек паззла
+    /**
+     *  Добавляем на экран новый кусок паззла.
+     *  Есть два метода: метод по умолчанию и метод, принимающий на вход кусок, который надо добавить.
+     */
     private void showNewPiece() {
-        PieceImageView imagePiece;
-        //Новых кусочков не осталось
-        if ((imagePiece = mManager.getNewRandomPiece()) == null) {
-            //Не пристыкованных тоже не осталось
-            if (!mManager.hasVisiblePieces()) {
-                /* --- ФИНИШ --- */
-                mState = State.FINISH;
-                mManager.stopTimer();
+        showNewPiece(mManager.getNewRandomPiece());
+    }
 
-                //Если были в зуме, возвращаемся
-                if (mLayoutZoom.isZoomed()) mLayoutZoom.zoomOut();
-
-                //Показываем один из финишных экранов
-                if (getIntent().getBooleanExtra("FRAGMENT_FINISH_TRAINING", false)) {
-                    String caption = getIntent().getStringExtra("MAP_CAPTION").toUpperCase() + " " +
-                            getString(R.string.finish_federal_district);
-                    long time = mManager.getTime();
-                    FragmentFinishTraining fragmentFinishTraining = FragmentFinishTraining.newInstance(caption, time);
-                    getFragmentManager().beginTransaction()
-                            .add(R.id.layout_root, fragmentFinishTraining)
-                            .commit();
-                }
-                if (getIntent().getBooleanExtra("FRAGMENT_FINISH_CHECK", false)) {
-                    FragmentFinishCheck fragmentFinishCheck = new FragmentFinishCheck();
-                    getFragmentManager().beginTransaction()
-                            .add(R.id.layout_root, fragmentFinishCheck)
-                            .commit();
-                }
-                if (getIntent().getBooleanExtra("FRAGMENT_FINISH_CHAMPIONSHIP", false)) {
-                    String level = getString(R.string.finish_level) + " " +
-                            ((MapImageView.Level) getIntent().getSerializableExtra("LEVEL")).getCaption();
-                    //Время складывается из времени за эту карту и за предыдущие
-                    long time = mManager.getTime() + getIntent().getLongExtra("TIME", 0);
-                    FragmentFinishChampionship fragmentFinishChampionship = FragmentFinishChampionship.newInstance(time, level);
-                    getFragmentManager().beginTransaction()
-                            .add(R.id.layout_root, fragmentFinishChampionship)
-                            .commit();
-                }
-            }
+    private void showNewPiece(PieceImageView imagePiece) {
+        if (imagePiece == null)
             return;
-        }
+
         //Делаем видимым и включаем подсветку
         imagePiece.setVisibility(View.VISIBLE);
         imagePiece.setBackgroundResource(R.drawable.backlight);
@@ -297,18 +268,38 @@ public class MainActivity extends AppCompatActivity implements FragmentStart.OnC
                 //Выставляем нужное время таймера
                 mManager.startTimer();
                 mManager.setTime(time);
-                //Показываем новый кусок паззла
-                showNewPiece();
+                // Выполняем следующее действие
+                nextAction();
                 break;
             case PAUSE:
                 mManager.setTime(time);
-                //Показываем новый кусок паззла
-                showNewPiece();
+                // Выполняем следующее действие
+                nextAction();
                 break;
             case FINISH:
                 //Выставляем нужное время таймера
                 mManager.setTime(time);
                 break;
+        }
+    }
+
+    // Действие после поворота экрана
+    private void nextAction() {
+        final PieceImageView newPiece;
+        if ((newPiece = mManager.getNewRandomPiece()) != null) {
+            showNewPiece(newPiece);
+        }
+        else {
+            final PieceImageView uncheckedPiece = mManager.getUncheckedRandomPiece();
+            if (uncheckedPiece == null) {
+                Log.e(ERROR_TAG, "nextAction() invoked when neither new nor unchecked pieces are left");
+                return;
+            }
+
+            FragmentManager fragmentManager = getFragmentManager();
+            final FragmentTest fragmentTest = (FragmentTest) fragmentManager.findFragmentById(R.id.fragment_test);
+            // Инициализируем тестовый фрагмент с параметром autoSet = true
+            fragmentTest.init(uncheckedPiece, mManager.getRandomPieces(uncheckedPiece), true);
         }
     }
 
@@ -418,7 +409,6 @@ public class MainActivity extends AppCompatActivity implements FragmentStart.OnC
 
         // Тест закрыт с положительным результатом
         if (completed) {
-            // Проверяем, есть ли ещё куски с непройденным тестом
             final PieceImageView uncheckedPiece;
             // Есть непройденные тесты
             if ((uncheckedPiece = mManager.getUncheckedRandomPiece()) != null) {
@@ -427,41 +417,85 @@ public class MainActivity extends AppCompatActivity implements FragmentStart.OnC
             }
             // Непройденных тестов не осталось
             else {
-                showNewPiece();
+                final PieceImageView newPiece;
+                // Есть новые куски
+                if ((newPiece = mManager.getNewRandomPiece()) != null) {
+                    showNewPiece(newPiece);
+                }
+                // Новых кусков тоже нет
+                else {
+                    finishGame();
+                }
                 mLayoutZoom.centerDefault();
             }
         }
         // Тест закрыт с отрицательным результатом
         else {
+            final PieceImageView newPiece;
             // Есть новые куски
-            if (mManager.getNewRandomPiece() != null) {
-                showNewPiece();
+            if ((newPiece = mManager.getNewRandomPiece()) != null) {
+                showNewPiece(newPiece);
                 mLayoutZoom.centerDefault();
             }
             // Больше кусков не осталось => все уже установлены (т.к. мы только что закрыли тест)
             else {
-                final PieceImageView uncheckedPiece;
                 // Кусок, к которому привязан тест на данный момент
                 final PieceImageView currentPiece = fragmentTest.getCurrentPiece();
-                // Есть непройденные тесты
-                if ((uncheckedPiece = mManager.getUncheckedRandomPiece(currentPiece)) != null) {
-                    // Инициализируем тестовый фрагмент с параметром autoSet = true
-                    fragmentTest.init(uncheckedPiece, mManager.getRandomPieces(uncheckedPiece), true);
+                // Кусок с непройденным тестом
+                final PieceImageView uncheckedPiece = mManager.getUncheckedRandomPiece(currentPiece);
+                if (uncheckedPiece == null) {
+                    Log.e(ERROR_TAG, "Cannot find any unchecked pieces");
+                    return;
                 }
-                // Непройденных тестов не осталось
-                else {
-                    showNewPiece();
-                    mLayoutZoom.centerDefault();
-                }
+
+                // Инициализируем тестовый фрагмент с параметром autoSet = true
+                fragmentTest.init(uncheckedPiece, mManager.getRandomPieces(uncheckedPiece), true);
             }
         }
     }
 
-    // Тестовый фрагмент был инициализирован с параметром autoAet = true и сигнализирует о том, что выполнил set()
+    // Тестовый фрагмент был инициализирован с параметром autoSet = true и сигнализирует о том, что выполнил set()
     @Override
     public void onAutoSet() {
         FragmentManager fragmentManager = getFragmentManager();
         final FragmentTest fragmentTest = (FragmentTest) fragmentManager.findFragmentById(R.id.fragment_test);
         mLayoutZoom.centerAt(fragmentTest);
     }
+
+    // Завершаем игру
+    private void finishGame() {
+        mState = State.FINISH;
+        mManager.stopTimer();
+
+        //Если были в зуме, возвращаемся
+        if (mLayoutZoom.isZoomed()) mLayoutZoom.zoomOut();
+
+        //Показываем один из финишных экранов
+        if (getIntent().getBooleanExtra("FRAGMENT_FINISH_TRAINING", false)) {
+            String caption = getIntent().getStringExtra("MAP_CAPTION").toUpperCase() + " " +
+                    getString(R.string.finish_federal_district);
+            long time = mManager.getTime();
+            FragmentFinishTraining fragmentFinishTraining = FragmentFinishTraining.newInstance(caption, time);
+            getFragmentManager().beginTransaction()
+                    .add(R.id.layout_root, fragmentFinishTraining)
+                    .commit();
+        }
+        if (getIntent().getBooleanExtra("FRAGMENT_FINISH_CHECK", false)) {
+            FragmentFinishCheck fragmentFinishCheck = new FragmentFinishCheck();
+            getFragmentManager().beginTransaction()
+                    .add(R.id.layout_root, fragmentFinishCheck)
+                    .commit();
+        }
+        if (getIntent().getBooleanExtra("FRAGMENT_FINISH_CHAMPIONSHIP", false)) {
+            String level = getString(R.string.finish_level) + " " +
+                    ((MapImageView.Level) getIntent().getSerializableExtra("LEVEL")).getCaption();
+            //Время складывается из времени за эту карту и за предыдущие
+            long time = mManager.getTime() + getIntent().getLongExtra("TIME", 0);
+            FragmentFinishChampionship fragmentFinishChampionship = FragmentFinishChampionship.newInstance(time, level);
+            getFragmentManager().beginTransaction()
+                    .add(R.id.layout_root, fragmentFinishChampionship)
+                    .commit();
+        }
+    }
+
 }
