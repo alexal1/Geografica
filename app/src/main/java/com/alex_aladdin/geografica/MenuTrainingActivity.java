@@ -47,6 +47,7 @@ public class MenuTrainingActivity extends AppCompatActivity {
                     intent.putExtra("FRAGMENT_FINISH_TRAINING", true);
                     intent.putExtra("FRAGMENT_FINISH_CHECK", false);
                     intent.putExtra("FRAGMENT_FINISH_CHAMPIONSHIP", false);
+                    intent.putExtra("SHOW_TESTS_IMMEDIATELY", true);
 
                     startActivityForResult(intent, 0);
                     mCurrentItem = item.ordinal();
@@ -95,6 +96,7 @@ public class MenuTrainingActivity extends AppCompatActivity {
         intent.putExtra("FRAGMENT_FINISH_TRAINING", true);
         intent.putExtra("FRAGMENT_FINISH_CHECK", false);
         intent.putExtra("FRAGMENT_FINISH_CHAMPIONSHIP", false);
+        intent.putExtra("SHOW_TESTS_IMMEDIATELY", true);
 
         startActivityForResult(intent, 0);
     }

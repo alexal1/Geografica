@@ -157,6 +157,7 @@ public class MenuChampionshipActivity extends AppCompatActivity {
         intent.putExtra("FRAGMENT_FINISH_TRAINING", false);
         intent.putExtra("FRAGMENT_FINISH_CHECK", true);
         intent.putExtra("FRAGMENT_FINISH_CHAMPIONSHIP", false);
+        intent.putExtra("SHOW_TESTS_IMMEDIATELY", false);
 
         startActivityForResult(intent, 0);
     }
@@ -192,6 +193,7 @@ public class MenuChampionshipActivity extends AppCompatActivity {
             intent.putExtra("FRAGMENT_FINISH_TRAINING", false);
             intent.putExtra("FRAGMENT_FINISH_CHECK", false);
             intent.putExtra("FRAGMENT_FINISH_CHAMPIONSHIP", true);
+            intent.putExtra("SHOW_TESTS_IMMEDIATELY", false);
         }
         //Осталось больше одного
         else {
@@ -205,6 +207,7 @@ public class MenuChampionshipActivity extends AppCompatActivity {
             intent.putExtra("FRAGMENT_FINISH_TRAINING", false);
             intent.putExtra("FRAGMENT_FINISH_CHECK", true);
             intent.putExtra("FRAGMENT_FINISH_CHAMPIONSHIP", false);
+            intent.putExtra("SHOW_TESTS_IMMEDIATELY", false);
         }
 
         startActivityForResult(intent, 0);

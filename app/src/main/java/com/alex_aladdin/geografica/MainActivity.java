@@ -83,6 +83,7 @@ public class MainActivity extends AppCompatActivity implements FragmentStart.OnC
         private final float delta;
         private final FragmentTip fragmentTip;
         private final FragmentTest fragmentTest;
+        private Boolean showTestsImmediately;
 
         //Конструктор
         MyDragListener() {
@@ -94,6 +95,8 @@ public class MainActivity extends AppCompatActivity implements FragmentStart.OnC
             fragmentTip = (FragmentTip) fragmentManager.findFragmentById(R.id.fragment_tip);
             //Фрагмент-тест
             fragmentTest = (FragmentTest) fragmentManager.findFragmentById(R.id.fragment_test);
+
+            showTestsImmediately = getIntent().getBooleanExtra("SHOW_TESTS_IMMEDIATELY", true);
         }
 
         public boolean onDrag(View v, DragEvent event) {
@@ -135,12 +138,18 @@ public class MainActivity extends AppCompatActivity implements FragmentStart.OnC
                         view.settle(x, y);
                         //Опускаем его вниз, чтобы он не мог загородить собой другой кусок
                         view.toBack();
-                        // Если нет других доступных кусков, показываем тест
+                        // Если нет других доступных кусков
                         if (!mManager.hasVisiblePieces()) {
-                            fragmentTest.set();
-                            mLayoutZoom.centerAt(fragmentTest);
-                            if (mLayoutZoom.isZoomed())
-                                mLayoutZoom.zoomOut();
+                            // В режиме тренировки сразу показываем тест
+                            if (showTestsImmediately) {
+                                fragmentTest.set();
+                                mLayoutZoom.centerAt(fragmentTest);
+                                if (mLayoutZoom.isZoomed())
+                                    mLayoutZoom.zoomOut();
+                            }
+                            // В режиме чемпионата выполняем следующее игровое действие
+                            else
+                                nextAction();
                         }
                     }
                     else {
@@ -283,7 +292,7 @@ public class MainActivity extends AppCompatActivity implements FragmentStart.OnC
         }
     }
 
-    // Действие после поворота экрана
+    // Следующее игровое действие
     private void nextAction() {
         final PieceImageView newPiece;
         if ((newPiece = mManager.getNewRandomPiece()) != null) {
@@ -460,15 +469,14 @@ public class MainActivity extends AppCompatActivity implements FragmentStart.OnC
         FragmentManager fragmentManager = getFragmentManager();
         final FragmentTest fragmentTest = (FragmentTest) fragmentManager.findFragmentById(R.id.fragment_test);
         mLayoutZoom.centerAt(fragmentTest);
+        if (mLayoutZoom.isZoomed())
+            mLayoutZoom.zoomOut();
     }
 
     // Завершаем игру
     private void finishGame() {
         mState = State.FINISH;
         mManager.stopTimer();
-
-        //Если были в зуме, возвращаемся
-        if (mLayoutZoom.isZoomed()) mLayoutZoom.zoomOut();
 
         //Показываем один из финишных экранов
         if (getIntent().getBooleanExtra("FRAGMENT_FINISH_TRAINING", false)) {
