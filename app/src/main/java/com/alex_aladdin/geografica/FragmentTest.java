@@ -4,9 +4,15 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.Path;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -31,6 +37,8 @@ public class FragmentTest extends Fragment {
     private int mCorrectVariant;
     private Timer mTimer = null;
     private PieceImageView mCurrentPiece;
+    private Bitmap mDrawingBitmap;
+    private Bitmap mOriginalBitmap;
     private Boolean mCompleted;
     // Определяем слушатель типа нашего интерфейса. Это будет сама активность
     private FragmentTest.EventListener mListener;
@@ -191,6 +199,8 @@ public class FragmentTest extends Fragment {
                         if (variant == mCorrectVariant) {
                             mLayout.setVisibility(View.INVISIBLE);
                             mBackground.setVisibility(View.INVISIBLE);
+                            // Стираем уголки
+                            removeCorners();
                             // Выполняем callback-функцию, прописанную в MainActivity
                             mListener.onTestClose(true);
                         }
@@ -232,6 +242,9 @@ public class FragmentTest extends Fragment {
         mLayout.setVisibility(View.VISIBLE);
         mBackground.setVisibility(View.VISIBLE);
 
+        // Рисуем уголки на куске
+        drawCorners();
+
         // Вешаем обработчик касаний на фон
         mBackground.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -246,6 +259,8 @@ public class FragmentTest extends Fragment {
                         mTimer.cancel();
                     // Разрешаем нажатия
                     mListVariants.setEnabled(true);
+                    // Стираем уголки
+                    removeCorners();
                     // Выполняем callback-функцию, прописанную в MainActivity
                     mListener.onTestClose(mCompleted);
 
@@ -255,6 +270,42 @@ public class FragmentTest extends Fragment {
                     return false;
             }
         });
+    }
+
+    // Рисуем уголки на текущем куске
+    private void drawCorners() {
+        final float width = mCurrentPiece.getWidth();
+        final float height = mCurrentPiece.getHeight();
+        final float thickness = 7;
+        final float offset = Math.round(thickness / 2);
+        final float length = Math.min(width, height) / 4;
+
+        mDrawingBitmap = ((BitmapDrawable) mCurrentPiece.getDrawable()).getBitmap();
+        mOriginalBitmap = Bitmap.createBitmap(mDrawingBitmap);
+        Canvas canvas = new Canvas(mDrawingBitmap);
+        Paint paint = new Paint();
+        paint.setColor(ContextCompat.getColor(getActivity(), R.color.dark_screen));
+        paint.setStyle(Paint.Style.STROKE);
+        paint.setAntiAlias(true);
+        paint.setStrokeWidth(thickness);
+
+        Path path = new Path();
+        path.moveTo(offset, length);
+        path.quadTo(0, 0, length, offset);
+        path.moveTo(width - length, offset);
+        path.quadTo(width, 0, width - offset, length);
+        path.moveTo(width - offset, height - length);
+        path.quadTo(width, height, width - length, height - offset);
+        path.moveTo(length, height - offset);
+        path.quadTo(0, height, offset, height - length);
+
+        canvas.drawPath(path, paint);
+    }
+
+    // Стираем уголки
+    private void removeCorners() {
+        mCurrentPiece.setImageBitmap(mOriginalBitmap);
+        mDrawingBitmap.recycle();
     }
 
     public RelativeLayout getLayout() {

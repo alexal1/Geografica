@@ -136,10 +136,13 @@ public class MainActivity extends AppCompatActivity implements FragmentStart.OnC
                     if ((Math.abs(x - target_x) < delta) && (Math.abs(y - target_y) < delta)) {
                         //Этот кусочек встал на свое место, ура
                         view.settle(x, y);
-                        //Опускаем его вниз, чтобы он не мог загородить собой другой кусок
-                        view.toBack();
-                        // Если нет других доступных кусков
-                        if (!mManager.hasVisiblePieces()) {
+                        // Есть другие доступные куски
+                        if (mManager.hasVisiblePieces()) {
+                            //Опускаем его вниз, чтобы он не мог загородить собой другой кусок
+                            view.toBack();
+                        }
+                        // Нет других доступных кусков
+                        else {
                             // В режиме тренировки сразу показываем тест
                             if (showTestsImmediately) {
                                 fragmentTest.set();
@@ -471,6 +474,10 @@ public class MainActivity extends AppCompatActivity implements FragmentStart.OnC
         mLayoutZoom.centerAt(fragmentTest);
         if (mLayoutZoom.isZoomed())
             mLayoutZoom.zoomOut();
+
+        // Поднимаем текущий кусок над остальными, чтобы целиком отображались уголки
+        PieceImageView currentPiece = fragmentTest.getCurrentPiece();
+        currentPiece.toFront();
     }
 
     // Завершаем игру
