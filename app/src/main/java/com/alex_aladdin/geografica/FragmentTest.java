@@ -272,37 +272,59 @@ public class FragmentTest extends Fragment {
         });
     }
 
-    // Рисуем уголки на текущем куске
+    // Рисуем подсветку куска
     private void drawCorners() {
         final float width = mCurrentPiece.getWidth();
         final float height = mCurrentPiece.getHeight();
-        final float thickness = 7;
+        final float thickness = 5;
         final float offset = Math.round(thickness / 2);
-        final float length = Math.min(width, height) / 4;
+        final float length = Math.min(width, height) / 6;
 
         mDrawingBitmap = ((BitmapDrawable) mCurrentPiece.getDrawable()).getBitmap();
         mOriginalBitmap = Bitmap.createBitmap(mDrawingBitmap);
         Canvas canvas = new Canvas(mDrawingBitmap);
-        Paint paint = new Paint();
-        paint.setColor(ContextCompat.getColor(getActivity(), R.color.dark_screen));
-        paint.setStyle(Paint.Style.STROKE);
-        paint.setAntiAlias(true);
-        paint.setStrokeWidth(thickness);
 
-        Path path = new Path();
-        path.moveTo(offset, length);
-        path.quadTo(0, 0, length, offset);
-        path.moveTo(width - length, offset);
-        path.quadTo(width, 0, width - offset, length);
-        path.moveTo(width - offset, height - length);
-        path.quadTo(width, height, width - length, height - offset);
-        path.moveTo(length, height - offset);
-        path.quadTo(0, height, offset, height - length);
+        // Рисуем фон
+        Paint paintBackground = new Paint();
+        paintBackground.setColor(ContextCompat.getColor(getActivity(), R.color.backlight));
+        paintBackground.setStyle(Paint.Style.FILL);
+        paintBackground.setAntiAlias(false);
 
-        canvas.drawPath(path, paint);
+        Path pathBackground = new Path();
+        pathBackground.moveTo(offset, length);
+        pathBackground.quadTo(0, 0, length, offset);
+        pathBackground.lineTo(width - length, offset);
+        pathBackground.quadTo(width, 0, width - offset, length);
+        pathBackground.lineTo(width - offset, height - length);
+        pathBackground.quadTo(width, height, width - length, height - offset);
+        pathBackground.lineTo(length, height - offset);
+        pathBackground.quadTo(0, height, offset, height - length);
+        pathBackground.lineTo(offset, length);
+
+        canvas.drawPath(pathBackground, paintBackground);
+        canvas.drawBitmap(mOriginalBitmap, 0, 0, new Paint());
+
+        // Рисуем углы
+        Paint paintCorners = new Paint();
+        paintCorners.setColor(ContextCompat.getColor(getActivity(), R.color.corners));
+        paintCorners.setStyle(Paint.Style.STROKE);
+        paintCorners.setAntiAlias(true);
+        paintCorners.setStrokeWidth(thickness);
+
+        Path pathCorners = new Path();
+        pathCorners.moveTo(offset, length);
+        pathCorners.quadTo(0, 0, length, offset);
+        pathCorners.moveTo(width - length, offset);
+        pathCorners.quadTo(width, 0, width - offset, length);
+        pathCorners.moveTo(width - offset, height - length);
+        pathCorners.quadTo(width, height, width - length, height - offset);
+        pathCorners.moveTo(length, height - offset);
+        pathCorners.quadTo(0, height, offset, height - length);
+
+        canvas.drawPath(pathCorners, paintCorners);
     }
 
-    // Стираем уголки
+    // Стираем подсветку куска
     private void removeCorners() {
         mCurrentPiece.setImageBitmap(mOriginalBitmap);
         mDrawingBitmap.recycle();

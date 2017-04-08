@@ -35,6 +35,7 @@ public class ZoomableRelativeLayout extends RelativeLayout {
      */
     public void centerAt(FragmentTest fragmentTest) {
         final RelativeLayout fragmentTestLayout = fragmentTest.getLayout();
+        final PieceImageView piece = fragmentTest.getCurrentPiece();
 
         // Начальные координаты layout'a
         final float x_start = this.getX();
@@ -44,9 +45,27 @@ public class ZoomableRelativeLayout extends RelativeLayout {
         final float fragment_x = fragmentTestLayout.getX();
         final float fragment_y = fragmentTestLayout.getY();
 
-        // Центр фрагмента
+        /* --- Выбираем точку для центирования экрана --- */
+        // По оси Ox просто берем середину фрагмента
         final float pivotX = fragment_x + (float) fragmentTestLayout.getWidth() / 2;
-        final float pivotY = fragment_y + (float) fragmentTestLayout.getHeight() / 2;
+        // По оси Oy делаем "интеллектуальное" центрирование
+        final float screenHeight = this.getHeight();
+        final float fragmentHeight = fragmentTestLayout.getHeight();
+        final float contentHeight = fragmentHeight + piece.getHeight();
+        final float minTopOffset = this.getHeight() / 40;
+        final float pivotY;
+        // Фрагмент и кусок помещаются целиком
+        if (contentHeight < screenHeight) {
+            pivotY = fragment_y + contentHeight / 2;
+        }
+        // Помещаются целиком только фрагмент + минимальный зазор
+        else if (fragmentHeight + minTopOffset < screenHeight) {
+            pivotY = fragment_y - minTopOffset + screenHeight / 2;
+        }
+        // Не хватает места на минимальный зазор или даже на сам фрагмент
+        else {
+            pivotY = fragment_y + fragmentHeight / 2;
+        }
 
         // Конечные координаты layout'а
         final float x_end = (float) this.getWidth() / 2 - pivotX;

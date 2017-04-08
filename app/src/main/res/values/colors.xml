@@ -10,4 +10,5 @@
     <color name="black">#000000</color>
     <color name="right_choice">#9900ff00</color>
     <color name="wrong_choice">#99ff0000</color>
+    <color name="corners">#00ccff</color>
 </resources>
