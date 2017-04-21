@@ -15,6 +15,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Random;
 
 import gr.antoniom.chronometer.Chronometer;
@@ -59,6 +60,9 @@ public class MainActivity extends AppCompatActivity implements FragmentStart.OnC
         //Если приложение запущено впервые
         if (savedInstanceState == null) {
             mState = State.START;
+            // Сохраняем ошибки, переданные в качестве параметра. Используется в режиме чемпионата
+            HashMap testMistakes = (HashMap) getIntent().getSerializableExtra("TEST_MISTAKES");
+            mManager.setTestMistakes(testMistakes);
             //Подключаем к активности стартовый фрагмент, если стоит соответствующий флаг
             if (getIntent().getBooleanExtra("FRAGMENT_START", false)) {
                 FragmentStart fragmentStart = new FragmentStart();
@@ -232,7 +236,7 @@ public class MainActivity extends AppCompatActivity implements FragmentStart.OnC
         super.onSaveInstanceState(saveInstanceState);
 
         //Сохраняем состояние игры
-        saveInstanceState.putString("STATE", mState.toString());
+        saveInstanceState.putSerializable("STATE", mState);
 
         //Получаем массив индексов кусочков паззла, которые уже стоят на своих местах
         ArrayList<Integer> arraySettled = mManager.getIndicesOfSettledPieces();
@@ -241,6 +245,10 @@ public class MainActivity extends AppCompatActivity implements FragmentStart.OnC
         //Получаем массив индексов кусочков паззла, для которых уже пройден тест
         ArrayList<Integer> arrayChecked = mManager.getIndicesOfCheckedPieces();
         saveInstanceState.putIntegerArrayList("CHECKED_PIECES", arrayChecked);
+
+        // Сохраняем количество ошибок в тестах для каждой карты
+        HashMap<String, Integer> testMistakes = mManager.getTestMistakes();
+        saveInstanceState.putSerializable("TEST_MISTAKES", testMistakes);
 
         //Сохраняем текущее время таймера
         mManager.stopTimer();
@@ -269,8 +277,12 @@ public class MainActivity extends AppCompatActivity implements FragmentStart.OnC
             view.setVisibility(View.VISIBLE);
         }
 
+        // Восстанавливаем количество ошибок в тестах для каждой карты
+        HashMap testMistakes = (HashMap) savedInstanceState.getSerializable("TEST_MISTAKES");
+        mManager.setTestMistakes(testMistakes);
+
         //Далее выполняем действия в зависимости от состояния игры
-        mState = State.valueOf(savedInstanceState.getString("STATE"));
+        mState = (State) savedInstanceState.getSerializable("STATE");
         long time = savedInstanceState.getLong("TIMER");
         switch (mState){
             case START:
@@ -360,9 +372,10 @@ public class MainActivity extends AppCompatActivity implements FragmentStart.OnC
     //Финишный фрагмент закончил свою работу
     @Override
     public void onFragmentFinishComplete(int resultCode) {
-        //Передаем обратно время сборки, но используется оно только в режиме чемпионата
+        //Передаем обратно время сборки и количество ошибок, но используется это только в режиме чемпионата
         Intent answerIntent = new Intent();
         answerIntent.putExtra("TIME", mManager.getTime());
+        answerIntent.putExtra("TEST_MISTAKES", mManager.getTestMistakes());
 
         setResult(resultCode, answerIntent);
         finish();
@@ -411,6 +424,13 @@ public class MainActivity extends AppCompatActivity implements FragmentStart.OnC
             mState = State.RUN;
             mManager.resumeTimer();
         }
+    }
+
+    // Пользователь выбрал неправильный ответ в тесте
+    @Override
+    public void onWrongAnswer() {
+        String caption = getIntent().getStringExtra("MAP_CAPTION");
+        mManager.addTestMistake(caption);
     }
 
     // Тестовый фрагмент был закрыт
@@ -488,9 +508,10 @@ public class MainActivity extends AppCompatActivity implements FragmentStart.OnC
         //Показываем один из финишных экранов
         if (getIntent().getBooleanExtra("FRAGMENT_FINISH_TRAINING", false)) {
             String caption = getIntent().getStringExtra("MAP_CAPTION").toUpperCase() + " " +
-                    getString(R.string.finish_federal_district);
+                    getString(R.string.finish_federal_district).toUpperCase();
             long time = mManager.getTime();
-            FragmentFinishTraining fragmentFinishTraining = FragmentFinishTraining.newInstance(caption, time);
+            HashMap testMistakes = mManager.getTestMistakes();
+            FragmentFinishTraining fragmentFinishTraining = FragmentFinishTraining.newInstance(caption, time, testMistakes);
             getFragmentManager().beginTransaction()
                     .add(R.id.layout_root, fragmentFinishTraining)
                     .commit();
@@ -506,7 +527,9 @@ public class MainActivity extends AppCompatActivity implements FragmentStart.OnC
                     ((MapImageView.Level) getIntent().getSerializableExtra("LEVEL")).getCaption();
             //Время складывается из времени за эту карту и за предыдущие
             long time = mManager.getTime() + getIntent().getLongExtra("TIME", 0);
-            FragmentFinishChampionship fragmentFinishChampionship = FragmentFinishChampionship.newInstance(time, level);
+            HashMap testMistakes = mManager.getTestMistakes();
+            FragmentFinishChampionship fragmentFinishChampionship =
+                    FragmentFinishChampionship.newInstance(time, level, testMistakes);
             getFragmentManager().beginTransaction()
                     .add(R.id.layout_root, fragmentFinishChampionship)
                     .commit();

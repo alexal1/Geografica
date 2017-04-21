@@ -19,6 +19,7 @@ class GameManager {
 
     private MapImageView mCurrentMap;
     private ArrayList<PieceImageView> mArrayPieces = new ArrayList<>();
+    private HashMap<String, Integer> mTestMistakes;
 
     private Chronometer mChronometer;
     private long mCurrentTime;
@@ -68,6 +69,18 @@ class GameManager {
                 return true;
         }
         return false;
+    }
+
+    // Добавляем ошибку к соответствующей карте
+    void addTestMistake(String caption) {
+        int value = (mTestMistakes.containsKey(caption)) ? mTestMistakes.get(caption) : 0;
+        value++;
+        mTestMistakes.put(caption, value);
+    }
+
+    @SuppressWarnings("unchecked")
+    void setTestMistakes(HashMap testMistakes) {
+        this.mTestMistakes = (HashMap<String, Integer>) testMistakes;
     }
 
     /* --- Геттеры --- */
@@ -157,6 +170,10 @@ class GameManager {
         Collections.shuffle(array_random);
 
         return array_random.subList(0, 3);
+    }
+
+    HashMap<String, Integer> getTestMistakes() {
+        return mTestMistakes;
     }
 
     /* --- Работаем с хронометром --- */

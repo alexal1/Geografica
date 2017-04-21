@@ -45,6 +45,7 @@ public class FragmentTest extends Fragment {
 
     // Определяем события, которые фрагмент будет использовать для связи с активностью
     interface EventListener {
+        void onWrongAnswer();
         void onTestClose(Boolean completed);
         void onAutoSet();
     }
@@ -213,8 +214,10 @@ public class FragmentTest extends Fragment {
                         mCompleted = true;
                         mCurrentPiece.setChecked();
                     }
-                    else
+                    else {
                         chosenView.setBackgroundResource(R.color.wrong_choice);
+                        mListener.onWrongAnswer();
+                    }
 
                     // Запрещаем нажатия
                     mListVariants.setEnabled(false);
