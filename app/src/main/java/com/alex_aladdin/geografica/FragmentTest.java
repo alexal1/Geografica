@@ -213,14 +213,13 @@ public class FragmentTest extends Fragment {
                         chosenView.setBackgroundResource(R.color.right_choice);
                         mCompleted = true;
                         mCurrentPiece.setChecked();
+                        // Запрещаем повторные нажатия
+                        mListVariants.setEnabled(false);
                     }
                     else {
                         chosenView.setBackgroundResource(R.color.wrong_choice);
                         mListener.onWrongAnswer();
                     }
-
-                    // Запрещаем нажатия
-                    mListVariants.setEnabled(false);
 
                     isChecked = true;
                 }

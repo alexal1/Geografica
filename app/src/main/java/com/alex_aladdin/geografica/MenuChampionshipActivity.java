@@ -153,7 +153,7 @@ public class MenuChampionshipActivity extends AppCompatActivity {
         Intent intent = new Intent(MenuChampionshipActivity.this, MainActivity.class);
         intent.putExtra("LEVEL", mLevel);
         intent.putExtra("MAP_NAME", "russia");
-        intent.putExtra("MAP_CAPTION", getString(R.string.districts_displacement));
+        intent.putExtra("MAP_CAPTION", getString(R.string.finish_districts_displacement));
         intent.putExtra("TIME", mTime);
         intent.putExtra("SHOW_TIMER", true);
         intent.putExtra("SHOW_BUTTON_INFO", false);

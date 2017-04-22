@@ -194,7 +194,7 @@ public class FragmentFinishChampionship extends Fragment {
 
             mTextRepeat.setText(getString(R.string.finish_perfect));
         }
-        else if (keyMax.equals(getString(R.string.districts_displacement))) {
+        else if (keyMax.equals(getString(R.string.finish_districts_displacement))) {
             String textRepeat = getString(R.string.finish_repeat) + " " + keyMax;
             mTextRepeat.setText(textRepeat);
         }
