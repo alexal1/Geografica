@@ -2,7 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/AndroidStudioProjects-Geografica.iml" filepath="$PROJECT_DIR$/AndroidStudioProjects-Geografica.iml" group="Geografica" />
       <module fileurl="file://$PROJECT_DIR$/Geografica.iml" filepath="$PROJECT_DIR$/Geografica.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/Geografica-app.iml" filepath="$PROJECT_DIR$/app/Geografica-app.iml" group="Geografica/app" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>
