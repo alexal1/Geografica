@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "346927706546",
+    "firebase_url": "https://geografica-87d0f.firebaseio.com",
+    "project_id": "geografica-87d0f",
+    "storage_bucket": "geografica-87d0f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:346927706546:android:8431d7d7410870f09934ab",
+        "android_client_info": {
+          "package_name": "com.alex_aladdin.geografica"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "346927706546-ft1b4oprufc523d5shs1hvgt8748pi2k.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBwHAr-wb8XqSY2yW8t3i99LljBk2S14OY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "346927706546-ft1b4oprufc523d5shs1hvgt8748pi2k.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

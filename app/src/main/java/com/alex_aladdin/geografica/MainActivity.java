@@ -5,6 +5,7 @@ import android.app.FragmentManager;
 import android.content.Intent;
 import android.graphics.Point;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Display;
 import android.view.DragEvent;
@@ -13,6 +14,8 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.alex_aladdin.geografica.di.ServiceLocator;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -24,11 +27,14 @@ public class MainActivity extends AppCompatActivity implements FragmentStart.OnC
         FragmentFinishChampionship.OnCompleteListener, FragmentExit.OnCompleteListener {
 
     public static final float DELTA_MM = 5.0f; //Дельта прилипания в миллиметрах
+    public static final String TAG = "GeoMainActivity";
 
+    private final Analytics analytics = ServiceLocator.get(Analytics.class);
     private GameManager mManager;
     private MapImageView mImageMap;
     private ZoomableRelativeLayout mLayoutZoom;
     private State mState; //Состояние игры
+    private String mMapName;
 
     private enum State {
         START, RUN, PAUSE, FINISH
@@ -47,9 +53,14 @@ public class MainActivity extends AppCompatActivity implements FragmentStart.OnC
 
         //Принимаем в качестве параметров уровень сложности и название карты
         MapImageView.Level level = (MapImageView.Level) getIntent().getSerializableExtra("LEVEL");
-        String map_name = getIntent().getExtras().getString("MAP_NAME");
+        Bundle extras = getIntent().getExtras();
+        mMapName = extras != null ? extras.getString("MAP_NAME") : null;
+        if (mMapName == null) {
+            Log.e(TAG, "Cannot get map name from the intent");
+            return;
+        }
 
-        mManager = new GameManager(this, level, map_name);
+        mManager = new GameManager(this, level, mMapName);
         mImageMap = mManager.getMap();
 
         mLayoutZoom = (ZoomableRelativeLayout)findViewById(R.id.layout_zoom);
@@ -172,6 +183,7 @@ public class MainActivity extends AppCompatActivity implements FragmentStart.OnC
 
                 //Показываем один из финишных экранов
                 if (getIntent().getBooleanExtra("FRAGMENT_FINISH_TRAINING", false)) {
+                    analytics.trainingFinished(mMapName.toUpperCase());
                     String caption = getIntent().getStringExtra("MAP_CAPTION").toUpperCase() + " " +
                             getString(R.string.finish_federal_district);
                     long time = mManager.getTime();
@@ -305,16 +317,19 @@ public class MainActivity extends AppCompatActivity implements FragmentStart.OnC
 
     //Клик на кнопку, добавляющую новый кусок паззла
     public void onButtonAddClick(View view) {
+        analytics.addPieceButtonClick();
         showNewPiece();
     }
 
     //Клик на кнопку, меняющую картинку карты
     public void onButtonInfoClick(View view) {
+        analytics.mapInfoButtonClick();
         mImageMap.changeMapInfo(this);
     }
 
     //Клик на кнопку зуммирования
     public void onButtonZoomClick(View view) {
+        analytics.zoomButtonClick(mLayoutZoom.isZoomed() ? Analytics.Zoom.OUT : Analytics.Zoom.IN);
         if (mLayoutZoom.isZoomed())
             mLayoutZoom.zoomOut();
         else

@@ -3,6 +3,7 @@
     package="com.alex_aladdin.geografica">
 
     <application
+        android:name=".GeoApp"
         android:allowBackup="false"
         android:icon="@mipmap/logo"
         android:label="@string/app_name"

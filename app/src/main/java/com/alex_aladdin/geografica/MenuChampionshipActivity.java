@@ -7,17 +7,21 @@ import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.appcompat.app.AppCompatActivity;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
 import android.widget.Button;
 import android.widget.ImageView;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.alex_aladdin.geografica.di.ServiceLocator;
 
 import java.util.Arrays;
 import java.util.Collections;
 
 public class MenuChampionshipActivity extends AppCompatActivity {
 
+    private Analytics analytics = ServiceLocator.get(Analytics.class);
     private MenuActivity.Menu[] mMenu; //Массив всех пунктов меню (карт)
     private int mCurrentItem; //Номер пункта меню, карта которого запущена в данный момент
     private MapImageView.Level mLevel; //Текущий выбранный уровень сложности
@@ -159,6 +163,8 @@ public class MenuChampionshipActivity extends AppCompatActivity {
         intent.putExtra("FRAGMENT_FINISH_CHAMPIONSHIP", false);
 
         startActivityForResult(intent, 0);
+
+        analytics.championshipStarted();
     }
 
     @Override
@@ -170,6 +176,8 @@ public class MenuChampionshipActivity extends AppCompatActivity {
 
             //Обновляем суммарное время
             mTime += data.getLongExtra("TIME", 0);
+
+            analytics.championshipRoundFinished(mCurrentItem);
         }
         else
             return;

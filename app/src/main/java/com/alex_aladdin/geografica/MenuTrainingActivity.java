@@ -3,14 +3,18 @@ package com.alex_aladdin.geografica;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.appcompat.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.alex_aladdin.geografica.di.ServiceLocator;
+
 public class MenuTrainingActivity extends AppCompatActivity {
 
+    private final Analytics analytics = ServiceLocator.get(Analytics.class);
     private int mCurrentItem; //Номер пункта меню, карта которого запущена в данный момент
 
     @Override
@@ -50,6 +54,8 @@ public class MenuTrainingActivity extends AppCompatActivity {
 
                     startActivityForResult(intent, 0);
                     mCurrentItem = item.ordinal();
+
+                    analytics.trainingStarted(item.toString());
                 }
             });
         }

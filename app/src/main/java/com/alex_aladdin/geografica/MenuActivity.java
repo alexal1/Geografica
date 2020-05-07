@@ -6,7 +6,6 @@ import android.graphics.Point;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Display;
 import android.view.View;
@@ -15,9 +14,15 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.alex_aladdin.geografica.di.ServiceLocator;
+
 public class MenuActivity extends AppCompatActivity {
 
-    enum Menu {
+    private final Analytics analytics = ServiceLocator.get(Analytics.class);
+
+    public enum Menu {
 
         SKFO("Северо-Кавказский"),
         YUFO("Южный"),
@@ -103,6 +108,7 @@ public class MenuActivity extends AppCompatActivity {
 
     //Кнопка ОСТАВИТЬ ОТЗЫВ
     public void onButtonRateClick(View view) {
+        analytics.rateAppClick();
         final String appPackageName = getPackageName();
         try {
             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + appPackageName)));
