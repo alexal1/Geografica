@@ -1,12 +1,8 @@
 <resources>
     <string name="app_name">Geografica</string>
 
-    <string name="finish_federal_district">федеральный округ</string>
-    <string name="finish_time">"Время сборки: "</string>
-    <string name="finish_mistakes">"Ошибок: "</string>
-    <string name="finish_repeat">Стоит повторить</string>
-    <string name="finish_districts_displacement">расположение округов</string>
-    <string name="finish_perfect">Безупречно!</string>
+    <string name="finish_federal_district">ФЕДЕРАЛЬНЫЙ ОКРУГ</string>
+    <string name="finish_result">Время сборки:</string>
     <string name="finish_check">\u2713</string>
     <string name="finish_russian_federation">РОССИЙСКАЯ ФЕДЕРАЦИЯ</string>
     <string name="finish_level">УРОВЕНЬ СЛОЖНОСТИ:</string>
@@ -27,6 +23,4 @@
 
     <string name="exit_caption">КНОПКА «НАЗАД»</string>
     <string name="exit_text">Выйти из игры?</string>
-
-    <string name="test_caption">¯\\_(ツ)_/¯</string>
 </resources>

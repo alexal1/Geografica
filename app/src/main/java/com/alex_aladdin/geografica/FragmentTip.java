@@ -53,6 +53,6 @@ public class FragmentTip extends Fragment {
 
     //Завершаем показ
     public void close() {
-        mLayout.setVisibility(View.INVISIBLE);
+        mLayout.setVisibility(View.GONE);
     }
 }

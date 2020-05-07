@@ -31,8 +31,7 @@
             android:id="@+id/fragment_tip"
             android:name="com.alex_aladdin.geografica.FragmentTip"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            tools:layout="@layout/fragment_tip" />
+            android:layout_height="wrap_content"/>
 
     </com.alex_aladdin.geografica.ZoomableRelativeLayout>
 
@@ -104,19 +103,5 @@
         android:padding="10dp"
         android:onClick="onButtonZoomClick"
         tools:ignore="ContentDescription"/>
-
-    <!-- FragmentTest and its background -->
-    <View
-        android:id="@+id/fragment_test_background"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="invisible" />
-
-    <fragment
-        android:id="@+id/fragment_test"
-        android:name="com.alex_aladdin.geografica.FragmentTest"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        tools:layout="@layout/fragment_test" />
 
 </RelativeLayout>

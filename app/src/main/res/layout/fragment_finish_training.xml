@@ -12,7 +12,6 @@
     android:baselineAligned="false">
 
     <LinearLayout
-        android:id="@+id/layout_window"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="4"
@@ -33,41 +32,14 @@
             android:textSize="15sp"
             android:textColor="@color/white_pressed"/>
 
-        <!-- Внутри GridLayout показываем результаты: время + ошибки -->
-        <GridLayout
-            android:id="@+id/layout_finish_results"
-            android:layout_width="wrap_content"
+        <TextView
+            android:id="@+id/text_finish_result"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
             android:layout_marginBottom="10dp"
-            android:orientation="horizontal"
-            android:columnCount="2">
-
-            <TextView
-                android:layout_gravity="end"
-                android:text="@string/finish_time"
-                android:textSize="20sp"
-                android:textColor="@color/white"/>
-
-            <TextView
-                android:id="@+id/text_finish_time"
-                android:layout_gravity="start"
-                android:textSize="30sp"
-                android:textColor="@color/white"/>
-
-            <TextView
-                android:layout_gravity="end"
-                android:text="@string/finish_mistakes"
-                android:textSize="20sp"
-                android:textColor="@color/white"/>
-
-            <TextView
-                android:id="@+id/text_finish_mistakes"
-                android:layout_gravity="start"
-                android:textSize="30sp"
-                android:textColor="@color/white"/>
-
-        </GridLayout>
+            android:gravity="center_horizontal"
+            android:textSize="30sp"
+            android:textColor="@color/white"/>
 
         <LinearLayout
             android:layout_width="match_parent"

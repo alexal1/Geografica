@@ -9,8 +9,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
-import java.util.HashMap;
-
 public class MenuTrainingActivity extends AppCompatActivity {
 
     private int mCurrentItem; //Номер пункта меню, карта которого запущена в данный момент
@@ -49,8 +47,6 @@ public class MenuTrainingActivity extends AppCompatActivity {
                     intent.putExtra("FRAGMENT_FINISH_TRAINING", true);
                     intent.putExtra("FRAGMENT_FINISH_CHECK", false);
                     intent.putExtra("FRAGMENT_FINISH_CHAMPIONSHIP", false);
-                    intent.putExtra("SHOW_TESTS_IMMEDIATELY", true);
-                    intent.putExtra("TEST_MISTAKES", new HashMap<>());
 
                     startActivityForResult(intent, 0);
                     mCurrentItem = item.ordinal();
@@ -99,8 +95,6 @@ public class MenuTrainingActivity extends AppCompatActivity {
         intent.putExtra("FRAGMENT_FINISH_TRAINING", true);
         intent.putExtra("FRAGMENT_FINISH_CHECK", false);
         intent.putExtra("FRAGMENT_FINISH_CHAMPIONSHIP", false);
-        intent.putExtra("SHOW_TESTS_IMMEDIATELY", true);
-        intent.putExtra("TEST_MISTAKES", new HashMap<>());
 
         startActivityForResult(intent, 0);
     }

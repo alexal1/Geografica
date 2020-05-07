@@ -15,7 +15,6 @@ import android.widget.ImageView;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 
 public class MenuChampionshipActivity extends AppCompatActivity {
 
@@ -23,7 +22,6 @@ public class MenuChampionshipActivity extends AppCompatActivity {
     private int mCurrentItem; //Номер пункта меню, карта которого запущена в данный момент
     private MapImageView.Level mLevel; //Текущий выбранный уровень сложности
     private long mTime; //Суммарное время по всем пройденным картам
-    private HashMap mTestMistakes; // Суммарное количество ошибок по всем пройденным картам
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -146,14 +144,12 @@ public class MenuChampionshipActivity extends AppCompatActivity {
         mCurrentItem = -1;
         //Сбрасываем время
         mTime = 0;
-        // Создаем новый объект для хранения ошибок
-        mTestMistakes = new HashMap<>();
 
         //Запускаем карту всей России
         Intent intent = new Intent(MenuChampionshipActivity.this, MainActivity.class);
         intent.putExtra("LEVEL", mLevel);
         intent.putExtra("MAP_NAME", "russia");
-        intent.putExtra("MAP_CAPTION", getString(R.string.finish_districts_displacement));
+        intent.putExtra("MAP_CAPTION", "");
         intent.putExtra("TIME", mTime);
         intent.putExtra("SHOW_TIMER", true);
         intent.putExtra("SHOW_BUTTON_INFO", false);
@@ -161,8 +157,6 @@ public class MenuChampionshipActivity extends AppCompatActivity {
         intent.putExtra("FRAGMENT_FINISH_TRAINING", false);
         intent.putExtra("FRAGMENT_FINISH_CHECK", true);
         intent.putExtra("FRAGMENT_FINISH_CHAMPIONSHIP", false);
-        intent.putExtra("SHOW_TESTS_IMMEDIATELY", false);
-        intent.putExtra("TEST_MISTAKES", mTestMistakes);
 
         startActivityForResult(intent, 0);
     }
@@ -176,8 +170,6 @@ public class MenuChampionshipActivity extends AppCompatActivity {
 
             //Обновляем суммарное время
             mTime += data.getLongExtra("TIME", 0);
-            // Обновляем количество ошибок
-            mTestMistakes = (HashMap) data.getSerializableExtra("TEST_MISTAKES");
         }
         else
             return;
@@ -200,8 +192,6 @@ public class MenuChampionshipActivity extends AppCompatActivity {
             intent.putExtra("FRAGMENT_FINISH_TRAINING", false);
             intent.putExtra("FRAGMENT_FINISH_CHECK", false);
             intent.putExtra("FRAGMENT_FINISH_CHAMPIONSHIP", true);
-            intent.putExtra("SHOW_TESTS_IMMEDIATELY", false);
-            intent.putExtra("TEST_MISTAKES", mTestMistakes);
         }
         //Осталось больше одного
         else {
@@ -215,8 +205,6 @@ public class MenuChampionshipActivity extends AppCompatActivity {
             intent.putExtra("FRAGMENT_FINISH_TRAINING", false);
             intent.putExtra("FRAGMENT_FINISH_CHECK", true);
             intent.putExtra("FRAGMENT_FINISH_CHAMPIONSHIP", false);
-            intent.putExtra("SHOW_TESTS_IMMEDIATELY", false);
-            intent.putExtra("TEST_MISTAKES", mTestMistakes);
         }
 
         startActivityForResult(intent, 0);
@@ -231,7 +219,6 @@ public class MenuChampionshipActivity extends AppCompatActivity {
         saveInstanceState.putInt("CURRENT_ITEM", mCurrentItem);
         saveInstanceState.putSerializable("LEVEL", mLevel);
         saveInstanceState.putLong("TIME", mTime);
-        saveInstanceState.putSerializable("TEST_MISTAKES", mTestMistakes);
     }
 
     //Восстанавливаем данные
@@ -243,7 +230,6 @@ public class MenuChampionshipActivity extends AppCompatActivity {
         mCurrentItem = savedInstanceState.getInt("CURRENT_ITEM");
         mLevel = (MapImageView.Level) savedInstanceState.getSerializable("LEVEL");
         mTime = savedInstanceState.getLong("TIME");
-        mTestMistakes = (HashMap) savedInstanceState.getSerializable("TEST_MISTAKES");
 
         //Выставляем доступность кнопки
         setButtonEnabled();

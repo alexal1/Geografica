@@ -11,7 +11,6 @@ import android.widget.RelativeLayout;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 
 import gr.antoniom.chronometer.Chronometer;
 
@@ -19,7 +18,6 @@ class GameManager {
 
     private MapImageView mCurrentMap;
     private ArrayList<PieceImageView> mArrayPieces = new ArrayList<>();
-    private HashMap<String, Integer> mTestMistakes;
 
     private Chronometer mChronometer;
     private long mCurrentTime;
@@ -71,23 +69,11 @@ class GameManager {
         return false;
     }
 
-    // Добавляем ошибку к соответствующей карте
-    void addTestMistake(String caption) {
-        int value = (mTestMistakes.containsKey(caption)) ? mTestMistakes.get(caption) : 0;
-        value++;
-        mTestMistakes.put(caption, value);
-    }
-
-    @SuppressWarnings("unchecked")
-    void setTestMistakes(HashMap testMistakes) {
-        this.mTestMistakes = (HashMap<String, Integer>) testMistakes;
-    }
-
     /* --- Геттеры --- */
 
-    // Возвращаем произвольный кусок паззла
+    //Возвращаем произвольный кусок паззла
     // НЕ стоящий на своем месте, и НЕ видимый пользователю
-    PieceImageView getNewRandomPiece() {
+    PieceImageView getPiece() {
         //Клонируем массив
         ArrayList<PieceImageView> array_random = new ArrayList<>(mArrayPieces);
         //Перемешиваем
@@ -99,38 +85,6 @@ class GameManager {
         return null;
     }
 
-    // Возвращаем произвольный кусок паззла
-    // Уже установленный, но для которого ещё не пройден тест
-    PieceImageView getUncheckedRandomPiece() {
-        return getUncheckedRandomPiece(null);
-    }
-
-    // То же самое, но откладываем текущий кусок в конец
-    PieceImageView getUncheckedRandomPiece(PieceImageView currentPiece) {
-        // Клонируем массив индексов установленных кусков
-        ArrayList<Integer> array_indices = new ArrayList<>(getIndicesOfSettledPieces());
-        // Вычитаем массив кусков с пройденным тестом
-        array_indices.removeAll(getIndicesOfCheckedPieces());
-
-        if (array_indices.isEmpty())
-            return null;
-        else {
-            // Перемешиваем
-            Collections.shuffle(array_indices);
-            // Если был передан текущий кусок
-            if (currentPiece != null) {
-                // Ищем его в массиве и откладываем в конец
-                int currentPieceIndex = mArrayPieces.indexOf(currentPiece);
-                if (array_indices.contains(currentPieceIndex)) {
-                    array_indices.remove(Integer.valueOf(currentPieceIndex));
-                    array_indices.add(currentPieceIndex);
-                }
-            }
-
-            return getPiece(array_indices.get(0));
-        }
-    }
-
     //Возвращает либо кусок с нужным индексом, либо null
     PieceImageView getPiece(int number) {
         if (number < mArrayPieces.size())
@@ -140,40 +94,14 @@ class GameManager {
     }
     MapImageView getMap() { return mCurrentMap; }
 
-    // Возвращает массив номеров кусочков паззла, которые уже стоят на своих местах
-    ArrayList<Integer> getIndicesOfSettledPieces() {
+    //Возвращает массив номеров кусочков паззла, которые уже стоят на своих местах
+    ArrayList<Integer> getListOfSettledPieces() {
         ArrayList<Integer> array = new ArrayList<>();
         for (PieceImageView piece : mArrayPieces) {
             if (piece.isSettled())
                 array.add(mArrayPieces.indexOf(piece));
         }
         return array;
-    }
-
-    // Возвращает массив номеров кусочков паззла, для которых уже пройден тест
-    ArrayList<Integer> getIndicesOfCheckedPieces() {
-        ArrayList<Integer> array = new ArrayList<>();
-        for (PieceImageView piece : mArrayPieces) {
-            if (piece.isChecked())
-                array.add(mArrayPieces.indexOf(piece));
-        }
-        return array;
-    }
-
-    // Возвращает три случайных куска, выбранных из множества всех, исключая данный
-    List<PieceImageView> getRandomPieces(PieceImageView excludedPiece) {
-        // Клонируем массив
-        ArrayList<PieceImageView> array_random = new ArrayList<>(mArrayPieces);
-        // Исключаем данный кусок
-        array_random.remove(excludedPiece);
-        // Перемешиваем
-        Collections.shuffle(array_random);
-
-        return array_random.subList(0, 3);
-    }
-
-    HashMap<String, Integer> getTestMistakes() {
-        return mTestMistakes;
     }
 
     /* --- Работаем с хронометром --- */
