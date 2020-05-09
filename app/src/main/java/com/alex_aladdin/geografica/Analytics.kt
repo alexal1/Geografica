@@ -8,11 +8,13 @@ import com.alex_aladdin.geografica.helpers.SharedPreferencesHelper
 import com.alex_aladdin.geografica.helpers.SharedPreferencesHelper.Companion.PREFS_ANALYTICS_SESSIONS_COUNT
 import com.alex_aladdin.geografica.helpers.SharedPreferencesHelper.Companion.PREFS_ANALYTICS_TOTAL_TIME
 import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 
 @ServiceLocator.Service
 class Analytics(context: Context, private val sharedPrefsHelper: SharedPreferencesHelper) {
 
     private val firebaseAnalytics = FirebaseAnalytics.getInstance(context)
+    private val firebaseCrashlytics = FirebaseCrashlytics.getInstance()
 
     private var startSessionTime: Long? = null
 
@@ -20,6 +22,8 @@ class Analytics(context: Context, private val sharedPrefsHelper: SharedPreferenc
         Log.d(TAG, "setStaticProperties, locale: $locale, startVersion: $startVersion")
         firebaseAnalytics.setUserProperty("locale", locale)
         firebaseAnalytics.setUserProperty("start_version", startVersion)
+        firebaseAnalytics.setUserProperty("contact_form_shown", "N")
+        firebaseAnalytics.setUserProperty("contact_form_sent", "N")
     }
 
     fun zoomButtonClick(zoom: Zoom) {
@@ -78,6 +82,31 @@ class Analytics(context: Context, private val sharedPrefsHelper: SharedPreferenc
         val totalLength = sharedPrefsHelper.incrementCounter(PREFS_ANALYTICS_TOTAL_TIME, sessionLength)
         firebaseAnalytics.setUserProperty("time_spent", totalLength.toString())
         Log.d(TAG, "finishSession, totalLength: $totalLength")
+    }
+
+    fun showContactForm() {
+        Log.d(TAG, "showContactForm")
+        firebaseAnalytics.logEvent("show_contact_form", null)
+        firebaseAnalytics.setUserProperty("contact_form_shown", "Y")
+    }
+
+    fun skipContactForm() {
+        Log.d(TAG, "skipContactForm")
+        firebaseAnalytics.logEvent("skip_contact_form", null)
+        firebaseAnalytics.setUserProperty("contact_form_sent", "N")
+    }
+
+    fun sendContactForm() {
+        Log.d(TAG, "sendContactForm")
+        firebaseAnalytics.logEvent("send_contact_form", null)
+        firebaseAnalytics.setUserProperty("contact_form_sent", "Y")
+    }
+
+    fun contactFormError(e: Exception?) {
+        Log.d(TAG, "contactFormError", e)
+        firebaseAnalytics.logEvent("contact_form_error", null)
+        firebaseAnalytics.setUserProperty("contact_form_sent", "ERROR")
+        e?.let(firebaseCrashlytics::recordException)
     }
 
     enum class Zoom { IN, OUT }

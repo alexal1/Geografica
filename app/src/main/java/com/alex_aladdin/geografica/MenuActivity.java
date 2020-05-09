@@ -1,11 +1,13 @@
 package com.alex_aladdin.geografica;
 
-import android.annotation.TargetApi;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.graphics.Point;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.Display;
 import android.view.View;
@@ -17,10 +19,22 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.alex_aladdin.geografica.di.ServiceLocator;
+import com.alex_aladdin.geografica.helpers.SharedPreferencesHelper;
+
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+
+import static androidx.fragment.app.FragmentManager.POP_BACK_STACK_INCLUSIVE;
+import static com.alex_aladdin.geografica.helpers.SharedPreferencesHelper.PREFS_CONTACT_FORM_WAS_CLOSED;
+import static com.alex_aladdin.geografica.helpers.SharedPreferencesHelper.PREFS_CONTACT_FORM_WAS_SENT;
 
 public class MenuActivity extends AppCompatActivity {
 
+    private static final String TAG = "GeoMenuActivity";
+
     private final Analytics analytics = ServiceLocator.get(Analytics.class);
+    private final SharedPreferencesHelper sharedPrefsHelper = ServiceLocator.get(SharedPreferencesHelper.class);
+    private final Calendar calendar = GregorianCalendar.getInstance();
 
     public enum Menu {
 
@@ -49,9 +63,9 @@ public class MenuActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu);
 
-        final LinearLayout layoutInner = (LinearLayout) findViewById(R.id.layout_inner);
-        final ImageView imageLogo = (ImageView) findViewById(R.id.image_logo);
-        final TextView textLogo = (TextView) findViewById(R.id.text_logo);
+        final LinearLayout layoutInner = findViewById(R.id.layout_inner);
+        final ImageView imageLogo = findViewById(R.id.image_logo);
+        final TextView textLogo = findViewById(R.id.text_logo);
 
         //Отслеживаем момент, когда layoutInner полностью загружается
         ViewTreeObserver viewTreeObserver = layoutInner.getViewTreeObserver();
@@ -59,10 +73,7 @@ public class MenuActivity extends AppCompatActivity {
             @Override
             public void onGlobalLayout() {
                 //Снимаем слушатель
-                if (Build.VERSION.SDK_INT < 16)
-                    removeOnGlobalLayoutListenerPre16(layoutInner, this);
-                else
-                    removeOnGlobalLayoutListenerPost16(layoutInner, this);
+                removeOnGlobalLayoutListener(layoutInner, this);
 
                 //Берем высоту layoutInner
                 int inner_h = layoutInner.getHeight();
@@ -84,13 +95,70 @@ public class MenuActivity extends AppCompatActivity {
         });
     }
 
-    @SuppressWarnings("deprecation")
-    private void removeOnGlobalLayoutListenerPre16(View view, ViewTreeObserver.OnGlobalLayoutListener listener) {
-        view.getViewTreeObserver().removeGlobalOnLayoutListener(listener);
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        ContactFormFragment existingContactFormFragment = (ContactFormFragment) getSupportFragmentManager().findFragmentByTag(ContactFormFragment.TAG);
+        if (existingContactFormFragment != null) {
+            existingContactFormFragment.setOnCloseClick(this::closeContactFormFragment);
+            if (existingContactFormFragment.isHidden()) {
+                showContactFormFragment(existingContactFormFragment);
+            }
+        } else if (isOldUser() && !wasContactFormClosed() && !wasContactFormSent()) {
+            ContactFormFragment contactFormFragment = ContactFormFragment.Companion.create();
+            contactFormFragment.setOnCloseClick(this::closeContactFormFragment);
+
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .setCustomAnimations(0, 0, 0, R.anim.go_out_down)
+                    .add(R.id.root_layout, contactFormFragment, ContactFormFragment.TAG)
+                    .addToBackStack(ContactFormFragment.TAG)
+                    .hide(contactFormFragment)
+                    .commit();
+
+            showContactFormFragment(contactFormFragment);
+        }
     }
 
-    @TargetApi(16)
-    private void removeOnGlobalLayoutListenerPost16(View view, ViewTreeObserver.OnGlobalLayoutListener listener) {
+    private void showContactFormFragment(ContactFormFragment fragment) {
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            if (fragment.isResumed()) {
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .setCustomAnimations(R.anim.go_in_up, 0, 0, 0)
+                        .show(fragment)
+                        .commit();
+            }
+        }, 500);
+    }
+
+    private void closeContactFormFragment() {
+        sharedPrefsHelper.setBool(PREFS_CONTACT_FORM_WAS_CLOSED, true);
+        getSupportFragmentManager().popBackStack(ContactFormFragment.TAG, POP_BACK_STACK_INCLUSIVE);
+    }
+
+    private boolean isOldUser() {
+        try {
+            PackageInfo packageInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+            long firstInstallTime = packageInfo.firstInstallTime;
+            calendar.set(2020, 4, 8);
+            return firstInstallTime <= calendar.getTimeInMillis();
+        } catch (PackageManager.NameNotFoundException e) {
+            Log.e(TAG, "Cannot retrieve package info", e);
+            return true;
+        }
+    }
+
+    private boolean wasContactFormClosed() {
+        return sharedPrefsHelper.getBool(PREFS_CONTACT_FORM_WAS_CLOSED, false);
+    }
+
+    private boolean wasContactFormSent() {
+        return sharedPrefsHelper.getBool(PREFS_CONTACT_FORM_WAS_SENT, false);
+    }
+
+    private void removeOnGlobalLayoutListener(View view, ViewTreeObserver.OnGlobalLayoutListener listener) {
         view.getViewTreeObserver().removeOnGlobalLayoutListener(listener);
     }
 
@@ -117,5 +185,13 @@ public class MenuActivity extends AppCompatActivity {
             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id="
                     + appPackageName)));
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (getSupportFragmentManager().findFragmentByTag(ContactFormFragment.TAG) != null) {
+            return;
+        }
+        super.onBackPressed();
     }
 }

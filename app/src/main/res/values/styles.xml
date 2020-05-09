@@ -4,4 +4,8 @@
         <!-- Customize your theme here. -->
         <item name="android:windowFullscreen">true</item>
     </style>
+
+    <style name="MyEditTextTheme">
+        <item name="colorControlActivated">@color/white</item>
+    </style>
 </resources>

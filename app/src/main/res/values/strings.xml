@@ -23,4 +23,11 @@
 
     <string name="exit_caption">КНОПКА «НАЗАД»</string>
     <string name="exit_text">Выйти из игры?</string>
+
+    <string name="contact_form_title">Пройдите опрос и получите 100 рублей</string>
+    <string name="contact_form_text">Привет, это я, разработчик Географики.\nХочу узнать, что вам нравится в этом приложении, а что раздражает, чтобы сделать его лучше.\nОставьте, пожалуйста, свой телефон, я вам перезвоню и задам несколько вопросов. Опрос не займёт больше 5 минут.\nДеньги сразу переведу на карту или кину на телефон.</string>
+    <string name="contact_form_send">Отправить</string>
+    <string name="contact_form_hint">X XXX XXX-XX-XX</string>
+    <string name="contact_form_thanks">Спасибо!</string>
+    <string name="contact_form_close">Закрыть</string>
 </resources>
